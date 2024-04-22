@@ -1,0 +1,26 @@
+{
+  "name": "useropexample",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npx ts-node main.ts",
+    "account-abstraction-sdk": "npx ts-node ./examples/account-abstraction-sdk-example.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@account-abstraction/contracts": "^0.7.0",
+    "@account-abstraction/sdk": "^0.6.0",
+    "ethers": "^6.12.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6",
+    "userop": "^0.4.0-beta.5",
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.0"
+  }
+}

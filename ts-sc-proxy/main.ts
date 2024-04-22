@@ -7,7 +7,7 @@ const paymasterUrl = 'https://api.stackup.sh/v1/paymaster/04832ebeb6088d4ca33e86
 const paymasterMiddleware = Presets.Middleware.verifyingPaymaster(paymasterUrl, { type: 'payg' });
 const opts = {paymasterMiddleware: paymasterMiddleware};
 
-async function sendSponsored(amount_token : number, token_address: string, destination_address?: string) {
+async function sendSponsored(amount_token : number , token_address : string, destination_address?:string) {
     // Initialize the account
     const signingKey = getAccountPrivateKey("01"); // TODO more than test-id 01 for the POC if needed
     const signer = new ethers.Wallet(signingKey);
@@ -56,7 +56,7 @@ async function sendSponsored(amount_token : number, token_address: string, desti
     console.log(`View here: https://jiffyscan.xyz/userOpHash/${res.userOpHash}`);
 }
 
-async function forwardZKP(proof: string) {
+async function forwardZKP(proof : string) {
 // Initialize the account
     const signingKey = getAccountPrivateKey("01"); // TODO more than test-id 01 for the POC if needed
     const signer = new ethers.Wallet(signingKey);
@@ -99,7 +99,7 @@ async function forwardZKP(proof: string) {
     console.log(`View here: https://jiffyscan.xyz/userOpHash/${res.userOpHash}`);
 }
 
-function getAccountPrivateKey(id: string) : string {
+function getAccountPrivateKey(id : string) {
     return "0x" + (id + "43374337433eb8b9db305859812b374337eb8b9db777777759812b433743374337efefabba45343374337").substring(0, 64);
 }
 
