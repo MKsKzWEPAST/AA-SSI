@@ -167,9 +167,9 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
 
           emit(const CombinedState.authenticated());
 
-          logger().i("[debugging-combined] -- Verification with proof $proofs");
+          logger().i("[debugging-combined] -- Verification with proof $proof");
 
-          var url = Uri.parse('https://broadly-assured-piglet.ngrok-free.app/api/forwardZKP');
+          var url = Uri.parse('https://broadly-assured-piglet.ngrok-free.app/api/forwardZKP/54833933833933833');
           var response = await http.post(
             url,
             headers: {"Content-Type": "application/json"},
