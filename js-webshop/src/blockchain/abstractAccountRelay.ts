@@ -1,6 +1,6 @@
 import express = require('express');
-import { ethers } from 'ethers';
 import { Presets, Client } from 'userop';
+import {ethers} from "ethers";
 
 const rpcUrl = 'https://api.stackup.sh/v1/node/04832ebeb6088d4ca33e86e7bc9054fdc03115d2d1e295df3122acf11817fb95';
 const paymasterUrl = 'https://api.stackup.sh/v1/paymaster/04832ebeb6088d4ca33e86e7bc9054fdc03115d2d1e295df3122acf11817fb95';
