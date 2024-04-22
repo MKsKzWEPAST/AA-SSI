@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {PaymentInputsWrapper, usePaymentInputs} from "react-payment-inputs";
 import images from "react-payment-inputs/images";
 import {ButtonGroup, Container, ToggleButton} from "react-bootstrap";
+import {QRCodeSVG} from "qrcode.react";
 
 function confirmCheckoutButton({valid, validatePayment}) {
     return (<button
@@ -144,12 +145,16 @@ const PaymentOptions = ({validatePayment}) => {
     }
 
     return (
-        <div className="d-flex flex-column align-items-center justify-content-center">
-            <div className="align-items-center row my-3">
-                <SelectOption changeOption={changeOption}/>
-            </div>
-            <div className="align-items-center row">
-                {componentToShow}
+        <div className={"d-flex flex-column m-3 align-items-center justify-content-center"}>
+            <span style={{textAlign: 'center'}}>Pay to this address.</span>
+            <div className={"my-3"} style={{
+                display: 'inline-block',
+                padding: '10px',
+                borderRadius: "5px",
+                border: '1px solid #ccc',
+                boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)',
+            }}>
+                <QRCodeSVG value={"ethereum:0x40775600Bb4E2E4Ab1c24B5c8bA4734cC47EE02E"} size={window.innerHeight * 0.25}/>
             </div>
         </div>
     );
