@@ -50,3 +50,5 @@ env.g.dart
 
 # Generated
 *.freezed.dart
+
+*.lock
