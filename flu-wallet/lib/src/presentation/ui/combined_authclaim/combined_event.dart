@@ -28,7 +28,7 @@ class CombinedEvent with _$CombinedEvent {
   ScanQrCodeResponse;
 
   // no QR code flow
-  const factory CombinedEvent.clickTapButton() = ClickTapButtonEvent;
+  /*const factory CombinedEvent.clickTapButton() = ClickTapButtonEvent;*/
 
   // prev claims
   const factory CombinedEvent.fetchAndSaveClaims(

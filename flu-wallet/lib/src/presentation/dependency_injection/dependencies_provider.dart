@@ -7,17 +7,16 @@ import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/iden3_message_type_
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 
 
-import 'package:minimal_example/utils/qr_code_parser_utils.dart';
-import 'package:minimal_example/src/common/env.dart';
-import 'package:minimal_example/src/presentation/ui/backup_identity/bloc/backup_identity_bloc.dart';
-import 'package:minimal_example/src/presentation/ui/claim_detail/bloc/claim_detail_bloc.dart';
-import 'package:minimal_example/src/presentation/ui/claims/mappers/claim_model_mapper.dart';
-import 'package:minimal_example/src/presentation/ui/claims/mappers/claim_model_state_mapper.dart';
-import 'package:minimal_example/src/presentation/ui/claims/mappers/proof_model_type_mapper.dart';
-import 'package:minimal_example/src/presentation/ui/combined_authclaim/combined_bloc.dart';
-import 'package:minimal_example/src/presentation/ui/home/home_bloc.dart';
-import 'package:minimal_example/src/presentation/ui/restore_identity/bloc/restore_identity_bloc.dart';
-import 'package:minimal_example/src/presentation/ui/splash/splash_bloc.dart';
+import 'package:wallet_app/utils/qr_code_parser_utils.dart';
+import 'package:wallet_app/src/presentation/ui/backup_identity/bloc/backup_identity_bloc.dart';
+import 'package:wallet_app/src/presentation/ui/claim_detail/bloc/claim_detail_bloc.dart';
+import 'package:wallet_app/src/presentation/ui/claims/mappers/claim_model_mapper.dart';
+import 'package:wallet_app/src/presentation/ui/claims/mappers/claim_model_state_mapper.dart';
+import 'package:wallet_app/src/presentation/ui/claims/mappers/proof_model_type_mapper.dart';
+import 'package:wallet_app/src/presentation/ui/combined_authclaim/combined_bloc.dart';
+import 'package:wallet_app/src/presentation/ui/home/home_bloc.dart';
+import 'package:wallet_app/src/presentation/ui/restore_identity/bloc/restore_identity_bloc.dart';
+import 'package:wallet_app/src/presentation/ui/splash/splash_bloc.dart';
 
 final getIt = GetIt.instance;
 

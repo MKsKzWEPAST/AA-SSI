@@ -8,22 +8,20 @@ import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:secure_application/secure_application_provider.dart';
 
-import 'package:minimal_example/utils/custom_button_style.dart';
-import 'package:minimal_example/utils/custom_colors.dart';
-import 'package:minimal_example/utils/custom_strings.dart';
-import 'package:minimal_example/utils/custom_text_styles.dart';
-import 'package:minimal_example/utils/custom_widgets_keys.dart';
-import 'package:minimal_example/src/presentation/dependency_injection/dependencies_provider.dart';
-import 'package:minimal_example/src/presentation/navigations/routes.dart';
-import 'package:minimal_example/src/presentation/ui/claims/models/claim_model.dart';
-import 'package:minimal_example/src/presentation/ui/claims/widgets/claim_card.dart';
-import 'package:minimal_example/src/presentation/ui/common/widgets/profile_radio_button.dart';
-import 'package:minimal_example/src/presentation/ui/combined_authclaim/combined_bloc.dart';
-import 'package:minimal_example/src/presentation/ui/combined_authclaim/combined_event.dart';
-import 'package:minimal_example/src/presentation/ui/combined_authclaim/combined_state.dart';
+import 'package:wallet_app/utils/custom_button_style.dart';
+import 'package:wallet_app/utils/custom_colors.dart';
+import 'package:wallet_app/utils/custom_strings.dart';
+import 'package:wallet_app/utils/custom_text_styles.dart';
+import 'package:wallet_app/utils/custom_widgets_keys.dart';
+import 'package:wallet_app/src/presentation/dependency_injection/dependencies_provider.dart';
+import 'package:wallet_app/src/presentation/navigations/routes.dart';
+import 'package:wallet_app/src/presentation/ui/claims/models/claim_model.dart';
+import 'package:wallet_app/src/presentation/ui/claims/widgets/claim_card.dart';
+import 'package:wallet_app/src/presentation/ui/common/widgets/profile_radio_button.dart';
+import 'package:wallet_app/src/presentation/ui/combined_authclaim/combined_bloc.dart';
+import 'package:wallet_app/src/presentation/ui/combined_authclaim/combined_event.dart';
+import 'package:wallet_app/src/presentation/ui/combined_authclaim/combined_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../../../../../utils/bioauth_utils.dart';
 
 class CombinedScreen extends StatefulWidget {
   final CombinedBloc _bloc;
@@ -35,43 +33,23 @@ class CombinedScreen extends StatefulWidget {
 }
 
 class _CombinedScreenState extends State<CombinedScreen> {
-  late StreamController<bool> _tapFetchedController;
   late Timer _timer;
 
   @override
   void initState() {
     super.initState();
 
-    _tapFetchedController = StreamController<bool>();
-
     SharedPreferences.getInstance()
         .then((prefs) => WidgetsBinding.instance.addPostFrameCallback((_) {
               widget._bloc.add(const CombinedEvent.getClaims());
-              final tapFetched = prefs.getBool("tapFetched") ?? false;
-              _tapFetchedController.sink.add(tapFetched);
-              if (!tapFetched) {
-                widget._bloc.add(const CombinedEvent.clickTapButton());
-              }
               if (!SecureApplicationProvider.of(context)!.authenticated) {
                 SecureApplicationProvider.of(context)!.lock();
               }
-
-              _timer = Timer.periodic(const Duration(seconds: 2), (timer) {
-                isTapFetched();
-              });
             }));
-  }
-
-  Future<void> isTapFetched() async {
-    final prefs = await SharedPreferences.getInstance();
-    final fetched = prefs.getBool("tapFetched") ?? false;
-    _tapFetchedController.sink.add(fetched);
-    if (fetched) _timer.cancel();
   }
 
   @override
   void dispose() {
-    _tapFetchedController.close(); // Close the stream when disposing.
     super.dispose();
   }
 
@@ -111,7 +89,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
     return AppBar(
       elevation: 0.0,
       title: const Text(
-        "Tix Wallet",
+        "Wallet",
         textAlign: TextAlign.center,
         style: CustomTextStyles.titleTextStyle,
       ),
@@ -141,6 +119,10 @@ class _CombinedScreenState extends State<CombinedScreen> {
                 const SizedBox(height: 6),
                 _buildTitle(),
               ],
+            ),
+            const Padding(padding: EdgeInsets.only(bottom: 16),
+              child: Text("DAI: 16.2"),
+
             ),
             Expanded(
                 child: SingleChildScrollView(
@@ -308,7 +290,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
     );
   }
 
-  Widget _buildTAPBar() {
+  /*Widget _buildTAPBar() {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: ElevatedButton(
@@ -323,40 +305,21 @@ class _CombinedScreenState extends State<CombinedScreen> {
         ),
       ),
     );
-  }
+  }*/
 
   Widget _buildBottomBar() {
-    return Padding(
-        padding: const EdgeInsets.only(bottom: 16),
-        child: StreamBuilder<bool>(
-            stream: _tapFetchedController.stream,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator(); // Display a loading indicator when waiting for data.
-              } else if (snapshot.hasError) {
-                return Text(
-                    'Error: ${snapshot.error}'); // Display an error message if an error occurs.
-              } else if (!snapshot.hasData) {
-                return Text(
-                    'No data available'); // Display a message when no data is available.
-              } else {
-                final fetched = snapshot.data ?? false;
-                return ElevatedButton(
-                  key: CustomWidgetsKeys.authScreenButtonConnect,
-                  onPressed: fetched
-                      ? () {
-                          widget._bloc
-                              .add(const CombinedEvent.clickScanQrCode());
-                        }
-                      : null,
-                  style: CustomButtonStyle.primaryButtonStyle,
-                  child: const Text(
-                    "Scan QR code",
-                    style: CustomTextStyles.primaryButtonTextStyle,
-                  ),
-                );
-              }
-            }));
+    return ElevatedButton(
+      key: CustomWidgetsKeys.authScreenButtonConnect,
+      onPressed: () {
+        widget._bloc
+            .add(const CombinedEvent.clickScanQrCode());
+      },
+      style: CustomButtonStyle.primaryButtonStyle,
+      child: const Text(
+        "Scan QR code",
+        style: CustomTextStyles.primaryButtonTextStyle,
+      ),
+    );
   }
 
   ///

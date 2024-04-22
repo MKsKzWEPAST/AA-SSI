@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:minimal_example/utils/custom_button_style.dart';
-import 'package:minimal_example/utils/custom_colors.dart';
-import 'package:minimal_example/utils/custom_strings.dart';
-import 'package:minimal_example/utils/custom_text_styles.dart';
-import 'package:minimal_example/src/presentation/dependency_injection/dependencies_provider.dart';
-import 'package:minimal_example/src/presentation/ui/backup_identity/bloc/backup_identity_bloc.dart';
-import 'package:minimal_example/src/presentation/ui/backup_identity/bloc/backup_identity_event.dart';
-import 'package:minimal_example/src/presentation/ui/backup_identity/bloc/backup_identity_state.dart';
+import 'package:wallet_app/utils/custom_button_style.dart';
+import 'package:wallet_app/utils/custom_colors.dart';
+import 'package:wallet_app/utils/custom_strings.dart';
+import 'package:wallet_app/utils/custom_text_styles.dart';
+import 'package:wallet_app/src/presentation/dependency_injection/dependencies_provider.dart';
+import 'package:wallet_app/src/presentation/ui/backup_identity/bloc/backup_identity_bloc.dart';
+import 'package:wallet_app/src/presentation/ui/backup_identity/bloc/backup_identity_event.dart';
+import 'package:wallet_app/src/presentation/ui/backup_identity/bloc/backup_identity_state.dart';
 
 class BackupIdentityScreen extends StatefulWidget {
   const BackupIdentityScreen({Key? key}) : super(key: key);

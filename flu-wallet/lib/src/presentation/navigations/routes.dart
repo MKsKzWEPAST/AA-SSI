@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:minimal_example/src/presentation/ui/backup_identity/widgets/backup_identity.dart';
-import 'package:minimal_example/src/presentation/ui/claim_detail/widgets/claim_detail.dart';
-import 'package:minimal_example/src/presentation/ui/claims/models/claim_model.dart';
-import 'package:minimal_example/src/presentation/ui/combined_authclaim/widgets/combined.dart';
-import 'package:minimal_example/src/presentation/ui/home/widgets/home.dart';
-import 'package:minimal_example/src/presentation/ui/qrcode_scanner/widgets/qrcode_scanner.dart';
-import 'package:minimal_example/src/presentation/ui/restore_identity/widgets/restore_identity.dart';
-import 'package:minimal_example/src/presentation/ui/splash/widgets/splash.dart';
+import 'package:wallet_app/src/presentation/ui/backup_identity/widgets/backup_identity.dart';
+import 'package:wallet_app/src/presentation/ui/claim_detail/widgets/claim_detail.dart';
+import 'package:wallet_app/src/presentation/ui/claims/models/claim_model.dart';
+import 'package:wallet_app/src/presentation/ui/combined_authclaim/widgets/combined.dart';
+import 'package:wallet_app/src/presentation/ui/home/widgets/home.dart';
+import 'package:wallet_app/src/presentation/ui/qrcode_scanner/widgets/qrcode_scanner.dart';
+import 'package:wallet_app/src/presentation/ui/restore_identity/widgets/restore_identity.dart';
+import 'package:wallet_app/src/presentation/ui/splash/widgets/splash.dart';
 import 'package:secure_application/secure_gate.dart';
-
-import 'package:minimal_example/utils/bioauth_utils.dart';
-import 'package:minimal_example/utils/custom_text_styles.dart';
+import 'package:wallet_app/utils/custom_text_styles.dart';
 
 class Routes {
   static const String initialPath = "/";

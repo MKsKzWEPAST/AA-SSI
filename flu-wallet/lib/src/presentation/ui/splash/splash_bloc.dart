@@ -5,8 +5,8 @@ import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/proof/data/dtos/circuits_to_download_param.dart';
 import 'package:polygonid_flutter_sdk/proof/domain/entities/download_info_entity.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
-import 'package:minimal_example/src/presentation/ui/splash/splash_event.dart';
-import 'package:minimal_example/src/presentation/ui/splash/splash_state.dart';
+import 'package:wallet_app/src/presentation/ui/splash/splash_event.dart';
+import 'package:wallet_app/src/presentation/ui/splash/splash_state.dart';
 
 class SplashBloc extends Bloc<SplashEvent, SplashState> {
   SplashBloc() : super(SplashState.init()) {

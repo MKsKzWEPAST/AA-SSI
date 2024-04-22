@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
@@ -40,7 +41,6 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
     this._qrcodeParserUtils,
   ) : super(const CombinedState.initial()) {
     on<ClickScanQrCodeEvent>(_handleClickScanQrCode);
-    on<ClickTapButtonEvent>(_handleClickTapButton);
     on<ScanQrCodeResponse>(_handleScanQrCodeResponse);
     on<ProfileSelectedEvent>(_handleProfileSelected);
     on<FetchAndSaveClaimsEvent>(_fetchAndSaveClaims);
@@ -71,7 +71,7 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
   }
 
   ///
-  Future<void> _handleClickTapButton(
+  /*Future<void> _handleClickTapButton(
       ClickTapButtonEvent event, Emitter<CombinedState> emit) async {
 
     String? privateKey =
@@ -113,7 +113,7 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
     }
     emit(const CombinedState.error("error while trying to get the credential"));
 
-  }
+  }*/
 
   Future<void> _handleIden3Message(String response, Emitter<CombinedState> emit) async {
     try {
@@ -127,8 +127,62 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
 
       switch (iden3message.messageType) {
         case Iden3MessageType.proofContractInvokeRequest:
-          // TODO handle logic for smart contracts?
+
+          logger().i("[debugging-combined] -- On-chain verification: Checkpoint 1--");
+
+          if (emit.isDone) return;
+
+          emit(CombinedState.loaded(iden3message));
+
+
+          emit(const CombinedState.loading());
+
+          String? privateKey =
+          await SecureStorage.read(key: SecureStorageKeys.privateKey);
+
+          if (privateKey == null) {
+            emit(const CombinedState.error("no private key found"));
+            return;
+          }
+
+          EnvEntity env = await _polygonIdSdk.getEnv();
+          final chainConfig = env.chainConfigs["80002"]!;
+          final blockchain = chainConfig.blockchain;
+          final network = chainConfig.network;
+
+          String? did = await _polygonIdSdk.identity.getDidIdentifier(
+              privateKey: privateKey,
+              blockchain: blockchain,
+              network: network);
+
+          final BigInt nonce = selectedProfile == SelectedProfile.public
+              ? GENESIS_PROFILE_NONCE
+              : await NonceUtils(getIt()).getPrivateProfileNonce(
+              did: did, privateKey: privateKey, from: iden3message.from);
+
+          final config = EnvConfigEntity(ipfsNodeUrl: env.ipfsUrl,chainConfigs: env.chainConfigs,didMethods: []);
+          final proofs = await _polygonIdSdk.iden3comm.getProofs(message: iden3message, genesisDid: did, privateKey: privateKey, profileNonce: nonce,challenge: "99889988",config: config);
+
+          final proof = proofs[0];
+
+          emit(const CombinedState.authenticated());
+
+          logger().i("[debugging-combined] -- Verification with proof $proofs");
+
+          var url = Uri.parse('https://broadly-assured-piglet.ngrok-free.app/api/forwardZKP');
+          var response = await http.post(
+            url,
+            headers: {"Content-Type": "application/json"},
+            body: jsonEncode(proof.toJson()),
+          );
+
+          if (response.statusCode == 200) {
+            logger().i('Success: ${response.body}');
+          } else {
+            logger().i('Error: ${response.statusCode}');
+          }
           break;
+
         case Iden3MessageType.credentialOffer:
           logger().i("[debugging-combined] -- Claims: Checkpoint 1--");
           emit(CombinedState.qrCodeScanned(iden3message));
@@ -334,9 +388,6 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
       List<ClaimModel> claimModelList =
           claimList.map((claimEntity) => _mapper.mapFrom(claimEntity)).toList();
 
-      if (claimModelList.isNotEmpty) {
-        prefs.setBool("tapFetched", true);
-      }
       emit(CombinedState.loadedClaims(claimModelList));
     } on GetClaimsException catch (_) {
       emit(const CombinedState.error("error while retrieving claims"));

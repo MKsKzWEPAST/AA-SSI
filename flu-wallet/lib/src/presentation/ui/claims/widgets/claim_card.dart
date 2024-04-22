@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import 'package:minimal_example/utils/custom_colors.dart';
-import 'package:minimal_example/utils/custom_dimensions.dart';
-import 'package:minimal_example/utils/custom_strings.dart';
-import 'package:minimal_example/utils/custom_text_styles.dart';
-import 'package:minimal_example/utils/image_resources.dart';
-import 'package:minimal_example/src/presentation/ui/claims/models/claim_model.dart';
+import 'package:wallet_app/utils/custom_colors.dart';
+import 'package:wallet_app/utils/custom_dimensions.dart';
+import 'package:wallet_app/utils/custom_strings.dart';
+import 'package:wallet_app/utils/custom_text_styles.dart';
+import 'package:wallet_app/utils/image_resources.dart';
+import 'package:wallet_app/src/presentation/ui/claims/models/claim_model.dart';
 
 class ClaimCard extends StatelessWidget {
   final ClaimModel claimModel;

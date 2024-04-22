@@ -2,11 +2,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
 
-import 'package:minimal_example/src/presentation/navigations/routes.dart';
-import 'package:minimal_example/src/presentation/ui/splash/widgets/splash.dart';
-import 'package:minimal_example/utils/custom_colors.dart';
-import 'package:minimal_example/utils/custom_strings.dart';
-import 'package:minimal_example/utils/custom_text_styles.dart';
+import 'package:wallet_app/src/presentation/navigations/routes.dart';
+import 'package:wallet_app/src/presentation/ui/splash/widgets/splash.dart';
+import 'package:wallet_app/utils/custom_colors.dart';
+import 'package:wallet_app/utils/custom_strings.dart';
+import 'package:wallet_app/utils/custom_text_styles.dart';
 
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:secure_application/secure_application.dart';

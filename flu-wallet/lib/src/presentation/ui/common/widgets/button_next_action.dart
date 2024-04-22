@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:minimal_example/utils/custom_colors.dart';
+import 'package:wallet_app/utils/custom_colors.dart';
 
 class ButtonNextAction extends StatelessWidget {
   final VoidCallback onPressed;
