@@ -4,24 +4,22 @@ import {Link, useLocation, useNavigate} from "react-router-dom";
 import {BsChevronDown, BsChevronUp} from 'react-icons/bs';
 import {clearCart} from "../redux/action";
 import {motion} from "framer-motion";
-import {PaymentOptions} from "../components";
+import {PaymentOptions, AgeAuth} from "../components";
 
 
 const Checkout = () => {
     const location = useLocation();
     const fastState = location.state
-    let counter = 0;
-    const seat = 14;
 
     let state = useSelector((state) => state.handleCart);
     const navigate = useNavigate();
     let dispatch = useDispatch();
     const [isCollapsedBilling, setIsCollapsedBilling] = useState(true);
-    const [isCollapsedSeat, setIsCollapsedSeat] = useState(true);
-    const [showSeatingMap, setShowSeatingMap] = useState(false);
+    let requireAgeVerified = false;
 
     if (fastState != null && fastState.product.qty > 0) {
         state = [fastState.product];
+        requireAgeVerified = fastState.product['18required'];
     }
 
     let nb_tickets = 0;
@@ -32,9 +30,7 @@ const Checkout = () => {
     const handleCollapseToggleBilling = () => {
         setIsCollapsedBilling(!isCollapsedBilling);
     };
-    const handleCollapseToggleSeating = () => {
-        setIsCollapsedSeat(!isCollapsedSeat);
-    };
+
 
     const EmptyCart = () => {
         return (
@@ -71,7 +67,7 @@ const Checkout = () => {
                 <div className="card-body">
                     <ul className="list-group list-group-flush">
                         <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
-                            Products ({totalItems})<span>${Math.round(subtotal)}</span>
+                            Products ({totalItems})<span>DAI {Math.round(subtotal)}</span>
                         </li>
                         <li className="list-group-item d-flex justify-content-between align-items-center px-0">
                             Shipping
@@ -82,7 +78,7 @@ const Checkout = () => {
                                 <strong>Total amount</strong>
                             </div>
                             <span>
-                        <strong>${Math.round(subtotal + shipping)}</strong>
+                        <strong>DAI {Math.round(subtotal + shipping)}</strong>
                       </span>
                         </li>
                     </ul>
@@ -97,7 +93,6 @@ const Checkout = () => {
 
         function paymentOptions() {
 
-
             return <div className="card mb-4">
                 <div className="card-header py-3">
                     <h4 className="mb-0">Payment</h4>
@@ -110,149 +105,18 @@ const Checkout = () => {
             </div>;
         }
 
-        function oldPaymentOption() {
-            return (
-                <form className="needs-validation" noValidate>
-                    <div className="row gy-3">
-                        <div className="col-md-6">
-                            <label htmlFor="cc-name" className="form-label">
-                                Name on card
-                            </label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                id="cc-name"
-                                placeholder=""
-                                required
-                            />
-                            <small className="text-muted">
-                                Full name as displayed on card
-                            </small>
-                            <div className="invalid-feedback">
-                                Name on card is required
-                            </div>
-                        </div>
+        function ageVerification() {
 
-                        <div className="col-md-6">
-                            <label htmlFor="cc-number" className="form-label">
-                                Credit card number
-                            </label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                id="cc-number"
-                                placeholder=""
-                                required
-                            />
-                            <div className="invalid-feedback">
-                                Credit card number is required
-                            </div>
-                        </div>
-
-                        <div className="col-md-3">
-                            <label htmlFor="cc-expiration" className="form-label">
-                                Expiration
-                            </label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                id="cc-expiration"
-                                placeholder=""
-                                required
-                            />
-                            <div className="invalid-feedback">
-                                Expiration date required
-                            </div>
-                        </div>
-
-                        <div className="col-md-3">
-                            <label htmlFor="cc-cvv" className="form-label">
-                                CVV
-                            </label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                id="cc-cvv"
-                                placeholder=""
-                                required
-                            />
-                            <div className="invalid-feedback">
-                                Security code required
-                            </div>
-                        </div>
-                    </div>
-
-                    <hr className="my-4"/>
-                    <button
-                        className="w-100 btn btn-primary "
-                        type="submit"
-                        onClick={() => {
-                            navigate("/Tickets", {state: {nb_of_tickets: nb_tickets}})
-                            dispatch(clearCart(null));
-                        }}>
-                        Continue to checkout
-                    </button>
-                </form>
-            );
-        }
-
-        function seatSelection() {
             return <div className="card mb-4">
-                <div className="card-header py-3" onClick={handleCollapseToggleSeating} style={{cursor: 'pointer'}}>
-                    <h4 className="mb-0">
-                        Seat selection {" "}
-                        {isCollapsedSeat ? <BsChevronDown/> : <BsChevronUp/>}
-                    </h4>
+                <div className="card-header py-3">
+                    <h4 className="mb-0">Age verification</h4>
                 </div>
-                <div className={`card-body ${isCollapsedSeat ? 'collapse' : ''}`}>
+                <div className="card-body">
 
-                    {!showSeatingMap ? state.map((item, idx) => {
-                            return (<div key={item.id}>
-                                    <div className="row align-items-center">
-                                        {Array.from({length: item.qty}).map((_, index) => (
-                                            <div
-                                                className="col-md-7 d-flex justify-content-between align-items-center py-1">
-                                                <div className="bg-image rounded"
-                                                     data-mdb-ripple-color="light">
-                                                    <i className="fa-solid fa-ticket"></i>
-                                                    <strong> {item.title}</strong> {item.date}
-                                                </div>
-                                                <div
-                                                    className="offset-2">
-                                                    <div className="d-flex align-items-center">
-                                                    <span className="text-muted">
-                                                {"Best seat: "}
-                                                        <strong>{seat}{String.fromCharCode(97 + counter++)}  </strong>
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <hr className="my-4"/>
-                                </div>
-                            );
-                        }) :
+                    <AgeAuth/>
 
-                        <img
-                            className="card-img img-fluid"
-                            src="./assets/seatmap.jpg"
-                            alt="Card"
-                            height={500}
-                        />
-
-                    }
-
-                    <button
-                        className="btn btn btn-outline-secondary btn-sm m-2"
-                        onClick={() => {
-                            setShowSeatingMap(!showSeatingMap)
-                        }}>
-                        {showSeatingMap ? "Go back" : "Change seating"}
-                    </button>
                 </div>
-            </div>
-                ;
+            </div>;
         }
 
         function billingAddress() {
@@ -401,10 +265,11 @@ const Checkout = () => {
                     <div className="row my-4">
                         <div className="col-md-5 col-lg-4 order-md-last">
                             {OrderSummary()}
+                            {/* TODO add button to verify payment and age verification! */}
                         </div>
                         <div className="col-md-7 col-lg-8">
-                            {seatSelection()}
                             {paymentOptions()}
+                            {requireAgeVerified?ageVerification():<div/>}
                             {billingAddress()}
                         </div>
                     </div>

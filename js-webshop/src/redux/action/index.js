@@ -1,7 +1,5 @@
 
 // For Add Item to Cart
-import {findRenderedDOMComponentWithClass} from "react-dom/test-utils";
-
 export const addCart = (product) =>{
     return {
         type:"ADDITEM",
