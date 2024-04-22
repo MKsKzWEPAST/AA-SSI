@@ -1,6 +1,8 @@
 import express = require('express');
+import bodyParser = require('body-parser');
+
+import { ethers } from 'ethers';
 import { Presets, Client } from 'userop';
-import {ethers} from "ethers";
 
 const rpcUrl = 'https://api.stackup.sh/v1/node/04832ebeb6088d4ca33e86e7bc9054fdc03115d2d1e295df3122acf11817fb95';
 const paymasterUrl = 'https://api.stackup.sh/v1/paymaster/04832ebeb6088d4ca33e86e7bc9054fdc03115d2d1e295df3122acf11817fb95';
@@ -107,6 +109,13 @@ function getAccountPrivateKey(id : string) {
 const app = express();
 const PORT = process.env.PORT || 3003;
 
+app.use(bodyParser.json());
+app.use(
+    bodyParser.urlencoded({
+        extended: true,
+    }),
+);
+
 app.post('/api/initZKP/:orderID', (req, res) => {
     // TODO
     res.json({ message: 'TODO!' });
@@ -129,6 +138,16 @@ app.post('/api/sendRC20/:orderID', (req, res) => {
 
     res.json({ message: 'Sending token test (with account 01)!' });
 });
+
+
+// Test address
+const signingKey = getAccountPrivateKey("01"); // TODO more than test-id 01 for the POC if needed
+const signer = new ethers.Wallet(signingKey);
+const builder = Presets.Builder.SimpleAccount.init(signer, rpcUrl, opts);
+const address = builder.then(a => console.log("ADDRESS" + a.getSender()));
+
+console.log(`Account address: ${address}`);
+
 
 
 app.listen(PORT, () => {
