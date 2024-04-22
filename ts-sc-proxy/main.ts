@@ -1,7 +1,6 @@
 import express = require('express');
 import bodyParser = require('body-parser');
 
-
 import { ethers } from 'ethers';
 import { Presets, Client } from 'userop';
 
