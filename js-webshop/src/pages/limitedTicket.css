@@ -1,0 +1,11 @@
+.goldenTicket {
+    position: relative;
+    transition: transform 0.3s ease, filter 0.3s ease, -webkit-filter 0.3s ease;
+}
+
+.goldenTicket:hover {
+    transform: translateY(-8px) rotate(2deg); /* Adjust the values as needed */
+    -webkit-filter: drop-shadow(4px 4px 4px #444);
+    filter: drop-shadow(0px 4px 4px #444);
+    cursor: pointer;
+}
