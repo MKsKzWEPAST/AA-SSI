@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract AgeVerifier is ZKPVerifier {
 
-    SmartMoney public smc = SmartMoney(0xaa8904B83864fcfc7dcbF9913fB03566B68a1454); 
+    SmartMoney public smc = SmartMoney(0x7bE17fF7A33F1F2d40dc154B9654098BDD38BA16); 
 
     mapping(uint256 => address) public idToAddress;
 

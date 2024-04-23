@@ -21,7 +21,6 @@ import 'package:wallet_app/utils/custom_text_styles.dart';
 import 'package:wallet_app/utils/custom_widgets_keys.dart';
 import 'package:wallet_app/utils/image_resources.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uni_links/uni_links.dart';
 import 'package:http/http.dart' as http;
 
 class HomeScreen extends StatefulWidget {
