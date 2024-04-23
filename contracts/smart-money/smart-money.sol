@@ -9,14 +9,17 @@ contract SmartMoney is Ownable(msg.sender) {
 
     struct Order {
         bool verified;
-        uint received;
-        uint price;
+        uint256 received;
+        uint256 price;
         bool paid;
         address payable sender; // wallet from which the last payment originated - TODO see if needed to send back the money
     }
 
     // Initialize orders/payments with orderID and price to be received
-    function initializeOrder(string memory orderID, uint price) external onlyOwner {
+    function initializeOrder(string memory orderID, uint256 price)
+        external
+        onlyOwner
+    {
         require(orders[orderID].price == 0, "Order already exists");
         orders[orderID].price = price;
     }
@@ -43,7 +46,9 @@ contract SmartMoney is Ownable(msg.sender) {
         conditionalOutput(orderID, true);
     }
 
-    function conditionalOutput(string memory orderID, bool fromVerify) view  internal  {
+    function conditionalOutput(string memory orderID, bool fromVerify)
+        internal
+    {
         if (fromVerify && !orders[orderID].verified) {
             // Send back received money so-far to the sender
             orders[orderID].sender.transfer(orders[orderID].received);
