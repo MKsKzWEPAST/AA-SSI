@@ -1,16 +1,15 @@
-// SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
 
 import {PrimitiveTypeUtils} from "@iden3/contracts/lib/PrimitiveTypeUtils.sol";
 import {ICircuitValidator} from "@iden3/contracts/interfaces/ICircuitValidator.sol";
 import {ZKPVerifier} from "@iden3/contracts/verifiers/ZKPVerifier.sol";
-//import {SmartMoney} from "./path/to/SmartMoney.sol";
-
+import "../smart-money/smart-money.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract AgeVerifier is ZKPVerifier {
 
-    //SmartMoney public smc = SmartMoney(0x...); 
+    SmartMoney public smc = SmartMoney(0xaa8904B83864fcfc7dcbF9913fB03566B68a1454); 
 
     mapping(uint256 => address) public idToAddress;
 
@@ -54,7 +53,8 @@ contract AgeVerifier is ZKPVerifier {
             idToAddress[id] = _msgSender();
 
             // smartMoney logic
-            //smc.notifyProof(requestId, true);
+            string memory req = Strings.toString(requestId);
+            smc.notify(req, true);
             pendingRequests[requestId] = false;
         }
     }
