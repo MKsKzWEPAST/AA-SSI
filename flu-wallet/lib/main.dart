@@ -8,7 +8,6 @@ import 'package:wallet_app/src/presentation/dependency_injection/dependencies_pr
     as di;
 
 import 'package:wallet_app/src/presentation/app.dart';
-import 'package:uni_links/uni_links.dart';
 import 'dart:async';
 
 Future<void> main() async {
