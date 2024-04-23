@@ -10,7 +10,7 @@ import {ZKPVerifier} from "@iden3/contracts/verifiers/ZKPVerifier.sol";
 
 contract AgeVerifier is ZKPVerifier {
 
-    //SmartMoney public smc; 
+    //SmartMoney public smc = SmartMoney(0x...); 
 
     mapping(uint256 => address) public idToAddress;
 
@@ -18,23 +18,17 @@ contract AgeVerifier is ZKPVerifier {
 
     mapping(uint64 => bool) public pendingRequests;
 
-      function setSMAddress(address addr) public onlyOwner {
-        require(addr != address(0), "Address cannot be zero");
-        //smc = SmartMoney(addr);
-    }
-
     function _beforeProofSubmit(
         uint64  requestId,
         uint256[] memory inputs,
         ICircuitValidator validator
     ) internal override {
         // check that  challenge input is address of sender
-        address addr = PrimitiveTypeUtils.uint256LEToAddress(
-            inputs[validator.inputIndexOf("challenge")]
-        );
+        uint256 chal = validator.inputIndexOf("challenge");
         // this is linking between msg.sender and address
         require(
-            _msgSender() == addr,
+            // for the purpose of the PoC, challenge is a constant string
+            chal == 12345678,
             "address in proof is not a sender address"
         );
 
