@@ -5,7 +5,6 @@ import {PrimitiveTypeUtils} from "@iden3/contracts/lib/PrimitiveTypeUtils.sol";
 import {ICircuitValidator} from "@iden3/contracts/interfaces/ICircuitValidator.sol";
 import {ZKPVerifier} from "@iden3/contracts/verifiers/ZKPVerifier.sol";
 import "../smart-money/smart-money.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract AgeVerifier is ZKPVerifier {
 
@@ -29,12 +28,19 @@ contract AgeVerifier is ZKPVerifier {
         ICircuitValidator validator
     ) internal override {
         require( 
-             pendingRequests[requestId],"no pending request found for the given id");
+             pendingRequests[requestId],"[accept] no pending request found for the given id");
 
-        // smartMoney logic
-        string memory req = Strings.toString(requestId);
-        smc.notify(req, true);
+        // smartMoney logic 
+        smc.notify(requestId, true);
         pendingRequests[requestId] = false;
-        
+    }
+
+    function deny(uint64 requestId) public onlyOwner {
+          require( 
+             pendingRequests[requestId],"[deny] no pending request found for the given id");
+             
+        // smartMoney logic 
+        smc.notify(requestId, false);
+        pendingRequests[requestId] = false;   
     }
 }
