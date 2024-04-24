@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract SmartMoney is Ownable(msg.sender) {
     // Define the mapping from orderID to order details
     mapping(string => Order) public orders;
-    address public shopAddress;
+    address public shopAddress = 0x40775600Bb4E2E4Ab1c24B5c8bA4734cC47EE02E;
 
     struct Order {
         bool verified;
@@ -16,9 +16,8 @@ contract SmartMoney is Ownable(msg.sender) {
     }
 
     // Initialize orders/payments with orderID and price to be received
-    function initializeOrder(string memory orderID, uint256 price)
+    function initializeOrder(string memory orderID, uint256 price) // TODO check if only from the shop smart account
         external
-        onlyOwner
     {
         require(orders[orderID].price == 0, "Order already exists");
         orders[orderID].price = price;
