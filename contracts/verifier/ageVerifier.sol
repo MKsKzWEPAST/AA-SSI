@@ -11,10 +11,6 @@ contract AgeVerifier is ZKPVerifier {
 
     SmartMoney public smc = SmartMoney(0x7bE17fF7A33F1F2d40dc154B9654098BDD38BA16); 
 
-    mapping(uint256 => address) public idToAddress;
-
-    mapping(address => uint256) public addressToId;
-
     mapping(uint64 => bool) public pendingRequests;
 
     function _beforeProofSubmit(
@@ -22,15 +18,7 @@ contract AgeVerifier is ZKPVerifier {
         uint256[] memory inputs,
         ICircuitValidator validator
     ) internal override {
-        // check that  challenge input is address of sender
-        uint256 chal = validator.inputIndexOf("challenge");
         // this is linking between msg.sender and address
-        require(
-            // for the purpose of the PoC, challenge is a constant string
-            chal == 12345678,
-            "address in proof is not a sender address"
-        );
-
         pendingRequests[requestId] = true;
 
     }
@@ -41,21 +29,12 @@ contract AgeVerifier is ZKPVerifier {
         ICircuitValidator validator
     ) internal override {
         require( 
-            addressToId[_msgSender()] == 0 && pendingRequests[requestId],
-            "proof can not be submitted more than once"
-        );
+             pendingRequests[requestId],"no pending request found for the given id");
 
-        // get user id
-        uint256 id = inputs[1];
-        // additional check didn't get airdrop tokens before
-        if (idToAddress[id] == address(0) && addressToId[_msgSender()] == 0) {
-            addressToId[_msgSender()] = id;
-            idToAddress[id] = _msgSender();
-
-            // smartMoney logic
-            string memory req = Strings.toString(requestId);
-            smc.notify(req, true);
-            pendingRequests[requestId] = false;
-        }
+        // smartMoney logic
+        string memory req = Strings.toString(requestId);
+        smc.notify(req, true);
+        pendingRequests[requestId] = false;
+        
     }
 }
