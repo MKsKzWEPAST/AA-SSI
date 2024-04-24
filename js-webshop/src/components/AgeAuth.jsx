@@ -1,11 +1,11 @@
 import {QRCodeSVG} from 'qrcode.react';
 import {GetAuthRequestAge} from '../blockchain';
 
-export default function AgeAuth() {
+export default function AgeAuth({orderID}) {
 
     const qrDisplay = () => {
 
-        const qrContent = GetAuthRequestAge();
+        const qrContent = GetAuthRequestAge(orderID);
 
         return (
             <div className={"d-flex flex-column m-3 align-items-center justify-content-center"}>

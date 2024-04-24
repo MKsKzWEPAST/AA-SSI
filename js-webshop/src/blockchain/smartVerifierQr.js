@@ -1,4 +1,4 @@
-export default function GetAuthRequestAge() {
+export default function GetAuthRequestAge(orderID) {
 
     const data = {
         "id": "7f38a193-0918-4a48-9fac-36adfdb8b542",
@@ -8,14 +8,14 @@ export default function GetAuthRequestAge() {
         "body": {
             "reason": "Age check for alcohol",
             "transaction_data": {
-                "contract_address": "0x35178273C828E08298EcB0C6F1b97B3aFf14C4cb", //TODO
+                "contract_address": "0x35178273C828E08298EcB0C6F1b97B3aFf14C4cb", //TODO change
                 "method_id": "b68967e2",
                 "chain_id": 80002,
                 "network": "polygon-amoy"
             },
             "scope": [
                 {
-                    "id": 1,
+                    "id": orderID,
                     "circuitId": "credentialAtomicQuerySigV2OnChain",
                     "query": {
                         "allowedIssuers": ["*"],
