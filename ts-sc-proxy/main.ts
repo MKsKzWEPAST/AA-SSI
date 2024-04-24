@@ -57,7 +57,7 @@ async function sendSponsored(amount_token : number , token_address : string, des
     console.log(`View here: https://jiffyscan.xyz/userOpHash/${res.userOpHash}`);
 }
 
-async function forwardZKP(proof: any, orderID: string) {
+async function forwardZKP(proof: any, orderID: number) {
 // Initialize the account
     const signingKey = getAccountPrivateKey("01"); // TODO more than test-id 01 for the POC if needed
     const signer = new ethers.Wallet(signingKey);
@@ -67,7 +67,7 @@ async function forwardZKP(proof: any, orderID: string) {
     console.log(`Account address: ${address}`);
 
     // Create the call data
-    let verifierSCAddress = "0x<TODO ADDRESS OF THE OnChainVerifier>"; // Receiving address (us if not specified)
+    let verifierSCAddress = "0x1d0882A6f12e9d2A6cf5E119b64fe84A9Fe8569E"; // Receiving address (us if not specified)
 
     console.log("PROOF: ")
     console.log(proof);
@@ -80,7 +80,7 @@ async function forwardZKP(proof: any, orderID: string) {
     const c = parseBigIntArray(proof.proof.pi_c.slice(0,2));
 
     // Read the ERC-20 token contract
-    const VerifierABI = require('./<TODO VerifierABI>.json'); // TODO: take ABI of OnChainVerifier contract
+    const VerifierABI = require('./AgeVerifierAbi.json');
     const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
     const verifier = new ethers.Contract(verifierSCAddress, VerifierABI, provider);
 
@@ -123,16 +123,61 @@ app.use(
 );
 
 
+async function initZKPRequest(orderID: number) {
+    const signingKey = getAccountPrivateKey("01"); // TODO more than test-id 01 for the POC if needed
+    const signer = new ethers.Wallet(signingKey);
+    const builder = await Presets.Builder.SimpleAccount.init(signer, rpcUrl, opts);
+    const address = builder.getSender();
+
+    console.log(`Account address: ${address}`);
+
+    // Create the call data
+    let verifierSCAddress = "0x1d0882A6f12e9d2A6cf5E119b64fe84A9Fe8569E"; // Receiving address (us if not specified)
+
+    // Read the ERC-20 token contract
+    const VerifierABI = require('./AgeVerifierAbi>.json');
+    const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+    const verifier = new ethers.Contract(verifierSCAddress, VerifierABI, provider);
+
+    const callTo = [verifierSCAddress];
+
+    const metadata = {};
+    const validator = {};
+    const data = {};
+    const argn2 = {metadata, validator, data};
+
+    const callData = [
+        verifier.interface.encodeFunctionData('setZKPRequest', [orderID, argn2]),
+    ];
+
+    // Send the User Operation to the ERC-4337 mempool
+    const client = await Client.init(rpcUrl);
+    const res = await client.sendUserOperation(
+        builder.executeBatch(callTo, callData),
+        {
+            onBuild: (op) => console.log('Signed UserOperation:', op),
+        }
+    );
+
+    // Return receipt
+    console.log(`UserOpHash: ${res.userOpHash}`);
+    console.log('Waiting for transaction...');
+    const ev = await res.wait();
+    console.log(`Transaction hash: ${ev?.transactionHash ?? null}`);
+    console.log(`View here: https://jiffyscan.xyz/userOpHash/${res.userOpHash}`);
+}
+
 app.post('/api/initZKP/:orderID', (req, res) => {
     console.log("InitZKP")
-    // TODO
-    res.json({ message: 'TODO!' });
+    const orderID = req.params.orderID;
+    initZKPRequest(parseInt(orderID)).catch((err) => console.error('Error:', err));
+    res.json({ message: 'Init ZKP request sent!' });
 });
 
 app.post('/api/forwardZKP/:orderID', (req, res) => {
     console.log("ForwardZKP")
     const orderID = req.params.orderID; // TODO probably going to remove the orderID from here (only in the proof response)
-    forwardZKP(req.body, orderID).catch((err) => console.error('Error:', err)); //TODO if error => notify smartmoney that verification failed (match error...)
+    forwardZKP(req.body, parseInt(orderID)).catch((err) => console.error('Error:', err)); //TODO if error => notify smartmoney that verification failed (match error...)
     res.json({ message: 'Proof sent to Verifier Contract!' });
 });
 
