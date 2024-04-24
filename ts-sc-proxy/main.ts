@@ -69,20 +69,22 @@ async function forwardZKP(proof: any, orderID: string) {
     // Create the call data
     let verifierSCAddress = "0x<TODO ADDRESS OF THE OnChainVerifier>"; // Receiving address (us if not specified)
 
+    console.log("PROOF: ")
+    console.log(proof);
+    const parseBigIntArray = (arr: string[]): bigint[] => arr.map(BigInt);
+
+    const requestId = proof.id;
+    const inputs = parseBigIntArray(proof.pub_signals);
+    const a = parseBigIntArray(proof.proof.pi_a);
+    const b: bigint[][] = proof.proof.pi_b.map((innerArr: string[]) => parseBigIntArray(innerArr));
+    const c = parseBigIntArray(proof.proof.pi_c);
+
     // Read the ERC-20 token contract
     const VerifierABI = require('./<TODO VerifierABI>.json'); // TODO: take ABI of OnChainVerifier contract
     const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
     const verifier = new ethers.Contract(verifierSCAddress, VerifierABI, provider);
 
     const callTo = [verifierSCAddress];
-
-    // TODO put "proof" into these fields
-    const requestId = 0;
-    const inputs = [0];
-    const a = [0,0];
-    const b = [[0,0],[0,0]];
-    const c = [0,0];
-
 
     const callData = [
         verifier.interface.encodeFunctionData('submitZKPResponse', [requestId, inputs, a, b, c]),
@@ -129,10 +131,8 @@ app.post('/api/initZKP/:orderID', (req, res) => {
 
 app.post('/api/forwardZKP/:orderID', (req, res) => {
     console.log("ForwardZKP")
-    console.log("Body");
-    console.log(req.body);
     const orderID = req.params.orderID; // TODO probably going to remove the orderID from here (only in the proof response)
-    forwardZKP(req.body, orderID).catch((err) => console.error('Error:', err));
+    forwardZKP(req.body, orderID).catch((err) => console.error('Error:', err)); //TODO if error => notify smartmoney that verification failed (match error...)
     res.json({ message: 'Proof sent to Verifier Contract!' });
 });
 
