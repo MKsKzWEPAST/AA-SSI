@@ -11,10 +11,6 @@ contract AgeVerifier is ZKPVerifier {
 
     SmartMoney public smc = SmartMoney(0x7bE17fF7A33F1F2d40dc154B9654098BDD38BA16); 
 
-    mapping(uint256 => address) public idToAddress;
-
-    mapping(address => uint256) public addressToId;
-
     mapping(uint64 => bool) public pendingRequests;
 
     function _beforeProofSubmit(
@@ -33,9 +29,7 @@ contract AgeVerifier is ZKPVerifier {
         ICircuitValidator validator
     ) internal override {
         require( 
-            addressToId[_msgSender()] == 0 && pendingRequests[requestId],
-            "proof can not be submitted more than once"
-        );
+             pendingRequests[requestId],"no pending request found for the given id");
 
         // smartMoney logic
         string memory req = Strings.toString(requestId);
