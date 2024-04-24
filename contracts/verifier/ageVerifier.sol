@@ -22,15 +22,7 @@ contract AgeVerifier is ZKPVerifier {
         uint256[] memory inputs,
         ICircuitValidator validator
     ) internal override {
-        // check that  challenge input is address of sender
-        uint256 chal = validator.inputIndexOf("challenge");
         // this is linking between msg.sender and address
-        require(
-            // for the purpose of the PoC, challenge is a constant string
-            chal == 12345678,
-            "address in proof is not a sender address"
-        );
-
         pendingRequests[requestId] = true;
 
     }
@@ -45,17 +37,10 @@ contract AgeVerifier is ZKPVerifier {
             "proof can not be submitted more than once"
         );
 
-        // get user id
-        uint256 id = inputs[1];
-        // additional check didn't get airdrop tokens before
-        if (idToAddress[id] == address(0) && addressToId[_msgSender()] == 0) {
-            addressToId[_msgSender()] = id;
-            idToAddress[id] = _msgSender();
-
-            // smartMoney logic
-            string memory req = Strings.toString(requestId);
-            smc.notify(req, true);
-            pendingRequests[requestId] = false;
-        }
+        // smartMoney logic
+        string memory req = Strings.toString(requestId);
+        smc.notify(req, true);
+        pendingRequests[requestId] = false;
+        
     }
 }
