@@ -6,8 +6,7 @@ import {clearCart} from "../redux/action";
 import {motion} from "framer-motion";
 import {PaymentOptions, AgeAuth} from "../components";
 
-const randomstring = require('randomstring');
-
+const maxOrderID = Number.MAX_SAFE_INTEGER/1000;
 
 const Checkout = () => {
     const location = useLocation();
@@ -24,7 +23,7 @@ const Checkout = () => {
         requireAgeVerified = fastState.product['18required'];
     }
 
-    const orderID = randomstring.generate(10);
+    const orderID = Math.floor( Math.random()*maxOrderID);
 
     let nb_tickets = 0;
     state.map((item) => {

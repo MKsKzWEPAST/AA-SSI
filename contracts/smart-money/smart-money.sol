@@ -1,10 +1,12 @@
+// SPDX-License-Identifier: UNLICENSED
+
 pragma solidity 0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract SmartMoney is Ownable(msg.sender) {
     // Define the mapping from orderID to order details
-    mapping(string => Order) public orders;
+    mapping(uint256 => Order) public orders;
     address public shopAddress = 0x40775600Bb4E2E4Ab1c24B5c8bA4734cC47EE02E;
 
     struct Order {
@@ -16,7 +18,7 @@ contract SmartMoney is Ownable(msg.sender) {
     }
 
     // Initialize orders/payments with orderID and price to be received
-    function initializeOrder(string memory orderID, uint256 price) // TODO check if only from the shop smart account
+    function initializeOrder(uint256 orderID, uint256 price) // TODO check if only from the shop smart account
         external
     {
         require(orders[orderID].price == 0, "Order already exists");
@@ -24,7 +26,7 @@ contract SmartMoney is Ownable(msg.sender) {
     }
 
     // Receive payment for an order
-    function pay(string memory orderID) external payable {
+    function pay(uint256 orderID) external payable {
         require(orders[orderID].price > 0, "Order does not exist");
 
         // Update the received amount
@@ -39,13 +41,13 @@ contract SmartMoney is Ownable(msg.sender) {
     }
 
     // Notification function for the verification status of the order
-    function notify(string memory orderID, bool verified) external onlyOwner {
+    function notify(uint256 orderID, bool verified) external onlyOwner {
         require(orders[orderID].price > 0, "Order does not exist");
         orders[orderID].verified = verified;
         conditionalOutput(orderID, true);
     }
 
-    function conditionalOutput(string memory orderID, bool fromVerify)
+    function conditionalOutput(uint256 orderID, bool fromVerify)
         internal
     {
         if (fromVerify && !orders[orderID].verified) {
