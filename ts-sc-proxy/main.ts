@@ -75,9 +75,9 @@ async function forwardZKP(proof: any, orderID: string) {
 
     const requestId = proof.id;
     const inputs = parseBigIntArray(proof.pub_signals);
-    const a = parseBigIntArray(proof.proof.pi_a);
-    const b: bigint[][] = proof.proof.pi_b.map((innerArr: string[]) => parseBigIntArray(innerArr));
-    const c = parseBigIntArray(proof.proof.pi_c);
+    const a = parseBigIntArray(proof.proof.pi_a.slice(0,2));
+    const b: bigint[][] = proof.proof.pi_b.map((innerArr: string[]) => parseBigIntArray(innerArr.slice(0,2))).slice(0,2);
+    const c = parseBigIntArray(proof.proof.pi_c.slice(0,2));
 
     // Read the ERC-20 token contract
     const VerifierABI = require('./<TODO VerifierABI>.json'); // TODO: take ABI of OnChainVerifier contract
