@@ -96,7 +96,7 @@ async function main() {
     // set default query
     const circuitIdSig = 'credentialAtomicQuerySigV2OnChain';
 
-    const ageVerifierAddress = "0x7484B953790a10686D028378Ace244afcDbFc606";
+    const ageVerifierAddress = "0x2F6163EbF7BB69f7ce9f5120A8A450Dc264fe4AF";
     const provider = new ethers.providers.JsonRpcProvider("https://polygon-amoy.g.alchemy.com/v2/tZIEm32QWH6cinpYSA8Yo7u0m2ZqtF1i");
     const signer = new ethers.Wallet("b955724e0a636ee776023399c2555e48453072b7f0f4ab1deedc10e61dda4f31",provider)
     const ageVerifier = new ethers.Contract(ageVerifierAddress, VerifierABI, signer);
@@ -128,7 +128,7 @@ async function main() {
         claimPathNotExist: 0,
     };
 
-    const requestIdSig = 178969786823;
+    const requestIdSig = 178969786824;
 
     const invokeRequestMetadata = {
         id: '7f38a193-0918-4a48-9fac-36adfdb8b542',
