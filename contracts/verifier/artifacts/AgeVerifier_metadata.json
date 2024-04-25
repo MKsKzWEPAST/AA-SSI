@@ -607,11 +607,11 @@
 			]
 		},
 		"smart-money/smart-money.sol": {
-			"keccak256": "0xed3b60d72ac94d0af5f7af6908c222c25a738a46bd23a7387a42f6d680d6a64c",
+			"keccak256": "0x86b751007bc223b4b912124c19c0662f976d6c8d6101d96ca6ac4333a04d4eef",
 			"license": "UNLICENSED",
 			"urls": [
-				"bzz-raw://a4833cae938b499a37425155c6f8e49be410dfacfac53373ecf7a37e4a0381d4",
-				"dweb:/ipfs/QmZui3c5fnNhnp6SbyKucPaX69UdzJM3Vryfo3RouMLVn2"
+				"bzz-raw://05a52cd17df7c4299269159d54dd38600a488d484b67608c2eff653b1e6efd70",
+				"dweb:/ipfs/QmbJnrnP81cxGwPvq6MYb1Uqen9vpPCqv2CtP9iAF46hAF"
 			]
 		},
 		"solidity-bytes-utils/contracts/BytesLib.sol": {
@@ -623,11 +623,11 @@
 			]
 		},
 		"verifier/ageVerifier.sol": {
-			"keccak256": "0x192bf95ab9f8a6fd9bc77061e5082b60f01eccbecec9cc9e98ae12ec13c28d1b",
+			"keccak256": "0x13da7a5f9a5f3540ba4a24d057f6f3f64449512557aba932c1a8605c9126d448",
 			"license": "UNLICENSED",
 			"urls": [
-				"bzz-raw://585815256c08b57428260cc350fa6fc15e037fb25d0fae42d5d753b4c22933b8",
-				"dweb:/ipfs/QmTofXxsS5n3HujJzgiGgxUYCowPZkfSNco8Syou8Jq51T"
+				"bzz-raw://b931544727b7b3599b858c4ae2fc4aa2c101e68145e3c666aabd79892b4af8b5",
+				"dweb:/ipfs/QmUbm4n9Qan1Dsn2po3TQKHC8bYGAm2hoEF4tGny6yiRUb"
 			]
 		}
 	},

@@ -10,7 +10,7 @@ import "../smart-money/smart-money.sol";
 
 contract AgeVerifier is ZKPVerifier {
 
-    SmartMoney public smc = SmartMoney(0x2613082eE9690881e533e814c9FCEa7D3AC7515C); 
+    SmartMoney public smc = SmartMoney(0x7E8e020459C31982787D7A6Da37FaD1256771bE7); 
 
     mapping(uint64 => bool) public pendingRequests;
 
