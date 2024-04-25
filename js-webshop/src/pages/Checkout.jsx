@@ -6,7 +6,7 @@ import {clearCart} from "../redux/action";
 import {motion} from "framer-motion";
 import {PaymentOptions, AgeAuth} from "../components";
 
-const maxOrderID = Number.MAX_SAFE_INTEGER / 1000;
+const maxOrderID = 2 ** 52; // fit with some margin in uint64 + no precision loss in js
 
 const Checkout = () => {
     const location = useLocation();
@@ -18,7 +18,7 @@ const Checkout = () => {
     const [isCollapsedBilling, setIsCollapsedBilling] = useState(true);
     let requireAgeVerified = false;
 
-    const orderID = Math.floor(Math.random() * maxOrderID);
+    const orderID = Math.floor(Math.random() * maxOrderID) + 1;
 
 
     async function initOrder(orderID, price, requireAgeVerified) {
