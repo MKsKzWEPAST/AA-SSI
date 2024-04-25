@@ -9,6 +9,9 @@ const paymasterUrl = 'https://api.stackup.sh/v1/paymaster/04832ebeb6088d4ca33e86
 const paymasterMiddleware = Presets.Middleware.verifyingPaymaster(paymasterUrl, { type: 'payg' });
 const opts = {paymasterMiddleware: paymasterMiddleware};
 
+const verifierSCAddress = "0x2F6163EbF7BB69f7ce9f5120A8A450Dc264fe4AF";
+
+
 async function sendSponsored(amount_token : number , token_address : string, destination_address?:string) {
     // Initialize the account
     const signingKey = getAccountPrivateKey("01"); // TODO more than test-id 01 for the POC if needed
@@ -57,7 +60,7 @@ async function sendSponsored(amount_token : number , token_address : string, des
     console.log(`View here: https://jiffyscan.xyz/userOpHash/${res.userOpHash}`);
 }
 
-async function forwardZKP(proof: any, orderID: number) {
+async function forwardZKP(proof: any) {
 // Initialize the account
     const signingKey = getAccountPrivateKey("01"); // TODO more than test-id 01 for the POC if needed
     const signer = new ethers.Wallet(signingKey);
@@ -65,9 +68,6 @@ async function forwardZKP(proof: any, orderID: number) {
     const address = builder.getSender();
 
     console.log(`Account address: ${address}`);
-
-    // Create the call data
-    let verifierSCAddress = "0x7484B953790a10686D028378Ace244afcDbFc606"; // Receiving address (us if not specified)
 
     console.log("PROOF: ")
     console.log(proof);
@@ -133,9 +133,6 @@ async function initZKPRequest(orderID: number) {
 
     console.log(`Account address: ${address}`);
 
-    // Create the call data
-    let verifierSCAddress = "0x7484B953790a10686D028378Ace244afcDbFc606"; // Receiving address (us if not specified)
-
     // Read the ERC-20 token contract
     const VerifierABI = require('./AgeVerifierAbi.json');
     const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
@@ -172,14 +169,15 @@ async function initZKPRequest(orderID: number) {
 app.post('/api/initZKP/:orderID', (req, res) => {
     console.log("InitZKP")
     const orderID = req.params.orderID;
+    // TODO - complete the initialization properly | report order initialization "owner" issue (anyone can do it atm)
     initZKPRequest(parseInt(orderID)).catch((err) => console.error('Error:', err));
     res.json({ message: 'Init ZKP request sent!' });
 });
 
-app.post('/api/forwardZKP/:orderID', (req, res) => {
+app.post('/api/forwardZKP', (req, res) => {
     console.log("ForwardZKP")
-    const orderID = req.params.orderID; // TODO probably going to remove the orderID from here (only in the proof response)
-    forwardZKP(req.body, parseInt(orderID)).catch((err) => console.error('Error:', err)); //TODO if error => notify smartmoney that verification failed (match error...)
+    forwardZKP(req.body).catch((err) => console.error('Error:', err));
+    //TODO if error => notify smartmoney that verification failed (match error... => 'deny' verif)
     res.json({ message: 'Proof sent to Verifier Contract!' });
 });
 
