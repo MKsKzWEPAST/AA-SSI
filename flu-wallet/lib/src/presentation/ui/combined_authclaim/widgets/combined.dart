@@ -1,13 +1,15 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:secure_application/secure_application_provider.dart';
-
+import 'package:http/http.dart' as http;
 import 'package:wallet_app/utils/custom_button_style.dart';
 import 'package:wallet_app/utils/custom_colors.dart';
 import 'package:wallet_app/utils/custom_strings.dart';
@@ -34,6 +36,7 @@ class CombinedScreen extends StatefulWidget {
 
 class _CombinedScreenState extends State<CombinedScreen> {
   late Timer _timer;
+  double _usdcBalance = 0.0;
 
   @override
   void initState() {
@@ -99,6 +102,26 @@ class _CombinedScreenState extends State<CombinedScreen> {
     );
   }
 
+
+  Future<void> _fetchUSDCBalance() async {
+
+    final response = await http.post(
+      Uri.parse('https://broadly-assured-piglet.ngrok-free.app/api/getBalance/01'),
+      // replace with your POST request body
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      setState(() {
+        _usdcBalance = json.decode(response.body)['balance'];
+      });
+    } else {
+      // Handle errors
+      logger().i('Failed to load data: ${response.statusCode}');
+    }
+  }
+
+
   ///
   Widget _buildBody() {
     return SafeArea(
@@ -109,6 +132,15 @@ class _CombinedScreenState extends State<CombinedScreen> {
           children: [
             Column(
               children: [
+                Padding(padding: const EdgeInsets.only(bottom: 16),
+                  child: Text(_usdcBalance as String),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    _fetchUSDCBalance();
+                  },
+                  child: const Text('Refresh balance'),
+                ),
                 const SizedBox(height: 10),
                 _buildProgress(),
                 const SizedBox(height: 10),
@@ -119,10 +151,6 @@ class _CombinedScreenState extends State<CombinedScreen> {
                 const SizedBox(height: 6),
                 _buildTitle(),
               ],
-            ),
-            const Padding(padding: EdgeInsets.only(bottom: 16),
-              child: Text("DAI: 16.2"),
-
             ),
             Expanded(
                 child: SingleChildScrollView(
