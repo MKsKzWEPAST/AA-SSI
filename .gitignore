@@ -4,3 +4,8 @@ contracts/smart-money/.prettierrc.json
 /contracts/smart-money/.deps
 contracts/smart-money/artifacts/SmartMoney.json
 contracts/smart-money/artifacts/build-info/7823dd2dff776376618551e2a5fdf86c.json
+/contracts/.deps
+/contracts/scripts/.idea
+/contracts/scripts/node_modules
+/contracts/smart-money/artifacts
+contracts/scripts/package-lock.json
