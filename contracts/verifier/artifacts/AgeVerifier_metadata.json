@@ -623,11 +623,11 @@
 			]
 		},
 		"verifier/ageVerifier.sol": {
-			"keccak256": "0xe3274dcc5a183ac09e7be2578ff52eb8cbbcc33624746233308024cbb001759f",
+			"keccak256": "0x192bf95ab9f8a6fd9bc77061e5082b60f01eccbecec9cc9e98ae12ec13c28d1b",
 			"license": "UNLICENSED",
 			"urls": [
-				"bzz-raw://8c2b7a5bdf27ea84d97b1f7cd9ea1a66a962e7411c5dabe7f8d93d958d59f02d",
-				"dweb:/ipfs/QmXDfskVvyKAtjVZfFxJWjZoKmehTqDFf1MkVwg7iR82XN"
+				"bzz-raw://585815256c08b57428260cc350fa6fc15e037fb25d0fae42d5d753b4c22933b8",
+				"dweb:/ipfs/QmTofXxsS5n3HujJzgiGgxUYCowPZkfSNco8Syou8Jq51T"
 			]
 		}
 	},
