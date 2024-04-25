@@ -8,7 +8,7 @@ export default function GetAuthRequestAge(orderID) {
         "body": {
             "reason": "Age check for alcohol",
             "transaction_data": {
-                "contract_address": "0x1d0882A6f12e9d2A6cf5E119b64fe84A9Fe8569E",
+                "contract_address": "0x7484B953790a10686D028378Ace244afcDbFc606",
                 "method_id": "b68967e2",
                 "chain_id": 80002,
                 "network": "polygon-amoy"

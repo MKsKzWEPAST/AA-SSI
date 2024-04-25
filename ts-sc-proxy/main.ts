@@ -67,7 +67,7 @@ async function forwardZKP(proof: any, orderID: number) {
     console.log(`Account address: ${address}`);
 
     // Create the call data
-    let verifierSCAddress = "0x1d0882A6f12e9d2A6cf5E119b64fe84A9Fe8569E"; // Receiving address (us if not specified)
+    let verifierSCAddress = "0x7484B953790a10686D028378Ace244afcDbFc606"; // Receiving address (us if not specified)
 
     console.log("PROOF: ")
     console.log(proof);
@@ -125,6 +125,7 @@ app.use(
 
 
 async function initZKPRequest(orderID: number) {
+    // TODO call the initZKP in the smart money at the same time
     const signingKey = getAccountPrivateKey("01"); // TODO more than test-id 01 for the POC if needed
     const signer = new ethers.Wallet(signingKey);
     const builder = await Presets.Builder.SimpleAccount.init(signer, rpcUrl, opts);
@@ -133,10 +134,10 @@ async function initZKPRequest(orderID: number) {
     console.log(`Account address: ${address}`);
 
     // Create the call data
-    let verifierSCAddress = "0x1d0882A6f12e9d2A6cf5E119b64fe84A9Fe8569E"; // Receiving address (us if not specified)
+    let verifierSCAddress = "0x7484B953790a10686D028378Ace244afcDbFc606"; // Receiving address (us if not specified)
 
     // Read the ERC-20 token contract
-    const VerifierABI = require('./AgeVerifierAbi>.json');
+    const VerifierABI = require('./AgeVerifierAbi.json');
     const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
     const verifier = new ethers.Contract(verifierSCAddress, VerifierABI, provider);
 
