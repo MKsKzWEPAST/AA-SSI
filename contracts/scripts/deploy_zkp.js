@@ -95,7 +95,7 @@ async function main() {
     // set default query
     const circuitIdSig = 'credentialAtomicQuerySigV2OnChain';
 
-    const ageVerifierAddress = "0x18dd30213CB5C64179621E9C75ff9b22174748C2";
+    const ageVerifierAddress = "0x3080D4B01cd22c2aF2Cae559e43047baB674CaD7";
     const provider = new ethers.providers.JsonRpcProvider("https://polygon-amoy.g.alchemy.com/v2/tZIEm32QWH6cinpYSA8Yo7u0m2ZqtF1i");
     const signer = new ethers.Wallet("b955724e0a636ee776023399c2555e48453072b7f0f4ab1deedc10e61dda4f31",provider)
     const ageVerifier = new ethers.Contract(ageVerifierAddress, VerifierABI, signer);

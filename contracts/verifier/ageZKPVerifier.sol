@@ -18,7 +18,7 @@ import "../smart-money/smart-money.sol";
 
     uint64 public constant REQUEST_ID = 1;
 
-     SmartMoney public smc = SmartMoney(0xc91d970b16fcbf3d374b9FB4f818E3f6176De910); 
+     SmartMoney public smc = SmartMoney(0x46B5B8D72c7475E30E949F32b373B6A388E077D6); 
 
     /// @dev Main storage structure for the contract
     struct ZKPVerifierStorage {
