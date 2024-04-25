@@ -14,6 +14,10 @@ contract AgeVerifier is ZKPVerifier {
 
     mapping(uint64 => bool) public pendingRequests;
 
+    function initialize() public initializer {
+        super.__ZKPVerifier_init(_msgSender());
+    }
+    
     function _beforeProofSubmit(
         uint64  requestId,
         uint256[] memory inputs,

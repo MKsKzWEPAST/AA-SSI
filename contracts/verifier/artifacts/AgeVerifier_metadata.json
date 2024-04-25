@@ -212,6 +212,13 @@
 				"type": "function"
 			},
 			{
+				"inputs": [],
+				"name": "initialize",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
 				"inputs": [
 					{
 						"internalType": "address",
@@ -616,11 +623,11 @@
 			]
 		},
 		"verifier/ageVerifier.sol": {
-			"keccak256": "0x17709242e028be39408a35d43ee7cb44c9fb5ba5c6455f660297b75a425a7e17",
+			"keccak256": "0xe3274dcc5a183ac09e7be2578ff52eb8cbbcc33624746233308024cbb001759f",
 			"license": "UNLICENSED",
 			"urls": [
-				"bzz-raw://a94330b49600c0d7f160ceda692c1e02938fcf7f6c09d5fb0dbb75a509471881",
-				"dweb:/ipfs/QmYyv5W8BzrWHKTUTpgg4MGD4hAkYoD2bLqqnmPFXNZc3B"
+				"bzz-raw://8c2b7a5bdf27ea84d97b1f7cd9ea1a66a962e7411c5dabe7f8d93d958d59f02d",
+				"dweb:/ipfs/QmXDfskVvyKAtjVZfFxJWjZoKmehTqDFf1MkVwg7iR82XN"
 			]
 		}
 	},
