@@ -36,6 +36,7 @@ contract SmartMoney is Ownable(msg.sender) {
     function pay(uint256 orderID) external payable {
         require(orders[orderID].price == msg.value, "Order does not exist or price doesn't match");
         orders[orderID].paid = true;
+        conditionalOutput(orderID, false);
     }
 
     // Notification function for the verification status of the order
@@ -58,7 +59,7 @@ contract SmartMoney is Ownable(msg.sender) {
             emit CompletePurchase(orderID,true);
             // Cash-out to the shop's account
             payable(shopAddress).transfer(orders[orderID].price);
-           
+
         }
     }
 }
