@@ -8,7 +8,7 @@ export default function GetAuthRequestAge(orderID) {
         "body": {
             "reason": "Age check for alcohol",
             "transaction_data": {
-                "contract_address": "0x35178273C828E08298EcB0C6F1b97B3aFf14C4cb", //TODO change
+                "contract_address": "0x1d0882A6f12e9d2A6cf5E119b64fe84A9Fe8569E",
                 "method_id": "b68967e2",
                 "chain_id": 80002,
                 "network": "polygon-amoy"
@@ -22,7 +22,7 @@ export default function GetAuthRequestAge(orderID) {
                         "context": "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v3.json-ld",
                         "credentialSubject": {
                             "birthday": {
-                                "$lt": getYYYYMMDD18()
+                                "$lt": 20060424 //getYYYYMMDD18()
                             }
                         },
                         "type": "KYCAgeCredential"

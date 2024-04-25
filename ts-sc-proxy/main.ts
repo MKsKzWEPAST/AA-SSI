@@ -76,7 +76,8 @@ async function forwardZKP(proof: any, orderID: number) {
     const requestId = proof.id;
     const inputs = parseBigIntArray(proof.pub_signals);
     const a = parseBigIntArray(proof.proof.pi_a.slice(0,2));
-    const b: bigint[][] = proof.proof.pi_b.map((innerArr: string[]) => parseBigIntArray(innerArr.slice(0,2))).slice(0,2);
+    const b_int = proof.proof.pi_b.map((innerArr: string[]) => parseBigIntArray(innerArr.slice(0,2)));
+    const b: bigint[][] = [[b_int[0][1], b_int[0][0]],[b_int[1][1], b_int[1][0]]]; // Thanks for this PolygonID :)
     const c = parseBigIntArray(proof.proof.pi_c.slice(0,2));
 
     // Read the ERC-20 token contract
