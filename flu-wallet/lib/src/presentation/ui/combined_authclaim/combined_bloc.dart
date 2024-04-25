@@ -161,7 +161,7 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
               did: did, privateKey: privateKey, from: iden3message.from);
 
           final config = EnvConfigEntity(ipfsNodeUrl: env.ipfsUrl,chainConfigs: env.chainConfigs,didMethods: []);
-          final proofs = await _polygonIdSdk.iden3comm.getProofs(message: iden3message, genesisDid: did, privateKey: privateKey, profileNonce: nonce,challenge: "99889988",config: config);
+          final proofs = await _polygonIdSdk.iden3comm.getProofs(message: iden3message, genesisDid: did, privateKey: privateKey, profileNonce: nonce,challenge: "1275620543470401730849761939194595208513403910607",config: config);
 
           final proof = proofs[0];
 
