@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import {BsChevronDown, BsChevronUp} from 'react-icons/bs';
@@ -6,7 +6,7 @@ import {clearCart} from "../redux/action";
 import {motion} from "framer-motion";
 import {PaymentOptions, AgeAuth} from "../components";
 
-const maxOrderID = Number.MAX_SAFE_INTEGER/1000;
+const maxOrderID = 2 ** 52; // fit with some margin in uint64 + no precision loss in js
 
 const Checkout = () => {
     const location = useLocation();
@@ -18,12 +18,50 @@ const Checkout = () => {
     const [isCollapsedBilling, setIsCollapsedBilling] = useState(true);
     let requireAgeVerified = false;
 
+    const orderID = Math.floor(Math.random() * maxOrderID) + 1;
+
+
+    async function initOrder(orderID, price, requireAgeVerified) {
+        console.log("called");
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', `https://broadly-assured-piglet.ngrok-free.app/api/initOrder?orderID=${orderID}&price=${price}&ageReq=${requireAgeVerified?1:0}`, false);
+        xhr.setRequestHeader("ngrok-skip-browser-warning", "true");
+
+        let result = false;
+        let done = false;
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                result = xhr.status === 200;
+                done = true;
+            }
+        };
+
+        xhr.send();
+
+        while (!done) {
+            await new Promise(resolve => setTimeout(resolve, 1000))
+        }
+        return result;
+    }
+
     if (fastState != null && fastState.product.qty > 0) {
         state = [fastState.product];
         requireAgeVerified = fastState.product['18required'];
+
+            initOrder(orderID, fastState.product.price * fastState.product.qty, requireAgeVerified).then(result => {
+                if (result) {
+                    console.log("Order initialized: ", orderID, fastState.product.price * fastState.product.qty, requireAgeVerified);
+                } else {
+                    console.log("Failed to initialize order: ", orderID, fastState.product.price * fastState.product.qty, requireAgeVerified);
+                }
+
+                // TODO verify if order is completed (on event in main.ts ...)
+
+            });
     }
 
-    const orderID = 178969786824; // Math.floor( Math.random()*maxOrderID);
 
     let nb_tickets = 0;
     state.map((item) => {
@@ -126,7 +164,7 @@ const Checkout = () => {
             return <div className="card mb-4">
                 <div className="card-header py-3" onClick={handleCollapseToggleBilling} style={{cursor: 'pointer'}}>
                     <h4 className="mb-0">
-                    Billing address <i>(optional) </i>
+                        Billing address <i>(optional) </i>
                         {isCollapsedBilling ? <BsChevronDown/> : <BsChevronUp/>}
                     </h4>
                 </div>
@@ -272,7 +310,7 @@ const Checkout = () => {
                         </div>
                         <div className="col-md-7 col-lg-8">
                             {paymentOptions()}
-                            {requireAgeVerified?ageVerification():<div/>}
+                            {requireAgeVerified ? ageVerification() : <div/>}
                             {billingAddress()}
                         </div>
                     </div>

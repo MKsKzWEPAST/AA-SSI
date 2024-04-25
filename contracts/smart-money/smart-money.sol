@@ -24,11 +24,12 @@ contract SmartMoney is Ownable(msg.sender) {
     }
 
     // Initialize orders/payments with orderID and price to be received
-    function initializeOrder(uint256 orderID, uint256 price)
+    function initializeOrder(uint256 orderID, uint256 price, bool ageRequired)
     external
     {
         require(orders[orderID].price == 0, "Order already exists");
         orders[orderID].price = price;
+        orders[orderID].verified = !ageRequired;
     }
 
     // Receive payment for an order
