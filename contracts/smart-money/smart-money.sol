@@ -5,6 +5,10 @@ pragma solidity 0.8.20;
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract SmartMoney is Ownable(msg.sender) {
+
+    //define event when finishing purchase workflow
+    event CompletePurchase(uint256 requestId, bool success);
+
     // Define the mapping from orderID to order details
     mapping(uint256 => Order) public orders;
     address public shopAddress = 0x40775600Bb4E2E4Ab1c24B5c8bA4734cC47EE02E;
@@ -46,11 +50,14 @@ contract SmartMoney is Ownable(msg.sender) {
         if (fromVerify && !orders[orderID].verified) {
             // Cancel the order
             delete orders[orderID];
+            emit CompletePurchase(orderID,false);
         }
         if (orders[orderID].paid && orders[orderID].verified) {
+            delete orders[orderID];
+            emit CompletePurchase(orderID,true);
             // Cash-out to the shop's account
             payable(shopAddress).transfer(orders[orderID].price);
-            delete orders[orderID];
+           
         }
     }
 }
