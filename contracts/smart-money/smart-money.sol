@@ -22,6 +22,7 @@ contract SmartMoney is Ownable(msg.sender) {
         bool verified;
         uint256 price;
         bool paid;
+        IERC20 token;
     }
 
     // Initialize orders/payments with orderID and price to be received
@@ -55,6 +56,7 @@ contract SmartMoney is Ownable(msg.sender) {
         require(success, "Token transfer failed [ERC20]");
 
         orders[orderID].paid = true;
+        orders[orderID].token = tokenContract;
         conditionalOutput(orderID, false);
     }
 
@@ -76,11 +78,11 @@ contract SmartMoney is Ownable(msg.sender) {
         }
         if (orders[orderID].paid && orders[orderID].verified) {
             uint256 price = orders[orderID].price;
+            IERC20 token = orders[orderID].token;
             delete orders[orderID];
             emit CompletePurchase(orderID,true);
             // Cash-out to the shop's account
-            payable(shopAddress).transfer(price);
-
+            token.transfer(shopAddress, price);
         }
     }
 }
