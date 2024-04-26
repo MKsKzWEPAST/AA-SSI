@@ -9,8 +9,8 @@ const paymasterUrl = 'https://api.stackup.sh/v1/paymaster/04832ebeb6088d4ca33e86
 const paymasterMiddleware = Presets.Middleware.verifyingPaymaster(paymasterUrl, {type: 'payg'});
 const opts = {paymasterMiddleware: paymasterMiddleware};
 
-const verifierSCAddress = "0x86F55D132aDc0a0e6c88f769E20241A9294c7C66";
-const smartMoneyAddress = "0x7E8e020459C31982787D7A6Da37FaD1256771bE7";
+const verifierSCAddress = "0x3080D4B01cd22c2aF2Cae559e43047baB674CaD7";
+const smartMoneyAddress = "0x46B5B8D72c7475E30E949F32b373B6A388E077D6";
 
 
 async function sendSponsored(amount_token: number, token_address: string, destination_address?: string) {

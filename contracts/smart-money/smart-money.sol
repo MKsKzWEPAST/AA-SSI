@@ -34,13 +34,16 @@ contract SmartMoney is Ownable(msg.sender) {
 
     // Receive payment for an order
     function pay(uint256 orderID) external payable {
-        require(orders[orderID].price == msg.value, "Order does not exist or price doesn't match");
+        require(orders[orderID].price == msg.value && msg.value != 0, "Order does not exist or price doesn't match");
+        require(!orders[orderID].paid, "Order already paid");
         orders[orderID].paid = true;
+        conditionalOutput(orderID, false);
     }
 
     // Notification function for the verification status of the order
     function notify(uint256 orderID, bool verified) external onlyOwner {
         require(orders[orderID].price > 0, "Order does not exist");
+        require(orders[orderID].verified == false, "Order already validated");
         orders[orderID].verified = verified;
         conditionalOutput(orderID, true);
     }
@@ -54,11 +57,12 @@ contract SmartMoney is Ownable(msg.sender) {
             emit CompletePurchase(orderID,false);
         }
         if (orders[orderID].paid && orders[orderID].verified) {
+            uint256 price = orders[orderID].price;
             delete orders[orderID];
             emit CompletePurchase(orderID,true);
             // Cash-out to the shop's account
-            payable(shopAddress).transfer(orders[orderID].price);
-           
+            payable(shopAddress).transfer(price);
+
         }
     }
 }
