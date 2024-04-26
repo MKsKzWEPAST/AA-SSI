@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:local_auth/local_auth.dart';
 
 import 'package:wallet_app/src/presentation/navigations/routes.dart';
@@ -39,6 +40,7 @@ class AppState extends State<App> with WidgetsBindingObserver {
     if (state == AppLifecycleState.paused || state == AppLifecycleState.detached) {
       // Perform the sign out when the app is closing or moving to background
       FirebaseAuth.instance.signOut().then((value) => logger().i("signed-out"));
+      GoogleSignIn().signOut();
     }
   }
 
