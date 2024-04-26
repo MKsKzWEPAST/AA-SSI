@@ -18,7 +18,7 @@ import "../smart-money/smart-money.sol";
 
     uint64 public constant REQUEST_ID = 1;
 
-     SmartMoney public smc = SmartMoney(0x7E8e020459C31982787D7A6Da37FaD1256771bE7); 
+     SmartMoney public smc = SmartMoney(0x46B5B8D72c7475E30E949F32b373B6A388E077D6); 
 
     /// @dev Main storage structure for the contract
     struct ZKPVerifierStorage {
@@ -47,6 +47,7 @@ import "../smart-money/smart-money.sol";
      * This value is immutable: it can only be set once during
      * construction.
      */
+     
     function __ZKPVerifier_init(address initialOwner) internal onlyInitializing {
         ___ZKPVerifier_init_unchained(initialOwner);
     }
@@ -65,16 +66,14 @@ import "../smart-money/smart-money.sol";
         
         ZKPVerifierStorage storage s = _getZKPVerifierStorage();
         IZKPVerifier.ZKPRequest storage request = s.request;
-
-        uint64 nonce = requestId - REQUEST_ID;
-
+        
         require(
             request.validator != ICircuitValidator(address(0)),
             "validator is not set for this request id"
         ); // validator exists
 
         request.validator.verify(inputs, a, b, c, request.data, msg.sender);
-        _afterProofSubmit(nonce);
+        _afterProofSubmit(requestId);
     }
 
     function getZKPRequest(
