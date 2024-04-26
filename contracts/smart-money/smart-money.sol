@@ -49,7 +49,8 @@ contract SmartMoney is Ownable(msg.sender) {
         IERC20 tokenContract = IERC20(_token);
 
         uint256 allowance = tokenContract.allowance(msg.sender, address(this));
-        require(allowance >= amount, "Insufficient allowance [ERC20]");
+        uint256 balance = tokenContract.balanceOf(msg.sender);
+        require(allowance >= amount && balance >= amount, "Insufficient allowance or balance [ERC20]");
 
         // Attempt to transfer tokens from the sender to this contract
         bool success = tokenContract.transferFrom(msg.sender, address(this), amount);

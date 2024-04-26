@@ -47,6 +47,7 @@ async function payERC20(orderID: number, amount_token: number, token: string, sh
     const callData = [
         // allow the SmartMoney contract (="to") of the store to transfer the tokens for the payment
         erc20.interface.encodeFunctionData('approve', [shopSmartMoney, amount]),
+        // pay with ERC20. The SmartMoney contract will take erc20 tokens from the user TODO - test
         erc20.interface.encodeFunctionData('payErc20', [orderID, tokenAddress, amount]),
     ];
 
