@@ -1,0 +1,17 @@
+.crypto-logo {
+    width: 50px; /* Adjust as needed */
+    height: 50px; /* Adjust as needed */
+    border-radius: 20px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    margin: 10px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.crypto-logo img {
+    width: 70%;
+    height: 70%;
+    flex-shrink: 0;
+}

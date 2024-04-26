@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import {BsChevronDown, BsChevronUp} from 'react-icons/bs';
@@ -9,6 +9,7 @@ import {PaymentOptions, AgeAuth} from "../components";
 const maxOrderID = 2 ** 52; // fit with some margin in uint64 + no precision loss in js
 
 const Checkout = () => {
+
     const location = useLocation();
     const fastState = location.state
 
@@ -22,8 +23,6 @@ const Checkout = () => {
 
 
     async function initOrder(orderID, price, requireAgeVerified) {
-        console.log("called");
-
         const xhr = new XMLHttpRequest();
         xhr.open('GET', `https://broadly-assured-piglet.ngrok-free.app/api/initOrder?orderID=${orderID}&price=${price}&ageReq=${requireAgeVerified?1:0}`, false);
         xhr.setRequestHeader("ngrok-skip-browser-warning", "true");
@@ -38,7 +37,12 @@ const Checkout = () => {
             }
         };
 
-        xhr.send();
+        try {
+            xhr.send();
+        } catch (error) {
+            console.log("Couldn't set the order");
+        }
+
 
         while (!done) {
             await new Promise(resolve => setTimeout(resolve, 1000))
@@ -108,7 +112,7 @@ const Checkout = () => {
                 <div className="card-body">
                     <ul className="list-group list-group-flush">
                         <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
-                            Products ({totalItems})<span>DAI {Math.round(subtotal)}</span>
+                            Products ({totalItems})<span>{Math.round(subtotal)} $</span>
                         </li>
                         <li className="list-group-item d-flex justify-content-between align-items-center px-0">
                             Shipping
@@ -119,7 +123,7 @@ const Checkout = () => {
                                 <strong>Total amount</strong>
                             </div>
                             <span>
-                        <strong>DAI {Math.round(subtotal + shipping)}</strong>
+                        <strong>{Math.round(subtotal + shipping)} $</strong>
                       </span>
                         </li>
                     </ul>
@@ -140,7 +144,7 @@ const Checkout = () => {
                 </div>
                 <div className="card-body">
 
-                    <PaymentOptions validatePayment={validatePayment}/>
+                    <PaymentOptions validatePayment={validatePayment} price={subtotal}/>
 
                 </div>
             </div>;
@@ -309,6 +313,7 @@ const Checkout = () => {
                             {/* TODO add button to verify payment and age verification! */}
                         </div>
                         <div className="col-md-7 col-lg-8">
+
                             {paymentOptions()}
                             {requireAgeVerified ? ageVerification() : <div/>}
                             {billingAddress()}
@@ -328,6 +333,7 @@ const Checkout = () => {
                 <hr/>
                 {state.length ? <ShowCheckout/> : <EmptyCart/>}
             </div>
+
         </motion.div>
     );
 };

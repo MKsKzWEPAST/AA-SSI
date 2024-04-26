@@ -3,6 +3,7 @@ import {PaymentInputsWrapper, usePaymentInputs} from "react-payment-inputs";
 import images from "react-payment-inputs/images";
 import {ButtonGroup, Container, ToggleButton} from "react-bootstrap";
 import {QRCodeSVG} from "qrcode.react";
+import {IconBox} from "./Graphical";
 
 function confirmCheckoutButton({valid, validatePayment}) {
     return (<button
@@ -16,7 +17,7 @@ function confirmCheckoutButton({valid, validatePayment}) {
     </button>);
 }
 
-const PaymentOptions = ({validatePayment}) => {
+const PaymentOptions = ({validatePayment, price}) => {
     const [valid, setValid] = React.useState(false);
 
     function PaymentInputs() {
@@ -78,7 +79,7 @@ const PaymentOptions = ({validatePayment}) => {
             <div className="d-flex flex-column">
                 <a href={"https://example.com/twint-payment"}>
                     <img src={"./assets/twint.png"} alt={"Twint link"} width={200}
-                                                                   style={{boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)'}}/></a>
+                         style={{boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)'}}/></a>
             </div>
         );
     }
@@ -90,31 +91,31 @@ const PaymentOptions = ({validatePayment}) => {
         };
 
         const radios = [
-            { name: 'pay_by_link', value: 'PayByLink' },
-            { name: 'twint', value: 'Twint' },
-            { name: 'saved_card', value: 'SavedCard' },
-            { name: 'new_card', value: 'NewCard' },
+            {name: 'pay_by_link', value: 'PayByLink'},
+            {name: 'twint', value: 'Twint'},
+            {name: 'saved_card', value: 'SavedCard'},
+            {name: 'new_card', value: 'NewCard'},
         ];
 
         return (
             <>
-            <ButtonGroup className="mb-1">
-                {radios.map((radio, idx) => (
-                    <ToggleButton
-                        className={idx===0?"rounded-start":(idx===radios.length-1?"rounded-end":"")}
-                        key={idx}
-                        id={`radio-${idx}`}
-                        type="radio"
-                        variant="outline-secondary"
-                        name="radio"
-                        value={radio.value}
-                        checked={selectedOption === radio.value}
-                        onChange={handleOptionChange}
-                    >
-                        {radio.value}
-                    </ToggleButton>
-                ))}
-            </ButtonGroup>
+                <ButtonGroup className="mb-1">
+                    {radios.map((radio, idx) => (
+                        <ToggleButton
+                            className={idx === 0 ? "rounded-start" : (idx === radios.length - 1 ? "rounded-end" : "")}
+                            key={idx}
+                            id={`radio-${idx}`}
+                            type="radio"
+                            variant="outline-secondary"
+                            name="radio"
+                            value={radio.value}
+                            checked={selectedOption === radio.value}
+                            onChange={handleOptionChange}
+                        >
+                            {radio.value}
+                        </ToggleButton>
+                    ))}
+                </ButtonGroup>
             </>
         );
     }
@@ -146,7 +147,7 @@ const PaymentOptions = ({validatePayment}) => {
 
     return (
         <div className={"d-flex flex-column m-3 align-items-center justify-content-center"}>
-            <span style={{textAlign: 'center'}}>Pay to this address.</span>
+            <span style={{textAlign: 'center'}}>Scan with your wallet app to pay.</span>
             <div className={"my-3"} style={{
                 display: 'inline-block',
                 padding: '10px',
@@ -154,7 +155,11 @@ const PaymentOptions = ({validatePayment}) => {
                 border: '1px solid #ccc',
                 boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)',
             }}>
-                <QRCodeSVG value={"ethereum:0x40775600Bb4E2E4Ab1c24B5c8bA4734cC47EE02E"} size={window.innerHeight * 0.25}/>
+                <QRCodeSVG value={"amoy:0x46B5B8D72c7475E30E949F32b373B6A388E077D6:"+price} size={window.innerHeight * 0.25}/>
+            </div>
+            <div className={"d-flex"}>
+                <IconBox svgPath={"./assets/multi-collateral-dai-dai-logo.svg"} alt={""}/>
+                <IconBox svgPath={"./assets/tether-usdt-logo.svg"} alt={""}/>
             </div>
         </div>
     );

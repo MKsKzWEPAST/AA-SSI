@@ -21,7 +21,6 @@ root.render(
             <Navbar/>
             <Layout/>
             <Footer/>
-            <BackOffice/>
             </PersistGate>
         </Provider>
     </HashRouter>
