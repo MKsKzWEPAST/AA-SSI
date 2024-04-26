@@ -37,7 +37,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   //final LocalAuthentication auth = LocalAuthentication();
   late final HomeBloc _bloc;
-  late StreamSubscription _sub;
 
   // for google credentials
   ValueNotifier userCredential = ValueNotifier('');
@@ -50,7 +49,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    _sub.cancel();
     super.dispose();
   }
 
@@ -97,6 +95,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<dynamic> signInWithGoogle() async {
     try {
+      await signOutFromGoogle();
+
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
       final GoogleSignInAuthentication? googleAuth =
@@ -109,8 +109,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
       return await FirebaseAuth.instance.signInWithCredential(credential);
     } on Exception catch (e) {
-      // TODO
      logger().i("error while signing up: " + e.toString());
+    }
+  }
+
+  Future<bool> signOutFromGoogle() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      await GoogleSignIn().signOut();
+      return true;
+    } on Exception catch (_) {
+      return false;
     }
   }
 
@@ -240,10 +249,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     const SizedBox(height: 10),
                     _buildEnterButton(CustomStrings.homeSocialLogin),
-                    const SizedBox(height: 20),
-                    state.identifier != null ?
-                        _buildRedirectText()
-                        : const Text("...",style:CustomTextStyles.descriptionTextStyle),
                   ],
                 );
               },
@@ -256,12 +261,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildRedirectText() {
-    Widget wid = const Text("Success, redirecting to wallet...",
-    style: CustomTextStyles.descriptionTextStyle);
-    Navigator.pushNamed(context, Routes.combinedPath);
-    return wid;
-  }
   ///
   Widget _buildEnterButton(String text){
     return ElevatedButton(
@@ -277,6 +276,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (userCredential.value != null) {
       logger().i("logged in");
       _bloc.add(const HomeEvent.createIdentity());
+      Navigator.pushNamed(context, Routes.combinedPath);
     }
   }
   ///

@@ -10,9 +10,18 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:wallet_app/src/presentation/app.dart';
 import 'dart:async';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // init DB for user credentials (social login tokens, smart account address..)
+  final database = openDatabase(join(await getDatabasesPath(),'credentials.db'), 
+  onCreate: (db,version) {
+    return db.execute('CREATE TABLE credentials(user_id TEXT PRIMARY KEY, access_token TEXT, id_token TEXT, account_address TEXT, email TEXT)');
+  }, version: 1,
+  );
 
   //Dependency Injection initialization
   await di.init();

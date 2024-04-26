@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
 
@@ -10,7 +11,7 @@ import 'package:wallet_app/utils/custom_text_styles.dart';
 
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:secure_application/secure_application.dart';
-
+import 'package:wallet_app/src/presentation/ui/home/widgets/home.dart';
 class App extends StatefulWidget {
   const App({Key? key}) : super(key: key);
 
@@ -18,13 +19,27 @@ class App extends StatefulWidget {
   State<App> createState() => AppState();
 }
 
-class AppState extends State<App> {
+class AppState extends State<App> with WidgetsBindingObserver {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   StreamSubscription<bool>? subLock;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.detached) {
+      // Perform the sign out when the app is closing or moving to background
+      FirebaseAuth.instance.signOut().then((value) => logger().i("signed-out"));
+    }
   }
 
   @override

@@ -25,6 +25,9 @@ import 'package:wallet_app/src/presentation/ui/combined_authclaim/combined_event
 import 'package:wallet_app/src/presentation/ui/combined_authclaim/combined_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+const USDT = 'USDT';
+const DAI = 'DAI';
+
 class CombinedScreen extends StatefulWidget {
   final CombinedBloc _bloc;
 
@@ -36,7 +39,8 @@ class CombinedScreen extends StatefulWidget {
 
 class _CombinedScreenState extends State<CombinedScreen> {
   late Timer _timer;
-  double _usdcBalance = 0.0;
+  double _stablecoinBalance = 0.0;
+  String currency = USDT;
 
   @override
   void initState() {
@@ -103,7 +107,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
   }
 
 
-  Future<void> _fetchUSDCBalance() async {
+  Future<void> _fetchCoinBalance(coin) async {
 
     final response = await http.post(
       Uri.parse('https://broadly-assured-piglet.ngrok-free.app/api/getBalance/01'),
@@ -113,11 +117,11 @@ class _CombinedScreenState extends State<CombinedScreen> {
 
     if (response.statusCode == 200) {
       setState(() {
-        _usdcBalance = json.decode(response.body)['balance'];
+        _stablecoinBalance = json.decode(response.body)[coin];
       });
     } else {
       setState(() {
-        _usdcBalance = 135643;
+        _stablecoinBalance = coin == DAI ? 2500 : 1300;
       });
       // Handle errors
       logger().i('Failed to load data: ${response.statusCode}');
@@ -136,14 +140,23 @@ class _CombinedScreenState extends State<CombinedScreen> {
             Column(
               children: [
                 Padding(padding: const EdgeInsets.only(bottom: 16),
-                  child: Text(_usdcBalance.toStringAsFixed(2)),
+                  child: Text(_stablecoinBalance.toString()),
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    _fetchUSDCBalance();
-                  },
-                  child: const Text('Refresh balance'),
-                ),
+                DropdownButton<String>(hint: const Text("Choose your currency"),
+                    value: currency,
+                    items: const <String>[DAI,USDT].map<DropdownMenuItem<String>>((String v) {
+                      return DropdownMenuItem<String>(
+                        value: v,
+                        child: Text(v),
+                      );
+                    }).toList(),
+                    onChanged: (String? value) {
+                      setState(() {
+                        currency = value!;
+                        _fetchCoinBalance(value);
+                      });
+
+                    }),
                 const SizedBox(height: 10),
                 _buildProgress(),
                 const SizedBox(height: 10),
