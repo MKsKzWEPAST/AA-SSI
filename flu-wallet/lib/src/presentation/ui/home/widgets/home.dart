@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:wallet_app/src/presentation/dependency_injection/dependencies_provider.dart';
 import 'package:wallet_app/src/presentation/navigations/routes.dart';
 import 'package:wallet_app/src/presentation/ui/common/widgets/button_next_action.dart';
@@ -22,6 +23,9 @@ import 'package:wallet_app/utils/custom_widgets_keys.dart';
 import 'package:wallet_app/utils/image_resources.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -31,9 +35,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final LocalAuthentication auth = LocalAuthentication();
+  //final LocalAuthentication auth = LocalAuthentication();
   late final HomeBloc _bloc;
   late StreamSubscription _sub;
+
+  // for google credentials
+  ValueNotifier userCredential = ValueNotifier('');
 
   @override
   void initState() {
@@ -51,36 +58,60 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: CustomColors.background,
-      body: SafeArea(
-        child: Container(
-          alignment: Alignment.center,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 50),
-                      _buildLogo(),
-                      const SizedBox(height: 50),
-                      _buildDescription(),
-                      const SizedBox(height: 20),
-                      _buildProgress(),
-                      _buildWalletSection(),
-                      _buildCreateIdentityButton(true),
-                      const SizedBox(height: 20),
-                      _buildErrorSection(),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+        body: ValueListenableBuilder(
+            valueListenable: userCredential,
+            builder: (context, value, child) {
+              return Container(
+                alignment: Alignment.center,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const SizedBox(height: 50),
+                            _buildLogo(),
+                            const SizedBox(height: 50),
+                            _buildDescription(),
+                            const SizedBox(height: 20),
+                            _buildProgress(),
+                            _buildWalletSection(),
+                            //_buildCreateIdentityButton(true),
+                            const SizedBox(height: 20),
+                            _buildErrorSection(),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ]
+                )
+              );
+            }
+            )
     );
+  }
+
+
+
+  Future<dynamic> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+      final GoogleSignInAuthentication? googleAuth =
+      await googleUser?.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
+
+      return await FirebaseAuth.instance.signInWithCredential(credential);
+    } on Exception catch (e) {
+      // TODO
+     logger().i("error while signing up: " + e.toString());
+    }
   }
 
 
@@ -202,43 +233,17 @@ class _HomeScreenState extends State<HomeScreen> {
             child: BlocBuilder(
               bloc: _bloc,
               builder: (BuildContext context, HomeState state) {
-                return state.identifier != null
-                    ? Column(
+                return Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment:
                   CrossAxisAlignment.center,
                   children: [
-                    state.identifier!.isEmpty
-                        ? Text(
-                      CustomStrings.homeNoWallet,
-                      style: CustomTextStyles
-                          .descriptionTextStyle
-                          .copyWith(
-                          fontSize: 20,
-                          fontWeight:
-                          FontWeight.w700),
-                    )
-                        : Text(
-                      CustomStrings.homeHasWallet,
-                      style: CustomTextStyles
-                          .descriptionTextStyle
-                          .copyWith(fontSize: 15),
-                    ),
+                    const SizedBox(height: 10),
+                    _buildEnterButton(CustomStrings.homeSocialLogin),
                     const SizedBox(height: 20),
-                    _buildEnterButton(CustomStrings.homeHasWallet),
-                  ],
-                )
-                    : Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment:
-                  CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      CustomStrings.homeNoWallet,
-                      style: CustomTextStyles
-                          .descriptionTextStyle
-                          .copyWith(fontSize: 15),
-                    ),
+                    state.identifier != null ?
+                        _buildRedirectText()
+                        : const Text("...",style:CustomTextStyles.descriptionTextStyle),
                   ],
                 );
               },
@@ -251,13 +256,29 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _buildRedirectText() {
+    Widget wid = const Text("Success, redirecting to wallet...",
+    style: CustomTextStyles.descriptionTextStyle);
+    Navigator.pushNamed(context, Routes.combinedPath);
+    return wid;
+  }
   ///
-  Widget _buildEnterButton(String text) {
+  Widget _buildEnterButton(String text){
     return ElevatedButton(
-        onPressed: () => Navigator.pushNamed(context, Routes.combinedPath),
+        onPressed: () => {
+        userCredential.value = signInWithGoogle().then((value) => {
+         _navigateAfterLogin(value)
+        })},
         child: Text(text));
   }
-
+  
+  void _navigateAfterLogin(value) {
+    userCredential.value = value;
+    if (userCredential.value != null) {
+      logger().i("logged in");
+      _bloc.add(const HomeEvent.createIdentity());
+    }
+  }
   ///
   Widget _buildErrorSection() {
     return BlocBuilder(

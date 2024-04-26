@@ -12,6 +12,7 @@ class CustomStrings {
       "identity.getDidIdentifier()\nIdentifier:";
   static const String homeHasWallet = "Access your wallet";
   static const String homeNoWallet = "Generate a DID first.";
+  static const String homeSocialLogin = "Google sign-in";
   static const String createID ="Create a DID here";
 
   static const String homeButtonRemoveIdentityCTA =

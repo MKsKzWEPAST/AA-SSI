@@ -136,7 +136,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
             Column(
               children: [
                 Padding(padding: const EdgeInsets.only(bottom: 16),
-                  child: Text(_usdcBalance as String),
+                  child: Text(_usdcBalance.toStringAsFixed(2)),
                 ),
                 ElevatedButton(
                   onPressed: () {
