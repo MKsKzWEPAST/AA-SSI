@@ -1,9 +1,10 @@
 import express = require('express');
 import bodyParser = require('body-parser');
-
+import {initializeDatabase,getCredential,insertCredential} from './db'
 import {ethers} from 'ethers';
 import {Presets, Client} from 'userop';
-
+import {verifyIDToken} from "./auth";
+import {computePrivateKeyFrom} from "./cryptoUtils"
 const rpcUrl = 'https://api.stackup.sh/v1/node/04832ebeb6088d4ca33e86e7bc9054fdc03115d2d1e295df3122acf11817fb95';
 const paymasterUrl = 'https://api.stackup.sh/v1/paymaster/04832ebeb6088d4ca33e86e7bc9054fdc03115d2d1e295df3122acf11817fb95';
 const paymasterMiddleware = Presets.Middleware.verifyingPaymaster(paymasterUrl, {type: 'payg'});
@@ -12,6 +13,7 @@ const opts = {paymasterMiddleware: paymasterMiddleware};
 const verifierSCAddress = "0x3080D4B01cd22c2aF2Cae559e43047baB674CaD7";
 const smartMoneyAddress = "0x46B5B8D72c7475E30E949F32b373B6A388E077D6";
 
+initializeDatabase().then( () => console.log("db initialized"));
 
 async function sendSponsored(amount_token: number, token_address: string, destination_address?: string) {
     // Initialize the account
@@ -200,6 +202,55 @@ app.post('/api/sendRC20/:orderID', (req, res) => {
 
     res.json({message: 'Sending token test (with account 01)!'});
 });
+
+
+app.post('/api/getaddress',async (req, res) => {
+    console.log("Get Smart Account Address");
+    const id_token = req.body.id_token;
+    const post_email = req.body.email;
+    if (!id_token || !post_email) {
+        res.status(400).send('Missing required fields to access address');
+        return;
+    }
+
+    try {
+
+        // get token id payload
+        let payload = await verifyIDToken(id_token);
+        if (!payload) {
+            res.status(401).send({message: 'Token verification failed.'});
+            return;
+        }
+        // verify email validity and sub for user_id
+
+        const {sub, email} = payload;
+        if (email != post_email) {
+            res.status(401).send({message: 'Email verification failed'});
+            return;
+        }
+
+        // smart account address for the user
+        let sa_address = "";
+
+        const credential = await getCredential(sub)
+        if (!credential) {
+
+            const sk = computePrivateKeyFrom(post_email,sub);
+            const signer = new ethers.Wallet(signingKey);
+            const builder = await Presets.Builder.SimpleAccount.init(signer, rpcUrl, opts);
+            sa_address = builder.getSender();
+
+            await insertCredential(sub, sk, sa_address, post_email);
+            // INIT ACCOUNT
+        } else {
+            sa_address = credential.address;
+        }
+        // Simulate successful operation with a dummy address
+        res.json({success: true, address: sa_address});
+    } catch (error) {
+        res.status(500).send('An error occurred while fetching the address');
+    }
+})
 
 
 // Test address

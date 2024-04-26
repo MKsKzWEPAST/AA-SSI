@@ -14,14 +14,19 @@
   "dependencies": {
     "@account-abstraction/contracts": "^0.7.0",
     "@account-abstraction/sdk": "^0.6.0",
+    "crypto": "^1.0.1",
     "ethers": "5.7.0",
+    "express": "^4.19.2",
+    "google-auth-library": "^9.9.0",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.6",
-    "userop": "^0.3.1",
-    "express": "^4.19.2"
+    "userop": "^0.3.1"
   },
   "devDependencies": {
+    "@types/express": "^4.17.21",
     "@types/node": "^20.8.0",
-    "@types/express": "^4.17.21"
+    "@types/sqlite3": "^3.1.11"
   }
 }
