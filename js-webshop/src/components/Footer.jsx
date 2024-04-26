@@ -8,7 +8,7 @@ const Footer = () => {
         <div className="d-flex align-items-center justify-content-center pb-5">
           <div className="col-md-6">
             <br/>
-            <p className="mb-3 mb-md-0"> © 2024 WebPub (demo store)
+            <p className="mb-3 mb-md-0"> © 2024 WebPub
             </p>
           </div>
         </div>

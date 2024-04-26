@@ -15,7 +15,14 @@ const smartMoneyAddress = "0x46B5B8D72c7475E30E949F32b373B6A388E077D6";
 
 initializeDatabase().then( () => console.log("db initialized"));
 
-async function sendSponsored(amount_token: number, token_address: string, destination_address?: string) {
+const DAI_ADDRESS = "0xd7dB0FE7506829004c99d75d1c04c6498CA9A270";
+const USDT_ADDRESS = "0x10a477F9F8974A84bd56578512e29c21628c922A";
+
+const DAI_ABI_PATH = "./ABIs/DaiABI.json";
+const USDT_ABI_PATH = "./ABIs/TetherABI.json";
+
+
+async function payERC20(orderID: number, amount_token: number, token: string, shopSmartMoney: string) {
     // Initialize the account
     const signingKey = getAccountPrivateKey("01"); // TODO more than test-id 01 for the POC if needed
     const signer = new ethers.Wallet(signingKey);
@@ -25,25 +32,22 @@ async function sendSponsored(amount_token: number, token_address: string, destin
     console.log(`Account address: ${address}`);
 
     // Create the call data
-    let to = address; // Receiving address (us if not specified)
-    if (destination_address !== 'undefined') {
-        to = destination_address!;
-    }
-    const token = token_address;
+    let tokenAddress = token==="dai"?DAI_ADDRESS:USDT_ADDRESS;
     const value = amount_token.toString(); // Amount of the ERC-20 token to transfer
 
     // Read the ERC-20 token contract
-    const ERC20_ABI = require('./erc20Abi.json'); // ERC-20 ABI in json format
+    const ERC20_ABI = require(token==="dai"?DAI_ABI_PATH:USDT_ABI_PATH); // ERC-20 ABI in json format
     const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
     const erc20 = new ethers.Contract(token, ERC20_ABI, provider);
     const decimals = await Promise.all([erc20.decimals()]);
     const amount = ethers.utils.parseUnits(value, decimals);
 
     // Encode the calls
-    const callTo = [token, token];
+    const callTo = [tokenAddress, shopSmartMoney];
     const callData = [
-        erc20.interface.encodeFunctionData('approve', [to, amount]),
-        erc20.interface.encodeFunctionData('transfer', [to, amount]),
+        // allow the SmartMoney contract (="to") of the store to transfer the tokens for the payment
+        erc20.interface.encodeFunctionData('approve', [shopSmartMoney, amount]),
+        erc20.interface.encodeFunctionData('payErc20', [orderID, tokenAddress, amount]),
     ];
 
     // Send the User Operation to the ERC-4337 mempool
@@ -124,7 +128,7 @@ async function initOrder(orderID: number, price: number, ageRequired: boolean) {
     console.log(`Account address: ${address}`);
 
     // Read the ERC-20 token contract
-    const SmartMoneyABI = require('./SmartMoneyAbi.json');
+    const SmartMoneyABI = require('./ABIs/SmartMoneyAbi.json');
     const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
     const smartMoney = new ethers.Contract(smartMoneyAddress, SmartMoneyABI, provider);
 
@@ -182,23 +186,41 @@ app.get('/api/initOrder', (req, res) => {
     }
 
     // TODO - complete the initialization properly | report order initialization "owner" issue (anyone can do it atm)
-    initOrder(orderID, price, ageRequired==1).catch((err) => console.error('Error:', err));
+    initOrder(orderID, price, ageRequired == 1).catch((err) => console.error('Error:', err));
     res.json({message: 'Init ZKP request sent!'});
 });
 
 app.post('/api/forwardZKP', (req, res) => {
     console.log("ForwardZKP")
     forwardZKP(req.body).catch((err) => console.error('Error:', err));
+
     //TODO if error => notify smartmoney that verification failed (match error... => 'deny' verif)
+
     res.json({message: 'Proof sent to Verifier Contract!'});
 });
 
-app.post('/api/sendRC20/:orderID', (req, res) => {
-    // TODO
+app.post('/api/sendRC20', (req, res) => {
     console.log("SendRC20")
+    let shop = req.query.storeAddress;
+    let orderID = req.query.orderID ? parseInt(req.query.orderID.toString()) : NaN;
+    let amount = req.query.amount ? parseInt(req.query.amount.toString()) : NaN;
+    let token = req.query.token;
 
-    // test
-    sendSponsored(0, '0x3870419Ba2BBf0127060bCB37f69A1b1C090992B').catch((err) => console.error('Error:', err));
+    // Check parameters
+    if (Number.isNaN(orderID) || orderID <= 0) {
+        return res.status(400).send('The given `orderID` is invalid.');
+    }
+    if (Number.isNaN(amount) || amount <= 0) {
+        return res.status(400).send('The given `price` is invalid.');
+    }
+    if (token == undefined || !(token! === "dai" || token! === "usdt")) {
+        return res.status(400).send('The given `token` is invalid.');
+    }
+    if (shop == undefined || shop.toString().length != 42) {
+        return res.status(400).send('The given `shop` is invalid.');
+    }
+
+    payERC20(orderID, amount, token, shop.toString()).catch((err) => console.error('Error:', err));
 
     res.json({message: 'Sending token test (with account 01)!'});
 });
@@ -262,7 +284,7 @@ const address = builder.then(a => console.log("ADDRESS" + a.getSender()));
 console.log(`Account address: ${address}`);
 
 const SmartMoneyAddress = "0x7E8e020459C31982787D7A6Da37FaD1256771bE7";
-const SmartMoneyABI = require('./SmartMoneyAbi.json');
+const SmartMoneyABI = require('./ABIs/SmartMoneyAbi.json');
 const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
 const smartMoney = new ethers.Contract(SmartMoneyAddress, SmartMoneyABI, provider);
 
