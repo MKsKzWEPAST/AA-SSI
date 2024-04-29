@@ -52,14 +52,14 @@ async function payERC20(orderID: number, amountToken: number, token: string, sho
     const erc20 = new ethers.Contract(tokenAddress, ERC20_ABI, provider);
     const decimals = await Promise.all([erc20.decimals()]);
     const multFactor = decimals[0];
-    const amount = multFactor * amountToken;
+    const amount = amountToken;// * multFactor; // TODO: fix variable decimals?
 
     // Encode the calls
     const callTo = [tokenAddress, shopSmartMoney];
     const callData = [
         // allow the SmartMoney contract (="to") of the store to transfer the tokens for the payment
         erc20.interface.encodeFunctionData('approve', [shopSmartMoney, amount]),
-        // pay with ERC20. The SmartMoney contract will take erc20 tokens from the user TODO - test
+        // pay with ERC20. The SmartMoney contract will take erc20 tokens from the user
         smartMoney.interface.encodeFunctionData('payErc20', [orderID, tokenAddress, amount]),
     ];
 
@@ -167,7 +167,7 @@ async function initOrder(orderID: number, price: number, ageRequired: boolean) {
     console.log(`Transaction hash: ${ev?.transactionHash ?? null}`);
     console.log(`View here: https://jiffyscan.xyz/userOpHash/${res.userOpHash}`);
 
-    orders.set(orderID, false);
+
 }
 
 // === server def
@@ -199,6 +199,8 @@ app.get('/api/initOrder', (req, res) => {
     if (Number.isNaN(price) || !(ageRequired == 0 || ageRequired == 1)) {
         return res.status(400).send('Invalid age requirement.');
     }
+
+    orders.set(orderID, false);
 
     // TODO - complete the initialization properly | report order initialization "owner" issue (anyone can do it atm)
     initOrder(orderID, price, ageRequired == 1).catch((err) => console.error('Error:', err));
