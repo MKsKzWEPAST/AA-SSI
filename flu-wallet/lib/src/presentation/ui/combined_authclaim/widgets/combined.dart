@@ -8,8 +8,10 @@ import 'package:local_auth/local_auth.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:provider/provider.dart';
 import 'package:secure_application/secure_application_provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:wallet_app/utils/auth_model.dart';
 import 'package:wallet_app/utils/custom_button_style.dart';
 import 'package:wallet_app/utils/custom_colors.dart';
 import 'package:wallet_app/utils/custom_strings.dart';
@@ -23,8 +25,8 @@ import 'package:wallet_app/src/presentation/ui/common/widgets/profile_radio_butt
 import 'package:wallet_app/src/presentation/ui/combined_authclaim/combined_bloc.dart';
 import 'package:wallet_app/src/presentation/ui/combined_authclaim/combined_event.dart';
 import 'package:wallet_app/src/presentation/ui/combined_authclaim/combined_state.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:wallet_app/utils/wallet_utils.dart';
 const USDT = 'USDT';
 const DAI = 'DAI';
 
@@ -41,19 +43,19 @@ class _CombinedScreenState extends State<CombinedScreen> {
   late Timer _timer;
   double _stablecoinBalance = 0.0;
   String currency = USDT;
+  String address = "0x...";
 
   @override
   void initState() {
     super.initState();
-
-    SharedPreferences.getInstance()
-        .then((prefs) => WidgetsBinding.instance.addPostFrameCallback((_) {
-              widget._bloc.add(const CombinedEvent.getClaims());
-              if (!SecureApplicationProvider.of(context)!.authenticated) {
-                SecureApplicationProvider.of(context)!.lock();
-              }
-            }));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget._bloc.add(const CombinedEvent.getClaims());
+      if (!SecureApplicationProvider.of(context)!.authenticated) {
+        SecureApplicationProvider.of(context)!.lock();
+      }
+    });
   }
+
 
   @override
   void dispose() {
@@ -109,8 +111,9 @@ class _CombinedScreenState extends State<CombinedScreen> {
 
   Future<void> _fetchCoinBalance(coin) async {
 
+    final proxy = dotenv.env["PROXY_URL"];
     final response = await http.post(
-      Uri.parse('https://broadly-assured-piglet.ngrok-free.app/api/getBalance/01'),
+      Uri.parse('$proxy/api/getBalance/...'),
       // replace with your POST request body
       headers: {'Content-Type': 'application/json'},
     );
@@ -139,6 +142,27 @@ class _CombinedScreenState extends State<CombinedScreen> {
           children: [
             Column(
               children: [
+                Consumer<AuthModel>(builder:
+                    (BuildContext context, AuthModel auth, Widget? child) {
+                          final id_token = auth.id_token;
+                          final email = auth.email;
+                          return FutureBuilder<String>(
+                            future: registerOrFetchSmartAccount(id_token, email), // Call your async function here
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                // Show loading indicator while the data is loading
+                                return const CircularProgressIndicator();
+                              } else if (snapshot.hasError) {
+                                // Handle errors
+                                return Text('Error: ${snapshot.error}');
+                              } else {
+                                // When data is fetched successfully, show your address
+                                return Text('Address: ${snapshot.data}', style: CustomTextStyles.descriptionTextStyle);
+                              }
+                            },
+                          );
+                    },
+                ),
                 Padding(padding: const EdgeInsets.only(bottom: 16),
                   child: Text(_stablecoinBalance.toString()),
                 ),

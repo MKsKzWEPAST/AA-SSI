@@ -25,10 +25,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
+import '../../../../../utils/auth_model.dart';
 
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -37,9 +39,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   //final LocalAuthentication auth = LocalAuthentication();
   late final HomeBloc _bloc;
-
-  // for google credentials
-  ValueNotifier userCredential = ValueNotifier('');
 
   @override
   void initState() {
@@ -56,73 +55,35 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: CustomColors.background,
-        body: ValueListenableBuilder(
-            valueListenable: userCredential,
-            builder: (context, value, child) {
-              return Container(
-                alignment: Alignment.center,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const SizedBox(height: 50),
-                            _buildLogo(),
-                            const SizedBox(height: 50),
-                            _buildDescription(),
-                            const SizedBox(height: 20),
-                            _buildProgress(),
-                            _buildWalletSection(),
-                            //_buildCreateIdentityButton(true),
-                            const SizedBox(height: 20),
-                            _buildErrorSection(),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ]
-                )
-              );
-            }
-            )
+        body: Container(
+        alignment: Alignment.center,
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 50),
+                      _buildLogo(),
+                      const SizedBox(height: 50),
+                      _buildDescription(),
+                      const SizedBox(height: 20),
+                      _buildProgress(),
+                      _buildWalletSection(),
+                      //_buildCreateIdentityButton(true),
+                      const SizedBox(height: 20),
+                      _buildErrorSection(),
+                    ],
+                  ),
+                ),
+              ),
+            ]
+        )
+    )
     );
   }
-
-
-
-  Future<dynamic> signInWithGoogle() async {
-    try {
-      await signOutFromGoogle();
-
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
-      final GoogleSignInAuthentication? googleAuth =
-      await googleUser?.authentication;
-
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth?.accessToken,
-        idToken: googleAuth?.idToken,
-      );
-
-      return await FirebaseAuth.instance.signInWithCredential(credential);
-    } on Exception catch (e) {
-     logger().i("error while signing up: " + e.toString());
-    }
-  }
-
-  Future<bool> signOutFromGoogle() async {
-    try {
-      await FirebaseAuth.instance.signOut();
-      await GoogleSignIn().signOut();
-      return true;
-    } on Exception catch (_) {
-      return false;
-    }
-  }
-
 
   ///
   Widget _buildIdentityActionButton() {
@@ -265,19 +226,16 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildEnterButton(String text){
     return ElevatedButton(
         onPressed: () => {
-        userCredential.value = signInWithGoogle().then((value) => {
-         _navigateAfterLogin(value)
-        })},
+        Provider.of<AuthModel>(context, listen:false).signInWithGoogle()
+            .then((value) => _navigateAfterLogin())
+        },
         child: Text(text));
   }
   
-  void _navigateAfterLogin(value) {
-    userCredential.value = value;
-    if (userCredential.value != null) {
+  void _navigateAfterLogin() {
       logger().i("logged in");
       _bloc.add(const HomeEvent.createIdentity());
       Navigator.pushNamed(context, Routes.combinedPath);
-    }
   }
   ///
   Widget _buildErrorSection() {
