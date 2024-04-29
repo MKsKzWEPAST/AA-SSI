@@ -1,7 +1,4 @@
-import React, {useState} from 'react';
-import {PaymentInputsWrapper, usePaymentInputs} from "react-payment-inputs";
-import images from "react-payment-inputs/images";
-import {ButtonGroup, Container, ToggleButton} from "react-bootstrap";
+import React, {useEffect, useState} from 'react';
 import {QRCodeSVG} from "qrcode.react";
 import {IconBox} from "./Graphical";
 
@@ -17,133 +14,17 @@ function confirmCheckoutButton({valid, validatePayment}) {
     </button>);
 }
 
-const PaymentOptions = ({validatePayment, price}) => {
-    const [valid, setValid] = React.useState(false);
+const PaymentOptions = ({validatePayment, price, orderID}) => {
+    const [QRHolder, setQRHolder] = useState(<div className="spinner-border" role="status">
+        <span className="sr-only">Loading...</span>
+    </div>);
 
-    function PaymentInputs() {
-        let meta
-        const {
-            wrapperProps,
-            getCardImageProps,
-            getCardNumberProps,
-            getExpiryDateProps,
-            getCVCProps
-        } = {meta} = usePaymentInputs(
-            {onTouch: handleTouch}
-        );
 
-        function handleTouch(touchedInput, touchedInputs) {
-
-            console.log("TESTTOUCH");
-            console.log(wrapperProps.error)
-            console.log(meta)
+    useEffect(() => {
+        if (orderID != null) {
+            setQRHolder(<QRCodeSVG value={`amoy:0x46B5B8D72c7475E30E949F32b373B6A388E077D6:${price}:${orderID}`} size={window.innerHeight * 0.2}/>);
         }
-
-        return (
-            <PaymentInputsWrapper {...wrapperProps}>
-                <svg {...getCardImageProps({images})} />
-                <input {...getCardNumberProps()} />
-                <input {...getExpiryDateProps()} />
-                <input {...getCVCProps()} />
-            </PaymentInputsWrapper>
-        );
-    }
-
-    function NewCard() {
-
-        return (
-            <div className="d-flex flex-column">
-                <h5>Enter a new card:</h5>
-                <PaymentInputs/>
-                <div className={"mt-2"}>
-                    {confirmCheckoutButton({valid: valid, validatePayment: validatePayment})}
-                </div>
-            </div>
-        );
-    }
-
-    function EzPay() {
-        return (
-            <div className="d-flex flex-column">
-                <h5>EzPay:</h5>
-                <img src={"./assets/payment-qr.png"} alt={"EzPay qr-code"} width={120}
-                     style={{boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)'}}/>
-                <span className={"mt-1"}>Scan to pay!</span>
-            </div>
-        );
-    }
-
-    function TwintPay() {
-
-        return (
-            <div className="d-flex flex-column">
-                <a href={"https://example.com/twint-payment"}>
-                    <img src={"./assets/twint.png"} alt={"Twint link"} width={200}
-                         style={{boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)'}}/></a>
-            </div>
-        );
-    }
-
-
-    function SelectOption({changeOption}) {
-        const handleOptionChange = (event) => {
-            changeOption(event.target.value);
-        };
-
-        const radios = [
-            {name: 'pay_by_link', value: 'PayByLink'},
-            {name: 'twint', value: 'Twint'},
-            {name: 'saved_card', value: 'SavedCard'},
-            {name: 'new_card', value: 'NewCard'},
-        ];
-
-        return (
-            <>
-                <ButtonGroup className="mb-1">
-                    {radios.map((radio, idx) => (
-                        <ToggleButton
-                            className={idx === 0 ? "rounded-start" : (idx === radios.length - 1 ? "rounded-end" : "")}
-                            key={idx}
-                            id={`radio-${idx}`}
-                            type="radio"
-                            variant="outline-secondary"
-                            name="radio"
-                            value={radio.value}
-                            checked={selectedOption === radio.value}
-                            onChange={handleOptionChange}
-                        >
-                            {radio.value}
-                        </ToggleButton>
-                    ))}
-                </ButtonGroup>
-            </>
-        );
-    }
-
-    const [selectedOption, changeOption] = useState("PayByLink")
-
-    let componentToShow;
-
-    switch (selectedOption) {
-        case 'PayByLink':
-            componentToShow = <EzPay/>;
-            break;
-        case 'Twint':
-            componentToShow = <TwintPay/>;
-            break;
-        case 'SavedCard':
-            componentToShow =
-                <div className="d-flex flex-column">
-                    <span className={"mb-1"}>Saved card ending with (3862)</span>
-                    {confirmCheckoutButton({valid: true, validatePayment: validatePayment})}
-                </div>
-            break;
-        case 'NewCard':
-            componentToShow = <NewCard/>;
-            break;
-        default:
-            componentToShow = <Container/>;
-    }
+    }, [orderID]);
 
     return (
         <div className={"d-flex flex-column m-3 align-items-center justify-content-center"}>
@@ -155,7 +36,7 @@ const PaymentOptions = ({validatePayment, price}) => {
                 border: '1px solid #ccc',
                 boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)',
             }}>
-                <QRCodeSVG value={"amoy:0x46B5B8D72c7475E30E949F32b373B6A388E077D6:"+price} size={window.innerHeight * 0.25}/>
+                {QRHolder}
             </div>
             <div className={"d-flex"}>
                 <IconBox svgPath={"./assets/multi-collateral-dai-dai-logo.svg"} alt={""}/>

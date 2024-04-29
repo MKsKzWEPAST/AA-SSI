@@ -19,12 +19,12 @@ const Checkout = () => {
     const [isCollapsedBilling, setIsCollapsedBilling] = useState(true);
     let requireAgeVerified = false;
 
-    const orderID = Math.floor(Math.random() * maxOrderID) + 1;
-
+    const [orderID, setOrderID] = useState(Math.floor(Math.random() * maxOrderID) + 1);
+    const [orderInitialized, setOrderInitialized] = useState(false);
 
     async function initOrder(orderID, price, requireAgeVerified) {
         const xhr = new XMLHttpRequest();
-        xhr.open('GET', `https://broadly-assured-piglet.ngrok-free.app/api/initOrder?orderID=${orderID}&price=${price}&ageReq=${requireAgeVerified?1:0}`, false);
+        xhr.open('GET', `https://broadly-assured-piglet.ngrok-free.app/api/initOrder?orderID=${orderID}&price=${price}&ageReq=${requireAgeVerified ? 1 : 0}`, false);
         xhr.setRequestHeader("ngrok-skip-browser-warning", "true");
 
         let result = false;
@@ -50,20 +50,56 @@ const Checkout = () => {
         return result;
     }
 
+    async function checkOrderStatus(orderID) {
+        while (true) {
+            const headers = {
+                "ngrok-skip-browser-warning": "true",
+                "accept":"application/json",
+            };
+
+            const response = await fetch(`https://broadly-assured-piglet.ngrok-free.app/api/getOrderStatus?orderID=${orderID}`, {
+                method: 'GET',
+                headers: headers
+            });
+
+            if (!response.ok) {
+                console.log('Failed to fetch order status');
+                return false;
+            }
+
+            const {complete} = await response.json();
+            if (complete) {
+                return true; // Order completed, exit loop
+            }
+
+            await new Promise(resolve => setTimeout(resolve, 15000));
+        }
+    }
+
     if (fastState != null && fastState.product.qty > 0) {
         state = [fastState.product];
         requireAgeVerified = fastState.product['18required'];
 
+        if (!orderInitialized) {
             initOrder(orderID, fastState.product.price * fastState.product.qty, requireAgeVerified).then(result => {
                 if (result) {
+                    setOrderInitialized(true);
                     console.log("Order initialized: ", orderID, fastState.product.price * fastState.product.qty, requireAgeVerified);
+
+                    checkOrderStatus(orderID).then(success => {
+                        if (success === undefined || !success) {
+                            console.log("Failed to confirm that order was processed.");
+                        } else {
+                            console.log("Order paid and processed.");
+                            navigate('/thanks');
+                        }
+                    });
                 } else {
                     console.log("Failed to initialize order: ", orderID, fastState.product.price * fastState.product.qty, requireAgeVerified);
+                    // TODO react if fail to init (or display toast)
                 }
-
-                // TODO verify if order is completed (on event in main.ts ...)
-
             });
+        }
     }
 
 
@@ -144,7 +180,7 @@ const Checkout = () => {
                 </div>
                 <div className="card-body">
 
-                    <PaymentOptions validatePayment={validatePayment} price={subtotal}/>
+                    <PaymentOptions validatePayment={validatePayment} price={subtotal} orderID={orderID}/>
 
                 </div>
             </div>;
