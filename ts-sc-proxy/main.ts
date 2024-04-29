@@ -89,7 +89,7 @@ async function forwardZKP(proof: any) {
     const c = parseBigIntArray(proof.proof.pi_c.slice(0, 2));
 
     // Read the ERC-20 token contract
-    const VerifierABI = require('./AgeVerifierAbi.json');
+    const VerifierABI = require('./ABIs/AgeVerifierAbi.json');
     const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
     const verifier = new ethers.Contract(verifierSCAddress, VerifierABI, provider);
 
