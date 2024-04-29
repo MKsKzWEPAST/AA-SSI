@@ -153,19 +153,6 @@
         "internalType": "uint256",
         "name": "orderID",
         "type": "uint256"
-      }
-    ],
-    "name": "pay",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "orderID",
-        "type": "uint256"
       },
       {
         "internalType": "address",
