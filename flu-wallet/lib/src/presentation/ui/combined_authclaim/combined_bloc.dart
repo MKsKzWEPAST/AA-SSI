@@ -13,6 +13,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_mes
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../../../../utils/custom_strings.dart';
 import '../../../../utils/nonce_utils.dart';
@@ -70,51 +71,6 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
     emit(const CombinedState.navigateToQrCodeScanner());
   }
 
-  ///
-  /*Future<void> _handleClickTapButton(
-      ClickTapButtonEvent event, Emitter<CombinedState> emit) async {
-
-    String? privateKey =
-    await SecureStorage.read(key: SecureStorageKeys.privateKey);
-    if (privateKey == null) {
-      emit(const CombinedState.error("no private key found"));
-      return;
-    }
-
-    EnvEntity env = await _polygonIdSdk.getEnv();
-    final chainConfig = env.chainConfigs["80002"]!;
-    final blockchain = chainConfig.blockchain;
-    final network = chainConfig.network;
-
-    String did = await _polygonIdSdk.identity.getDidIdentifier(
-        privateKey: privateKey,
-        blockchain: blockchain,
-        network: network);
-
-    final prefs = await SharedPreferences.getInstance();
-    final email = prefs.getString("email") ?? "";
-    if (email == "") {
-      emit(const CombinedState.error("error while trying to get the credential: your wallet isn't setup with a proper email address"));
-    }
-    final url = Uri.parse('https://griffon-loved-physically.ngrok-free.app/issueTAP?token=455333&did='+did);
-    final response = await http.get(url,headers: {'Content-Type': 'application/json',"email": email});
-    if (response.statusCode == 200) {
-      final String credential = response.body;
-      if (credential == "") {
-        emit(const CombinedState.error("error while trying to get the credential: credential is empty"));
-        return;
-      }
-
-      final Iden3MessageEntity iden3message =
-      await _qrcodeParserUtils.getIden3MessageFromQrCode(credential);
-      emit(CombinedState.qrCodeScanned(iden3message));
-
-      return;
-    }
-    emit(const CombinedState.error("error while trying to get the credential"));
-
-  }*/
-
   Future<void> _handleIden3Message(String response, Emitter<CombinedState> emit) async {
     try {
       final Iden3MessageEntity iden3message =
@@ -169,7 +125,8 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
 
           logger().i("[debugging-combined] -- Verification with proof $proof");
 
-          var url = Uri.parse('https://broadly-assured-piglet.ngrok-free.app/api/forwardZKP');
+          final proxy = dotenv.env["PROXY_URL"];
+          var url = Uri.parse('$proxy/api/forwardZKP');
           var response = await http.post(
             url,
             headers: {"Content-Type": "application/json"},

@@ -90,12 +90,12 @@ async function main() {
     const schemaClaimPathKey =
         '20376033832371109177683048456014525905119173674985843915445634726167450989630';
     const value = [getYYYYMMDD18(), ...new Array(63).fill(0)];
-    const slotIndex = 0; // because schema  is merklized for merklized credential, otherwise you should actual put slot index  https://docs.iden3.io/protocol/non-merklized/#motivation
+    const slotIndex = 0; // because schema  is merklized for merklized credential, otherwise you should actually put slot index  https://docs.iden3.io/protocol/non-merklized/#motivation
 
     // set default query
     const circuitIdSig = 'credentialAtomicQuerySigV2OnChain';
 
-    const ageVerifierAddress = "0x3080D4B01cd22c2aF2Cae559e43047baB674CaD7";
+    const ageVerifierAddress = "0x1cf0a1819Dd8853d5c69f6896Fe78373Dd33b962";
     const provider = new ethers.providers.JsonRpcProvider("https://polygon-amoy.g.alchemy.com/v2/tZIEm32QWH6cinpYSA8Yo7u0m2ZqtF1i");
     const signer = new ethers.Wallet("b955724e0a636ee776023399c2555e48453072b7f0f4ab1deedc10e61dda4f31",provider)
     const ageVerifier = new ethers.Contract(ageVerifierAddress, VerifierABI, signer);

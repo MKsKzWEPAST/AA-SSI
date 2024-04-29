@@ -3,9 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:provider/provider.dart';
 
 import 'package:wallet_app/src/presentation/navigations/routes.dart';
 import 'package:wallet_app/src/presentation/ui/splash/widgets/splash.dart';
+import 'package:wallet_app/utils/auth_model.dart';
 import 'package:wallet_app/utils/custom_colors.dart';
 import 'package:wallet_app/utils/custom_strings.dart';
 import 'package:wallet_app/utils/custom_text_styles.dart';
@@ -38,9 +40,7 @@ class AppState extends State<App> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused || state == AppLifecycleState.detached) {
-      // Perform the sign out when the app is closing or moving to background
-      FirebaseAuth.instance.signOut().then((value) => logger().i("signed-out"));
-      GoogleSignIn().signOut();
+      Provider.of<AuthModel>(context,listen: false).signOutFromGoogle().then((value) =>  logger().i("signed-out"));
     }
   }
 
