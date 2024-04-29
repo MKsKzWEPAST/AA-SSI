@@ -9,3 +9,4 @@ export { default as PageNotFound } from './PageNotFound';
 export { default as Tickets } from './Tickets';
 export { default as Signup } from './Signup';
 export { default as LimitedTickets } from './LimitedTickets'
+export { default as Thanks } from './Thanks'

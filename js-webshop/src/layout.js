@@ -1,7 +1,7 @@
 // Layout.js
 import {ProtectedRoute} from "./components/ProtectedRoute";
 import React from 'react';
-import { Route, Routes, useLocation} from 'react-router-dom';
+import {Route, Routes, useLocation} from 'react-router-dom';
 import {useSelector} from "react-redux";
 import {
     AboutPage,
@@ -14,7 +14,8 @@ import {
     Register,
     Tickets,
     Signup,
-    LimitedTickets
+    LimitedTickets,
+    Thanks
 } from "./pages";
 import {AnimatePresence} from "framer-motion";
 
@@ -35,6 +36,7 @@ const Layout = () => {
             )
         );
     }
+
     return (
         <AnimatePresence>
             <Routes location={location} key={location.pathname}>
@@ -50,6 +52,7 @@ const Layout = () => {
                 <Route path="*" element={<PageNotFound/>}/>
                 <Route path="/product/*" element={<PageNotFound/>}/>
                 <Route path="/limitedTickets" element={elem_template(<LimitedTickets/>)}/>
+                <Route path="/thanks" element={<Thanks/>}/>
             </Routes>
         </AnimatePresence>
     );

@@ -1,28 +1,40 @@
 import express = require('express');
 import bodyParser = require('body-parser');
-import {initializeDatabase,getCredential,insertCredential} from './db'
+import {initializeDatabase, getCredential, insertCredential} from './db'
 import {ethers} from 'ethers';
 import {Presets, Client} from 'userop';
 import {verifyIDToken} from "./auth";
 import {computePrivateKeyFrom} from "./cryptoUtils"
+
 const rpcUrl = 'https://api.stackup.sh/v1/node/04832ebeb6088d4ca33e86e7bc9054fdc03115d2d1e295df3122acf11817fb95';
 const paymasterUrl = 'https://api.stackup.sh/v1/paymaster/04832ebeb6088d4ca33e86e7bc9054fdc03115d2d1e295df3122acf11817fb95';
 const paymasterMiddleware = Presets.Middleware.verifyingPaymaster(paymasterUrl, {type: 'payg'});
 const opts = {paymasterMiddleware: paymasterMiddleware};
 
-const verifierSCAddress = "0x3080D4B01cd22c2aF2Cae559e43047baB674CaD7";
-const smartMoneyAddress = "0x46B5B8D72c7475E30E949F32b373B6A388E077D6";
+const verifierSCAddress = "0x1cf0a1819Dd8853d5c69f6896Fe78373Dd33b962";
+const smartMoneyAddress = "0x1973dD4486c8BA89C7ab3988Cc54e60F6E54Ef66";
 
-initializeDatabase().then( () => console.log("db initialized"));
+initializeDatabase().then(() => console.log("db initialized"));
 
 const DAI_ADDRESS = "0xd7dB0FE7506829004c99d75d1c04c6498CA9A270";
 const USDT_ADDRESS = "0x10a477F9F8974A84bd56578512e29c21628c922A";
 
+const TOKEN_ADDRESSES = new Map([
+    ["dai", "0xd7dB0FE7506829004c99d75d1c04c6498CA9A270"],
+    ["usdt", "0x10a477F9F8974A84bd56578512e29c21628c922A"]
+])
+
 const DAI_ABI_PATH = "./ABIs/DaiABI.json";
 const USDT_ABI_PATH = "./ABIs/TetherABI.json";
 
+const SmartMoneyABI = require('./ABIs/SmartMoneyAbi.json');
+const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+const smartMoney = new ethers.Contract(smartMoneyAddress, SmartMoneyABI, provider);
 
-async function payERC20(orderID: number, amount_token: number, token: string, shopSmartMoney: string) {
+const orders: Map<number, boolean> = new Map();
+
+
+async function payERC20(orderID: number, amountToken: number, token: string, shopSmartMoney: string) {
     // Initialize the account
     const signingKey = getAccountPrivateKey("01"); // TODO more than test-id 01 for the POC if needed
     const signer = new ethers.Wallet(signingKey);
@@ -32,23 +44,23 @@ async function payERC20(orderID: number, amount_token: number, token: string, sh
     console.log(`Account address: ${address}`);
 
     // Create the call data
-    let tokenAddress = token==="dai"?DAI_ADDRESS:USDT_ADDRESS;
-    const value = amount_token.toString(); // Amount of the ERC-20 token to transfer
+    let tokenAddress = TOKEN_ADDRESSES.get(token)!;
 
     // Read the ERC-20 token contract
-    const ERC20_ABI = require(token==="dai"?DAI_ABI_PATH:USDT_ABI_PATH); // ERC-20 ABI in json format
-    const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
-    const erc20 = new ethers.Contract(token, ERC20_ABI, provider);
+    const ERC20_ABI = require(token === "dai" ? DAI_ABI_PATH : USDT_ABI_PATH); // ERC-20 ABI in json format
+    const provider = new ethers.providers.JsonRpcProvider(rpcUrl,);
+    const erc20 = new ethers.Contract(tokenAddress, ERC20_ABI, provider);
     const decimals = await Promise.all([erc20.decimals()]);
-    const amount = ethers.utils.parseUnits(value, decimals);
+    const multFactor = decimals[0];
+    const amount = amountToken;// * multFactor; // TODO: fix variable decimals?
 
     // Encode the calls
     const callTo = [tokenAddress, shopSmartMoney];
     const callData = [
         // allow the SmartMoney contract (="to") of the store to transfer the tokens for the payment
         erc20.interface.encodeFunctionData('approve', [shopSmartMoney, amount]),
-        // pay with ERC20. The SmartMoney contract will take erc20 tokens from the user TODO - test
-        erc20.interface.encodeFunctionData('payErc20', [orderID, tokenAddress, amount]),
+        // pay with ERC20. The SmartMoney contract will take erc20 tokens from the user
+        smartMoney.interface.encodeFunctionData('payErc20', [orderID, tokenAddress, amount]),
     ];
 
     // Send the User Operation to the ERC-4337 mempool
@@ -154,6 +166,8 @@ async function initOrder(orderID: number, price: number, ageRequired: boolean) {
     const ev = await res.wait();
     console.log(`Transaction hash: ${ev?.transactionHash ?? null}`);
     console.log(`View here: https://jiffyscan.xyz/userOpHash/${res.userOpHash}`);
+
+
 }
 
 // === server def
@@ -185,6 +199,8 @@ app.get('/api/initOrder', (req, res) => {
     if (Number.isNaN(price) || !(ageRequired == 0 || ageRequired == 1)) {
         return res.status(400).send('Invalid age requirement.');
     }
+
+    orders.set(orderID, false);
 
     // TODO - complete the initialization properly | report order initialization "owner" issue (anyone can do it atm)
     initOrder(orderID, price, ageRequired == 1).catch((err) => console.error('Error:', err));
@@ -226,8 +242,7 @@ app.post('/api/sendRC20', (req, res) => {
     res.json({message: 'Sending token test (with account 01)!'});
 });
 
-
-app.post('/api/getaddress',async (req, res) => {
+app.post('/api/getaddress', async (req, res) => {
     console.log("Get Smart Account Address");
     const id_token = req.body.id_token;
     const post_email = req.body.email;
@@ -258,7 +273,7 @@ app.post('/api/getaddress',async (req, res) => {
         const credential = await getCredential(sub)
         if (!credential) {
 
-            const sk = computePrivateKeyFrom(post_email,sub);
+            const sk = computePrivateKeyFrom(post_email, sub);
             const signer = new ethers.Wallet(signingKey);
             const builder = await Presets.Builder.SimpleAccount.init(signer, rpcUrl, opts);
             sa_address = builder.getSender();
@@ -275,6 +290,36 @@ app.post('/api/getaddress',async (req, res) => {
     }
 })
 
+app.get('/api/getOrderStatus', async (req, res) => {
+    console.log("Get Order Status");
+    let orderID = req.query.orderID ? parseInt(req.query.orderID.toString()) : NaN;
+
+    // Check parameters
+    if (Number.isNaN(orderID) || orderID <= 0) {
+        return res.status(400).send('The given `orderID` is invalid.');
+    }
+
+    const status = orders.get(orderID);
+    if (status != undefined) {
+        res.json({complete: status});
+
+    } else {
+        res.status(400).send('No entry found for orderID: ' + orderID);
+    }
+})
+
+app.get('/api/readOrderStatus', async (req, res) => {
+    console.log("Read Order Status");
+    let orderID = req.query.orderID ? parseInt(req.query.orderID.toString()) : NaN;
+
+    // Check parameters
+    if (Number.isNaN(orderID) || orderID <= 0) {
+        return res.status(400).send('The given `orderID` is invalid.');
+    }
+
+    orders.delete(orderID);
+    res.json({message: "ok"});
+})
 
 // Test address
 const signingKey = getAccountPrivateKey("01"); // TODO more than test-id 01 for the POC if needed
@@ -284,17 +329,11 @@ const address = builder.then(a => console.log("ADDRESS" + a.getSender()));
 
 console.log(`Account address: ${address}`);
 
-const SmartMoneyAddress = "0x7E8e020459C31982787D7A6Da37FaD1256771bE7";
-const SmartMoneyABI = require('./ABIs/SmartMoneyAbi.json');
-const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
-const smartMoney = new ethers.Contract(SmartMoneyAddress, SmartMoneyABI, provider);
-
-smartMoney.on("CompletePurchase", (requestId, success) => {
-    console.log("Purchase completed: requestId", requestId, " - success=", success);
+smartMoney.on("CompletePurchase", (requestID, success) => {
+    console.log("\nPurchase completed: requestId", requestID, " - success=", success, "\n");
+    orders.set(requestID.toNumber(), success);
 })
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
-
-// https://broadly-assured-piglet.ngrok-free.app/api/forwardZKP
