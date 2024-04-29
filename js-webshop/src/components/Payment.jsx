@@ -22,7 +22,7 @@ const PaymentOptions = ({validatePayment, price, orderID}) => {
 
     useEffect(() => {
         if (orderID != null) {
-            setQRHolder(<QRCodeSVG value={`amoy:0x46B5B8D72c7475E30E949F32b373B6A388E077D6:${price}:${orderID}`} size={window.innerHeight * 0.2}/>);
+            setQRHolder(<QRCodeSVG value={`amoy:0x1973dD4486c8BA89C7ab3988Cc54e60F6E54Ef66:${price}:${orderID}`} size={window.innerHeight * 0.2}/>);
         }
     }, [orderID]);
 
