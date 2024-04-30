@@ -31,11 +31,12 @@ class AuthModel extends ChangeNotifier {
         idToken: googleAuth?.idToken,
       );
 
+
       await _auth.signInWithCredential(credential);
 
       _email = _auth.currentUser?.email ?? "";
 
-      _id_token = credential.idToken!;
+      _id_token = googleAuth?.idToken ?? "";
       notifyListeners();
     } on Exception catch (e) {
       logger().i("error while signing up: " + e.toString());

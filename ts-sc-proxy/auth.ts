@@ -1,6 +1,9 @@
 import { OAuth2Client } from 'google-auth-library';
 
-const CLIENT_ID = "423030272874-2sqc5pefkm14a9lsd1vfp278665l7nro.apps.googleusercontent.com";
+import admin = require("firebase-admin");
+
+
+const CLIENT_ID = "423030272874-t2q3clv1q6cgnqbu29f545s690cp3bje.apps.googleusercontent.com";
 
 const client = new OAuth2Client(CLIENT_ID);
 export async function verifyIDToken(idToken: string) {
@@ -8,5 +11,6 @@ export async function verifyIDToken(idToken: string) {
         idToken,
         audience: CLIENT_ID, // Specify the CLIENT ID for the intended audience
     });
+    console.log(ticket);
     return ticket.getPayload();
 }

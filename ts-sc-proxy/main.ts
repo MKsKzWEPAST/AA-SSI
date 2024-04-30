@@ -20,7 +20,7 @@ initializeDatabase().then(() => console.log("db initialized"));
 const TOKEN_DECIMALS = BigInt(18);
 const TOKEN_ADDRESSES = new Map([
     ["dai", "0xd7dB0FE7506829004c99d75d1c04c6498CA9A270"],
-    ["usdt", "0xB7e328B63332d2b0f8679CE462e76505a2ebb8Bf"]
+    ["usdt", "0xB7e328B63332d2b0f8679CE462e76505a2ebb8Bf    "]
 ]);
 
 const TOKEN_ABIS = new Map([
@@ -28,7 +28,8 @@ const TOKEN_ABIS = new Map([
     ["usdt", "./ABIs/TetherABI.json"]
 ]);
 
-const SmartMoneyABI = require('./ABIs/SmartMoneyAbi.json');
+import SmartMoneyABI = require('./ABIs/SmartMoneyAbi.json');
+import {getAuth} from "firebase-admin/lib/auth";
 const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
 const smartMoney = new ethers.Contract(smartMoneyAddress, SmartMoneyABI, provider);
 
@@ -252,6 +253,8 @@ app.post('/api/getaddress', async (req, res) => {
     console.log("Get Smart Account Address");
     const id_token = req.body.id_token;
     const post_email = req.body.email;
+    console.log(req.body);
+    console.log(post_email);
     if (!id_token || !post_email) {
         res.status(400).send('Missing required fields to access address');
         return;
@@ -273,12 +276,14 @@ app.post('/api/getaddress', async (req, res) => {
             return;
         }
 
+        console.log(sub);
         // smart account address for the user
         let sa_address = "";
 
         const credential = await getCredential(sub)
-        if (!credential) {
 
+        if (!credential) {
+            console.log("That's a new account!");
             const sk = computePrivateKeyFrom(post_email, sub);
             const signer = new ethers.Wallet(signingKey);
             const builder = await Presets.Builder.SimpleAccount.init(signer, rpcUrl, opts);
@@ -287,11 +292,13 @@ app.post('/api/getaddress', async (req, res) => {
             await insertCredential(sub, sk, sa_address, post_email);
             // INIT ACCOUNT
         } else {
+            console.log("No new credentials");
             sa_address = credential.address;
         }
         // Simulate successful operation with a dummy address
         res.json({success: true, address: sa_address});
     } catch (error) {
+        console.log(error);
         res.status(500).send('An error occurred while fetching the address');
     }
 })

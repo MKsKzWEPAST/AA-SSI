@@ -3,14 +3,14 @@ import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 
-Future<String> registerOrFetchSmartAccount(String idToken, String email) async {
+Future<String> registerOrFetchSmartAccount(String id_token, String email) async {
   try {
     Map<String, String> headers = {
       'Content-Type': 'application/json',
     };
 
     Map<String, dynamic> body = {
-      'id_token': idToken,
+      'id_token': id_token,
       'email': email,
     };
 
