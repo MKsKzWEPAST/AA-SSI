@@ -8,9 +8,7 @@ import {authenticate, verifyIDToken} from "./auth";
 import {computePrivateKeyFrom} from "./cryptoUtils"
 import {rpcUrl,smartMoneyAddress,opts,TOKEN_ABIS,TOKEN_ADDRESSES,TOKEN_DECIMALS,verifierSCAddress} from "./consts";
 
-
 // initializing smart money contracts
-
 const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
 const smartMoney = new ethers.Contract(smartMoneyAddress, SmartMoneyABI, provider);
 
@@ -249,14 +247,14 @@ app.post('/api/sendRC20', async (req, res) => {
     if (Number.isNaN(amount) || amount <= 0) {
         return res.status(400).send('The given `price` is invalid.');
     }
-    if (token == undefined || !(token! === "dai" || token! === "usdt")) {
+    if (token == undefined || TOKEN_ADDRESSES.get(token.toString()) == undefined) {
         return res.status(400).send('The given `token` is invalid.');
     }
     if (shop == undefined || shop.toString().length != 42) {
         return res.status(400).send('The given `shop` is invalid.');
     }
 
-    payERC20(orderID, amount, token, shop.toString(), credential).catch((err) => console.error('Error:', err));
+    payERC20(orderID, amount, token.toString(), shop.toString(), credential).catch((err) => console.error('Error:', err));
 
     res.json({message: 'Sending token test (with account 01)!'});
 });
