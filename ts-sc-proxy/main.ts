@@ -18,14 +18,15 @@ initializeDatabase().then(() => console.log("db initialized"));
 
 // TOKEN decimals set at 18 (common decimals for price)
 const TOKEN_DECIMALS = BigInt(18);
+
 const TOKEN_ADDRESSES = new Map([
     ["dai", "0xd7dB0FE7506829004c99d75d1c04c6498CA9A270"],
-    ["usdt", "0xB7e328B63332d2b0f8679CE462e76505a2ebb8Bf    "]
+    ["tusd", "0x345a017dC4A6E3082FEe99DB5FAfA5C02bBA0e57"],
 ]);
 
 const TOKEN_ABIS = new Map([
     ["dai", "./ABIs/DaiABI.json"],
-    ["usdt", "./ABIs/TetherABI.json"]
+    ["tusd", "./ABIs/TetherUSDAbi.json"],
 ]);
 
 import SmartMoneyABI = require('./ABIs/SmartMoneyAbi.json');
