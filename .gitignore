@@ -10,3 +10,7 @@ contracts/smart-money/artifacts/build-info/7823dd2dff776376618551e2a5fdf86c.json
 /contracts/smart-money/artifacts
 /contracts/verifier/artifacts
 contracts/scripts/package-lock.json
+
+/ts-sc-proxy/identifier.sqlite
+/ts-sc-proxy/proxydb.sqlite
+/ts-sc-proxy/package-lock.json
