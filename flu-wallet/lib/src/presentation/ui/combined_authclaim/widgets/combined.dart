@@ -8,6 +8,7 @@ import 'package:local_auth/local_auth.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:secure_application/secure_application_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:wallet_app/utils/auth_model.dart';
@@ -29,8 +30,8 @@ import 'package:wallet_app/utils/wallet_utils.dart';
 
 import 'TokenWallet.dart';
 
-const USDT = 'USDT';
-const DAI = 'DAI';
+const TUSD = 'tusd';
+const DAI = 'dai';
 
 class CombinedScreen extends StatefulWidget {
   final CombinedBloc _bloc;
@@ -43,8 +44,8 @@ class CombinedScreen extends StatefulWidget {
 
 class _CombinedScreenState extends State<CombinedScreen> {
   late Timer _timer;
-  double _stablecoinBalance = 0.0;
-  String currency = USDT;
+  Map<String, double> _stablecoinBalance = {TUSD: 0.0, DAI: 0.0};
+  String currency = TUSD;
   String address = "";
   final auth = getIt<AuthModel>();
 
@@ -58,7 +59,6 @@ class _CombinedScreenState extends State<CombinedScreen> {
       }
     });
   }
-
 
   @override
   void dispose() {
@@ -102,40 +102,42 @@ class _CombinedScreenState extends State<CombinedScreen> {
       title: Text(
         "Wallet",
         textAlign: TextAlign.center,
-        style: CustomTextStyles.titleTextStyle.copyWith(fontWeight: FontWeight.bold, color: Colors.deepPurple),
+        style: CustomTextStyles.titleTextStyle
+            .copyWith(fontWeight: FontWeight.bold, color: Colors.deepPurpleAccent),
       ),
       automaticallyImplyLeading: false,
       centerTitle: true,
     );
   }
 
-
   Future<void> _fetchCoinBalance(coin) async {
-
     final proxy = dotenv.env["PROXY_URL"];
     final response = await http.post(
       Uri.parse('$proxy/api/getBalance/$address'),
       // replace with your POST request body
-      headers: {"content-type":"application/json"},
+      headers: {"content-type": "application/json"},
       body: jsonEncode({"coin": coin}),
     );
 
     if (response.statusCode == 200) {
       setState(() {
-        _stablecoinBalance = double.parse(json.decode(response.body)["balance"]);
+        _stablecoinBalance[coin] =
+            double.parse(json.decode(response.body)["balance"]);
       });
     } else {
       setState(() {
-        _stablecoinBalance = coin == DAI ? 2500 : 1300;
+        _stablecoinBalance[coin] = 0;
       });
       // Handle errors
       logger().i('Failed to load data: ${response.statusCode}');
     }
   }
 
-
   ///
   Widget _buildBody() {
+    var daiQty = _stablecoinBalance[DAI]!;
+    var tusdQty = _stablecoinBalance[TUSD]!;
+
     return SafeArea(
       child: SizedBox(
         width: MediaQuery.of(context).size.width,
@@ -144,31 +146,42 @@ class _CombinedScreenState extends State<CombinedScreen> {
           children: [
             Column(
               children: [
-                address == "" ?
-                FutureBuilder<String>(
-                            future: registerOrFetchSmartAccount(auth.id_token, auth.email),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState == ConnectionState.waiting) {
-                                return const CircularProgressIndicator();
-                              } else if (snapshot.hasError) {
-                                // Handle errors
-                                return Text('Error: ${snapshot.error}');
-                              } else {
-                                // data is fetched successfully
-                                address = snapshot.data!;
-                                return Text('Address: ${snapshot.data?.substring(0, 10)}...', style: TextStyle(fontStyle: FontStyle.italic));
-                              }
-                            },
-                          )
-                : Text('Address: $address', style: CustomTextStyles.descriptionTextStyle),
-                Padding(padding: const EdgeInsets.only(bottom: 16),
-                  child: Text(_stablecoinBalance.toString()),
-                ),
+                address == ""
+                    ? FutureBuilder<String>(
+                        future: registerOrFetchSmartAccount(
+                            auth.id_token, auth.email),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const CircularProgressIndicator();
+                          } else if (snapshot.hasError) {
+                            // Handle errors
+                            return Text('Error: ${snapshot.error}');
+                          } else {
+                            // data is fetched successfully
+                            address = snapshot.data!;
+                            return Text(
+                                'Address: ${snapshot.data?.substring(0, 10)}...',
+                                style: const TextStyle(fontStyle: FontStyle.italic));
+                          }
+                        },
+                      )
+                    : Text(
+                    'Address: ${address.substring(0, 10)}...',
+                    style: const TextStyle(fontStyle: FontStyle.italic)),
                 const SizedBox(height: 10),
-                TokenWallet(address: address, tokens: const {
-                  'DAI': {'quantity': 321, 'icon': 'assets/images/dai-logo.svg'},
-                  'TrueUSD': {'quantity': 42, 'icon': 'assets/images/tusd-logo.svg'},
+                TokenWallet(address: address, tokens: {
+                  'DAI': {
+                    'quantity': daiQty,
+                    'icon': 'assets/images/dai-logo.svg'
+                  },
+                  'TrueUSD': {
+                    'quantity': tusdQty,
+                    'icon': 'assets/images/tusd-logo.svg'
+                  },
                 }),
+                const SizedBox(height: 10),
+                TokenWalletActions(),
                 const SizedBox(height: 10),
                 _buildProgress(),
                 const SizedBox(height: 10),
@@ -202,6 +215,65 @@ class _CombinedScreenState extends State<CombinedScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Row TokenWalletActions() {
+    return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              _fetchCoinBalance(DAI);
+              _fetchCoinBalance(TUSD);
+            },
+            child: const Text('Refresh'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  backgroundColor: Colors.deepPurple,
+                  title: const Text('Wallet Public Key'),
+                  content: SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.6,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        QrImageView(
+                          data: address,
+                          version: QrVersions.auto,
+                          size: 200.0,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          address,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Close'),
+                    ),
+                  ],
+                ),
+              );
+            },
+            child: const Text('Receive'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              // TODO - see QR-Code and offer payment selection
+            },
+            child: const Text('Pay'),
+          ),
+        ],
     );
   }
 
@@ -328,7 +400,8 @@ class _CombinedScreenState extends State<CombinedScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Text(
         CustomStrings.claimsTitle,
-        style: CustomTextStyles.titleTextStyle.copyWith(fontSize: 20, color: Colors.white),
+        style: CustomTextStyles.titleTextStyle
+            .copyWith(fontSize: 20, color: Colors.white),
       ),
     );
   }
@@ -366,8 +439,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
     return ElevatedButton(
       key: CustomWidgetsKeys.authScreenButtonConnect,
       onPressed: () {
-        widget._bloc
-            .add(const CombinedEvent.clickScanQrCode());
+        widget._bloc.add(const CombinedEvent.clickScanQrCode());
       },
       style: CustomButtonStyle.primaryButtonStyle,
       child: const Text(

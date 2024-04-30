@@ -80,47 +80,6 @@ class TokenWallet extends StatelessWidget {
               },
             ),
           ),
-          const SizedBox(height: 16),
-          Center(
-            child: ElevatedButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    backgroundColor: Colors.deepPurple,
-                    title: const Text('Wallet Public Key'),
-                    content: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.6,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          QrImageView(
-                            data: address,
-                            version: QrVersions.auto,
-                            size: 200.0,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            address,
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                        ],
-                      ),
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Text('Close'),
-                      ),
-                    ],
-                  ),
-                );
-              },
-              child: const Text('Receive'),
-            ),
-          ),
         ],
       ),
     );
