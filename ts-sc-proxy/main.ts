@@ -16,16 +16,17 @@ const smartMoneyAddress = "0x1973dD4486c8BA89C7ab3988Cc54e60F6E54Ef66";
 
 initializeDatabase().then(() => console.log("db initialized"));
 
-const DAI_ADDRESS = "0xd7dB0FE7506829004c99d75d1c04c6498CA9A270";
-const USDT_ADDRESS = "0x10a477F9F8974A84bd56578512e29c21628c922A";
-
+// TOKEN decimals set at 18 (common decimals for price)
+const TOKEN_DECIMALS = BigInt(18);
 const TOKEN_ADDRESSES = new Map([
     ["dai", "0xd7dB0FE7506829004c99d75d1c04c6498CA9A270"],
-    ["usdt", "0x10a477F9F8974A84bd56578512e29c21628c922A"]
-])
+    ["usdt", "0xB7e328B63332d2b0f8679CE462e76505a2ebb8Bf"]
+]);
 
-const DAI_ABI_PATH = "./ABIs/DaiABI.json";
-const USDT_ABI_PATH = "./ABIs/TetherABI.json";
+const TOKEN_ABIS = new Map([
+    ["dai", "./ABIs/DaiABI.json"],
+    ["usdt", "./ABIs/TetherABI.json"]
+]);
 
 const SmartMoneyABI = require('./ABIs/SmartMoneyAbi.json');
 const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
@@ -47,12 +48,15 @@ async function payERC20(orderID: number, amountToken: number, token: string, sho
     let tokenAddress = TOKEN_ADDRESSES.get(token)!;
 
     // Read the ERC-20 token contract
-    const ERC20_ABI = require(token === "dai" ? DAI_ABI_PATH : USDT_ABI_PATH); // ERC-20 ABI in json format
+    const abi_path = TOKEN_ABIS.get(token);
+    if (abi_path == undefined) {
+        console.log(`Invalid token name: ${token}`);
+        return;
+    }
+    const ERC20_ABI = require(abi_path); // ERC-20 ABI in json format
     const provider = new ethers.providers.JsonRpcProvider(rpcUrl,);
     const erc20 = new ethers.Contract(tokenAddress, ERC20_ABI, provider);
-    const decimals = await Promise.all([erc20.decimals()]);
-    const multFactor = decimals[0];
-    const amount = amountToken;// * multFactor; // TODO: fix variable decimals?
+    const amount = BigInt(amountToken) * (BigInt(10) ** TOKEN_DECIMALS);
 
     // Encode the calls
     const callTo = [tokenAddress, shopSmartMoney];
@@ -145,10 +149,12 @@ async function initOrder(orderID: number, price: number, ageRequired: boolean) {
     const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
     const smartMoney = new ethers.Contract(smartMoneyAddress, SmartMoneyABI, provider);
 
+    const amount = BigInt(price) * (BigInt(10) ** TOKEN_DECIMALS);
+
     const callTo = [smartMoneyAddress];
 
     const callData = [
-        smartMoney.interface.encodeFunctionData('initializeOrder', [orderID, price, ageRequired])
+        smartMoney.interface.encodeFunctionData('initializeOrder', [orderID, amount, ageRequired])
     ];
 
     // Send the User Operation to the ERC-4337 mempool
