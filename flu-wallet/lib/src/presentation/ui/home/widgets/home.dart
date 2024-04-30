@@ -227,16 +227,25 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildEnterButton(String text){
     return ElevatedButton(
         onPressed: () => {
-        _auth.signInWithGoogle()
-            .then((value) => _navigateAfterLogin())
+          signInAndNavigate()
         },
         child: Text(text));
   }
   
-  void _navigateAfterLogin() {
-      logger().i("logged in");
-      _bloc.add(const HomeEvent.createIdentity());
-      Navigator.pushNamed(context, Routes.combinedPath);
+  void signInAndNavigate() {
+    try {
+      _auth.signInWithGoogle()
+          .then( (v) {
+        {
+          logger().i("logged in");
+          _bloc.add(const HomeEvent.createIdentity());
+          Navigator.pushNamed(context, Routes.combinedPath);
+        }
+      });
+    } catch (error) {
+      logger().i("Error while signing in: $error");
+      return;
+    }
   }
   ///
   Widget _buildErrorSection() {
