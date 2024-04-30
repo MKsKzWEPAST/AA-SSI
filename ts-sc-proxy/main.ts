@@ -254,8 +254,11 @@ app.post('/api/getbalance/:smcAddress', async (req, res) => {
     const addr = req.params.smcAddress;
     console.log(addr);
     const coin = req.body.coin;
-    const erc20_sc = coin == "DAI" ? TOKEN_ADDRESSES["dai"]: TOKEN_ADDRESSES["usdt"];
-    const erc20AbiPath = coin == "DAI" ? DAI_ABI_PATH : USDT_ABI_PATH;
+    let erc20_sc = coin == "DAI" ? TOKEN_ADDRESSES.get("dai"): TOKEN_ADDRESSES.get("usdt");
+    if (!erc20_sc) erc20_sc = "";
+    let erc20AbiPath = coin == "DAI" ? TOKEN_ABIS.get("dai") : TOKEN_ABIS.get("usdt");
+    if (!erc20AbiPath) erc20AbiPath = "";
+
     const erc20Abi = require(erc20AbiPath);
     const contract = new ethers.Contract(erc20_sc, erc20Abi, provider);
 
