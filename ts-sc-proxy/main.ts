@@ -16,7 +16,7 @@ const smartMoneyAddress = "0x1973dD4486c8BA89C7ab3988Cc54e60F6E54Ef66";
 initializeDatabase().then(() => console.log("db initialized"));
 
 const DAI_ADDRESS = "0xd7dB0FE7506829004c99d75d1c04c6498CA9A270";
-const USDT_ADDRESS = "0x10a477F9F8974A84bd56578512e29c21628c922A";
+const USDT_ADDRESS = "0x0e0248eEADdEBaF253aD9bCA1ED690E84e5Ac1e5";
 
 const TOKEN_ADDRESSES = new Map([
     ["dai", "0xd7dB0FE7506829004c99d75d1c04c6498CA9A270"],
@@ -243,6 +243,33 @@ app.post('/api/sendRC20', (req, res) => {
     res.json({message: 'Sending token test (with account 01)!'});
 });
 
+
+app.post('/api/getbalance/:smcAddress', async (req, res) => {
+    const addr = req.params.smcAddress;
+    console.log(addr);
+    const coin = req.body.coin;
+    const erc20_sc = coin == "DAI" ? DAI_ADDRESS : USDT_ADDRESS;
+    const erc20AbiPath = coin == "DAI" ? DAI_ABI_PATH : USDT_ABI_PATH;
+    const erc20Abi = require(erc20AbiPath);
+    const contract = new ethers.Contract(erc20_sc, erc20Abi, provider);
+
+    console.log(coin);
+    console.log(erc20_sc);
+    try {
+        // Call balanceOf function from the contract
+        const balance = await contract.balanceOf(addr);
+        console.log(Number(balance));
+        // Convert the balance from BigNumber to string for easier reading
+        const balanceFormatted = ethers.utils.formatEther(balance);
+        console.log(balanceFormatted);
+        res.status(200).send({ address, balance: balanceFormatted});
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ error: 'Failed to retrieve token balance', details: error });
+    }
+
+});
+
 app.post('/api/getaddress', async (req, res) => {
     console.log("Get Smart Account Address");
     const id_token = req.body.id_token;
@@ -280,7 +307,7 @@ app.post('/api/getaddress', async (req, res) => {
             console.log("That's a new account!");
 
             const sk = computePrivateKeyFrom(post_email, sub);
-            const signer = new ethers.Wallet(signingKey);
+            const signer = new ethers.Wallet(sk);
             const builder = await Presets.Builder.SimpleAccount.init(signer, rpcUrl, opts);
             sa_address = builder.getSender();
 

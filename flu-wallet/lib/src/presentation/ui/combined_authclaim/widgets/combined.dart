@@ -43,7 +43,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
   late Timer _timer;
   double _stablecoinBalance = 0.0;
   String currency = USDT;
-  String address = "0x...";
+  String address = "";
 
   @override
   void initState() {
@@ -113,14 +113,15 @@ class _CombinedScreenState extends State<CombinedScreen> {
 
     final proxy = dotenv.env["PROXY_URL"];
     final response = await http.post(
-      Uri.parse('$proxy/api/getBalance/...'),
+      Uri.parse('$proxy/api/getBalance/$address'),
       // replace with your POST request body
-      headers: {'Content-Type': 'application/json'},
+      headers: {"content-type":"application/json"},
+      body: jsonEncode({"coin": coin}),
     );
 
     if (response.statusCode == 200) {
       setState(() {
-        _stablecoinBalance = json.decode(response.body)[coin];
+        _stablecoinBalance = double.parse(json.decode(response.body)["balance"]);
       });
     } else {
       setState(() {
@@ -142,27 +143,28 @@ class _CombinedScreenState extends State<CombinedScreen> {
           children: [
             Column(
               children: [
+                address == "" ?
                 Consumer<AuthModel>(builder:
                     (BuildContext context, AuthModel auth, Widget? child) {
                           final id_token = auth.id_token;
                           final email = auth.email;
                           return FutureBuilder<String>(
-                            future: registerOrFetchSmartAccount(id_token, email), // Call your async function here
+                            future: registerOrFetchSmartAccount(id_token, email),
                             builder: (context, snapshot) {
                               if (snapshot.connectionState == ConnectionState.waiting) {
-                                // Show loading indicator while the data is loading
                                 return const CircularProgressIndicator();
                               } else if (snapshot.hasError) {
                                 // Handle errors
                                 return Text('Error: ${snapshot.error}');
                               } else {
-                                // When data is fetched successfully, show your address
+                                // data is fetched successfully
+                                address = snapshot.data!;
                                 return Text('Address: ${snapshot.data}', style: CustomTextStyles.descriptionTextStyle);
                               }
                             },
                           );
                     },
-                ),
+                ) : Text('Address: $address', style: CustomTextStyles.descriptionTextStyle),
                 Padding(padding: const EdgeInsets.only(bottom: 16),
                   child: Text(_stablecoinBalance.toString()),
                 ),
@@ -176,7 +178,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
                     }).toList(),
                     onChanged: (String? value) {
                       setState(() {
-                        currency = value!;
+                        currency = value ?? "ERROR";
                         _fetchCoinBalance(value);
                       });
 
