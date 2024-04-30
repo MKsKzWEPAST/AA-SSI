@@ -52,3 +52,5 @@ env.g.dart
 *.freezed.dart
 
 *.lock
+
+.env

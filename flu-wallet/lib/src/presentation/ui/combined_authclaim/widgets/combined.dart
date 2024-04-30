@@ -27,6 +27,9 @@ import 'package:wallet_app/src/presentation/ui/combined_authclaim/combined_event
 import 'package:wallet_app/src/presentation/ui/combined_authclaim/combined_state.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:wallet_app/utils/wallet_utils.dart';
+
+import 'TokenWallet.dart';
+
 const USDT = 'USDT';
 const DAI = 'DAI';
 
@@ -65,7 +68,6 @@ class _CombinedScreenState extends State<CombinedScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: CustomColors.background,
       endDrawer: _buildDrawer(),
       appBar: _buildAppBar(),
       body: _buildBody(),
@@ -97,12 +99,11 @@ class _CombinedScreenState extends State<CombinedScreen> {
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
       elevation: 0.0,
-      title: const Text(
+      title: Text(
         "Wallet",
         textAlign: TextAlign.center,
-        style: CustomTextStyles.titleTextStyle,
+        style: CustomTextStyles.titleTextStyle.copyWith(fontWeight: FontWeight.bold, color: Colors.deepPurple),
       ),
-      backgroundColor: CustomColors.background,
       automaticallyImplyLeading: false,
       centerTitle: true,
     );
@@ -159,7 +160,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
                               } else {
                                 // data is fetched successfully
                                 address = snapshot.data!;
-                                return Text('Address: ${snapshot.data}', style: CustomTextStyles.descriptionTextStyle);
+                                return Text('Address: ${snapshot.data}', style: TextStyle(fontStyle: FontStyle.italic));
                               }
                             },
                           );
@@ -183,6 +184,11 @@ class _CombinedScreenState extends State<CombinedScreen> {
                       });
 
                     }),
+                const SizedBox(height: 10),
+                TokenWallet(address: address, tokens: const {
+                  'DAI': {'quantity': 321, 'icon': 'assets/images/dai-logo.svg'},
+                  'TrueUSD': {'quantity': 42, 'icon': 'assets/images/tusd-logo.svg'},
+                }),
                 const SizedBox(height: 10),
                 _buildProgress(),
                 const SizedBox(height: 10),

@@ -58,13 +58,7 @@ class AppState extends State<App> with WidgetsBindingObserver {
             home: const SplashScreen(),
             routes: Routes.getRoutes(context),
             navigatorKey: navigatorKey,
-            theme: ThemeData(
-              primarySwatch: CustomColors.primaryWhite,
-              buttonTheme: const ButtonThemeData(
-                buttonColor: CustomColors.primaryOrange,
-                textTheme: ButtonTextTheme.accent,
-              ),
-            ),
+            theme: ThemeData.dark(),
           );
         },
       ),
