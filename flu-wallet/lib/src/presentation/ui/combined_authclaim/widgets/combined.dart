@@ -45,6 +45,7 @@ class CombinedScreen extends StatefulWidget {
 class _CombinedScreenState extends State<CombinedScreen> {
   late Timer _timer;
   Map<String, double> _stablecoinBalance = {TUSD: 0.0, DAI: 0.0};
+
   String currency = TUSD;
   String address = "";
   final auth = getIt<AuthModel>();
@@ -58,6 +59,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
         SecureApplicationProvider.of(context)!.lock();
       }
     });
+    // TODO find how to refresh upon build... maybe with Timer(const Duration(seconds: 1), _fetchCoinsBalance);
   }
 
   @override
@@ -131,6 +133,11 @@ class _CombinedScreenState extends State<CombinedScreen> {
       // Handle errors
       logger().i('Failed to load data: ${response.statusCode}');
     }
+  }
+
+  void _fetchCoinsBalance() {
+    _fetchCoinBalance(DAI);
+    _fetchCoinBalance(TUSD);
   }
 
   ///
@@ -224,8 +231,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
         children: [
           ElevatedButton(
             onPressed: () {
-              _fetchCoinBalance(DAI);
-              _fetchCoinBalance(TUSD);
+              _fetchCoinsBalance();
             },
             child: const Text('Refresh'),
           ),
@@ -268,8 +274,12 @@ class _CombinedScreenState extends State<CombinedScreen> {
             child: const Text('Receive'),
           ),
           ElevatedButton(
-            onPressed: () {
-              Navigator.pushNamed(context, Routes.payTokenPath);
+            onPressed: () async {
+              String? qrCodeScanningResult =
+                  await Navigator.pushNamed(context, Routes.qrCodeScannerPath) as String?;
+              print(qrCodeScanningResult);
+              // TODO: display payment request and offer choice to pay with a token they have enough of.
+              //  If not enough funds, say "please reload your account, you don't have enough tokens to pay"
             },
             child: const Text('Pay'),
           ),

@@ -3,7 +3,6 @@ import 'package:flutter/widgets.dart';
 import 'package:wallet_app/src/presentation/ui/backup_identity/widgets/backup_identity.dart';
 import 'package:wallet_app/src/presentation/ui/claim_detail/widgets/claim_detail.dart';
 import 'package:wallet_app/src/presentation/ui/claims/models/claim_model.dart';
-import 'package:wallet_app/src/presentation/ui/combined_authclaim/widgets/TokenPayment.dart';
 import 'package:wallet_app/src/presentation/ui/combined_authclaim/widgets/combined.dart';
 import 'package:wallet_app/src/presentation/ui/home/widgets/home.dart';
 import 'package:wallet_app/src/presentation/ui/qrcode_scanner/widgets/qrcode_scanner.dart';
@@ -22,7 +21,6 @@ class Routes {
   static const String claimDetailPath = "/claim_detail";
   static const String backupIdentityPath = "/backup_identity";
   static const String restoreIdentityPath = "/restore_identity";
-  static const String payTokenPath = "/pay_token";
 
   ///
   static Map<String, WidgetBuilder> getRoutes(context) {
@@ -35,7 +33,6 @@ class Routes {
       claimDetailPath: _claimDetailPath(),
       backupIdentityPath: _backupIdentityRoute(),
       restoreIdentityPath: _restoreIdentityRoute(),
-      payTokenPath: _payTokenRoute(),
     };
   }
 
@@ -79,10 +76,5 @@ class Routes {
   ///
   static WidgetBuilder _restoreIdentityRoute() {
     return (BuildContext context) => const RestoreIdentityScreen();
-  }
-
-
-  static WidgetBuilder _payTokenRoute(){
-  return (BuildContext context) => const TokenPayment();
   }
 }
