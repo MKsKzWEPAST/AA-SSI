@@ -24,8 +24,8 @@ const TOKEN_ADDRESSES = new Map([
 ]);
 
 const TOKEN_ABIS = new Map([
-    ["dai", "./ABIs/DaiABI.json"],
-    ["tusd", "./ABIs/TetherUSDAbi.json"],
+    ["dai", "./ABIs/DaiAbi.json"],
+    ["tusd", "./ABIs/TrueUSDAbi.json"],
 ]);
 
 import SmartMoneyABI = require('./ABIs/SmartMoneyAbi.json');
@@ -237,14 +237,14 @@ app.post('/api/sendRC20', (req, res) => {
     if (Number.isNaN(amount) || amount <= 0) {
         return res.status(400).send('The given `price` is invalid.');
     }
-    if (token == undefined || !(token! === "dai" || token! === "usdt")) {
+    if (token == undefined || TOKEN_ADDRESSES.get(token.toString()) == undefined) {
         return res.status(400).send('The given `token` is invalid.');
     }
     if (shop == undefined || shop.toString().length != 42) {
         return res.status(400).send('The given `shop` is invalid.');
     }
 
-    payERC20(orderID, amount, token, shop.toString()).catch((err) => console.error('Error:', err));
+    payERC20(orderID, amount, token.toString(), shop.toString()).catch((err) => console.error('Error:', err));
 
     res.json({message: 'Sending token test (with account 01)!'});
 });
