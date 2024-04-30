@@ -29,7 +29,7 @@ const TOKEN_ABIS = new Map([
 ]);
 
 import SmartMoneyABI = require('./ABIs/SmartMoneyAbi.json');
-import {getAuth} from "firebase-admin/lib/auth";
+
 const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
 const smartMoney = new ethers.Contract(smartMoneyAddress, SmartMoneyABI, provider);
 
