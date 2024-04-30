@@ -21,7 +21,7 @@ class TokenWallet extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           SizedBox(
-            height: 200,
+            height: 135,
             child: ListView.builder(
               itemCount: tokens.length,
               itemBuilder: (context, index) {
