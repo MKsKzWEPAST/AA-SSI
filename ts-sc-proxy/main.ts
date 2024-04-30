@@ -296,6 +296,7 @@ app.post('/api/getaddress', async (req, res) => {
     const credentialObj = await authenticate(id_token,post_email);
     if (credentialObj.code != 200) {
         res.status(credentialObj.code).send(credentialObj.message);
+        return;
     }
     const credential = credentialObj.credential;
     const sub = credentialObj.sub;

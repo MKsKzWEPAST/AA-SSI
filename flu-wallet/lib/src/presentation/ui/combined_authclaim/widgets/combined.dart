@@ -156,7 +156,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
                               } else {
                                 // data is fetched successfully
                                 address = snapshot.data!;
-                                return Text('Address: ${snapshot.data}', style: TextStyle(fontStyle: FontStyle.italic));
+                                return Text('Address: ${snapshot.data?.substring(0, 10)}...', style: TextStyle(fontStyle: FontStyle.italic));
                               }
                             },
                           )
@@ -164,21 +164,6 @@ class _CombinedScreenState extends State<CombinedScreen> {
                 Padding(padding: const EdgeInsets.only(bottom: 16),
                   child: Text(_stablecoinBalance.toString()),
                 ),
-                DropdownButton<String>(hint: const Text("Choose your currency"),
-                    value: currency,
-                    items: const <String>[DAI,USDT].map<DropdownMenuItem<String>>((String v) {
-                      return DropdownMenuItem<String>(
-                        value: v,
-                        child: Text(v),
-                      );
-                    }).toList(),
-                    onChanged: (String? value) {
-                      setState(() {
-                        currency = value ?? "ERROR";
-                        _fetchCoinBalance(value);
-                      });
-
-                    }),
                 const SizedBox(height: 10),
                 TokenWallet(address: address, tokens: const {
                   'DAI': {'quantity': 321, 'icon': 'assets/images/dai-logo.svg'},
@@ -343,7 +328,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Text(
         CustomStrings.claimsTitle,
-        style: CustomTextStyles.titleTextStyle.copyWith(fontSize: 20),
+        style: CustomTextStyles.titleTextStyle.copyWith(fontSize: 20, color: Colors.white),
       ),
     );
   }
