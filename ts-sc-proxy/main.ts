@@ -13,7 +13,6 @@ const opts = {paymasterMiddleware: paymasterMiddleware};
 
 const verifierSCAddress = "0x1cf0a1819Dd8853d5c69f6896Fe78373Dd33b962";
 const smartMoneyAddress = "0x1973dD4486c8BA89C7ab3988Cc54e60F6E54Ef66";
-
 initializeDatabase().then(() => console.log("db initialized"));
 
 const DAI_ADDRESS = "0xd7dB0FE7506829004c99d75d1c04c6498CA9A270";
@@ -24,10 +23,12 @@ const TOKEN_ADDRESSES = new Map([
     ["usdt", "0x10a477F9F8974A84bd56578512e29c21628c922A"]
 ])
 
+
 const DAI_ABI_PATH = "./ABIs/DaiABI.json";
 const USDT_ABI_PATH = "./ABIs/TetherABI.json";
 
-const SmartMoneyABI = require('./ABIs/SmartMoneyAbi.json');
+import SmartMoneyABI = require('./ABIs/SmartMoneyAbi.json');
+import {getAuth} from "firebase-admin/lib/auth";
 const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
 const smartMoney = new ethers.Contract(smartMoneyAddress, SmartMoneyABI, provider);
 
@@ -246,13 +247,14 @@ app.post('/api/getaddress', async (req, res) => {
     console.log("Get Smart Account Address");
     const id_token = req.body.id_token;
     const post_email = req.body.email;
+    console.log(req.body);
+    console.log(post_email);
     if (!id_token || !post_email) {
         res.status(400).send('Missing required fields to access address');
         return;
     }
 
     try {
-
         // get token id payload
         let payload = await verifyIDToken(id_token);
         if (!payload) {
@@ -267,11 +269,15 @@ app.post('/api/getaddress', async (req, res) => {
             return;
         }
 
+        console.log(sub);
         // smart account address for the user
         let sa_address = "";
 
         const credential = await getCredential(sub)
+
         if (!credential) {
+
+            console.log("That's a new account!");
 
             const sk = computePrivateKeyFrom(post_email, sub);
             const signer = new ethers.Wallet(signingKey);
@@ -281,11 +287,13 @@ app.post('/api/getaddress', async (req, res) => {
             await insertCredential(sub, sk, sa_address, post_email);
             // INIT ACCOUNT
         } else {
+            console.log("No new credentials");
             sa_address = credential.address;
         }
         // Simulate successful operation with a dummy address
         res.json({success: true, address: sa_address});
     } catch (error) {
+        console.log(error);
         res.status(500).send('An error occurred while fetching the address');
     }
 })

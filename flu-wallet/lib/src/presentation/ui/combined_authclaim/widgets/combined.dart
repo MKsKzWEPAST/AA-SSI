@@ -188,7 +188,6 @@ class _CombinedScreenState extends State<CombinedScreen> {
                 const SizedBox(height: 10),
                 _buildErrorSection(),
                 const SizedBox(height: 10),
-                const SizedBox(height: 6),
                 _buildTitle(),
               ],
             ),
