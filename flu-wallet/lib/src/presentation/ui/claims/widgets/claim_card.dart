@@ -37,7 +37,7 @@ class ClaimCard extends StatelessWidget {
           gradient: CustomColors.claimCardBackground,
         ),
         width: double.infinity,
-        height: double.infinity,
+        height: 180,
         child: SvgPicture.asset(
           ImageResources.claimBackground,
           width: double.infinity,

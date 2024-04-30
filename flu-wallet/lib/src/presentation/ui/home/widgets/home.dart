@@ -55,7 +55,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: CustomColors.background,
         body: Container(
         alignment: Alignment.center,
         child: Column(
@@ -163,12 +162,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   ///
   Widget _buildDescription() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 24),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Text(
         CustomStrings.homeDescription,
         textAlign: TextAlign.center,
-        style: CustomTextStyles.descriptionTextStyle,
+        style: CustomTextStyles.descriptionTextStyle.copyWith(color: Colors.white),
       ),
     );
   }

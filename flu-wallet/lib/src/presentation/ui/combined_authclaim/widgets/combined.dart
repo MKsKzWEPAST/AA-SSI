@@ -269,7 +269,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
           ),
           ElevatedButton(
             onPressed: () {
-              // TODO - see QR-Code and offer payment selection
+              Navigator.pushNamed(context, Routes.payTokenPath);
             },
             child: const Text('Pay'),
           ),
