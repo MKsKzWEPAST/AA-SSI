@@ -9,16 +9,17 @@ import 'package:flutter/widgets.dart';
 class AuthModel extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  String _id_token =  "";
+  String _id_token = "";
+
   String get id_token => _id_token;
 
   String _email = "";
+
   String get email => _email;
 
   Future<void> signInWithGoogle() async {
     await signOutFromGoogle();
     try {
-
       logger().i("SIGNING IN WITH GOOGLE");
 
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -44,10 +45,10 @@ class AuthModel extends ChangeNotifier {
   }
 
   Future<void> signOutFromGoogle() async {
-      _email = "";
-      _id_token = "";
-      await _auth.signOut();
-      await GoogleSignIn().signOut();
-      notifyListeners();
+    _email = "";
+    _id_token = "";
+    await _auth.signOut();
+    await GoogleSignIn().signOut();
+    notifyListeners();
   }
 }
