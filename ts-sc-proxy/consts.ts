@@ -7,13 +7,13 @@ export const TOKEN_ADDRESSES = new Map([
 ]);
 
 // ABIs =============================
-const TOKEN_ABIS = new Map([
+export const TOKEN_ABIS = new Map([
     ["dai", "./ABIs/DaiAbi.json"],
     ["tusd", "./ABIs/TrueUSDAbi.json"],
 ]);
 
 // TOKEN decimals set at 18 (common decimals for price)
-const TOKEN_DECIMALS = BigInt(18);
+export const TOKEN_DECIMALS = BigInt(18);
 
 // stackup =======================
 
