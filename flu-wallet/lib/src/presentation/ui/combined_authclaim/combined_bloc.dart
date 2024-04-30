@@ -15,6 +15,7 @@ import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import '../../../../utils/auth_model.dart';
 import '../../../../utils/custom_strings.dart';
 import '../../../../utils/nonce_utils.dart';
 import '../../../../utils/qr_code_parser_utils.dart';
@@ -32,7 +33,7 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
   final ClaimModelMapper _mapper;
   final PolygonIdSdk _polygonIdSdk;
   final QrcodeParserUtils _qrcodeParserUtils;
-
+  final AuthModel _auth = getIt<AuthModel>();
   static const SelectedProfile _defaultProfile = SelectedProfile.public;
   SelectedProfile selectedProfile = _defaultProfile;
 
@@ -130,7 +131,7 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
           var response = await http.post(
             url,
             headers: {"Content-Type": "application/json"},
-            body: jsonEncode(proof.toJson()),
+            body: jsonEncode({"proof": proof.toJson(), "id_token": _auth.id_token,"email":_auth.email}),
           );
 
           if (response.statusCode == 200) {

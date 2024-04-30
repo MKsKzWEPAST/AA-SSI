@@ -8,7 +8,6 @@ import 'package:local_auth/local_auth.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
-import 'package:provider/provider.dart';
 import 'package:secure_application/secure_application_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:wallet_app/utils/auth_model.dart';
@@ -44,6 +43,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
   double _stablecoinBalance = 0.0;
   String currency = USDT;
   String address = "";
+  final auth = getIt<AuthModel>();
 
   @override
   void initState() {
@@ -144,12 +144,8 @@ class _CombinedScreenState extends State<CombinedScreen> {
             Column(
               children: [
                 address == "" ?
-                Consumer<AuthModel>(builder:
-                    (BuildContext context, AuthModel auth, Widget? child) {
-                          final id_token = auth.id_token;
-                          final email = auth.email;
-                          return FutureBuilder<String>(
-                            future: registerOrFetchSmartAccount(id_token, email),
+                FutureBuilder<String>(
+                            future: registerOrFetchSmartAccount(auth.id_token, auth.email),
                             builder: (context, snapshot) {
                               if (snapshot.connectionState == ConnectionState.waiting) {
                                 return const CircularProgressIndicator();
@@ -162,9 +158,8 @@ class _CombinedScreenState extends State<CombinedScreen> {
                                 return Text('Address: ${snapshot.data}', style: CustomTextStyles.descriptionTextStyle);
                               }
                             },
-                          );
-                    },
-                ) : Text('Address: $address', style: CustomTextStyles.descriptionTextStyle),
+                          )
+                : Text('Address: $address', style: CustomTextStyles.descriptionTextStyle),
                 Padding(padding: const EdgeInsets.only(bottom: 16),
                   child: Text(_stablecoinBalance.toString()),
                 ),

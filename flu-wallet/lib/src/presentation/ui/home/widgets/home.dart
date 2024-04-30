@@ -25,7 +25,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:provider/provider.dart';
 import '../../../../../utils/auth_model.dart';
 
 
@@ -39,11 +38,13 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   //final LocalAuthentication auth = LocalAuthentication();
   late final HomeBloc _bloc;
+  late final AuthModel _auth;
 
   @override
   void initState() {
     super.initState();
     _bloc = getIt<HomeBloc>();
+    _auth = getIt<AuthModel>();
   }
 
   @override
@@ -226,7 +227,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildEnterButton(String text){
     return ElevatedButton(
         onPressed: () => {
-        Provider.of<AuthModel>(context, listen:false).signInWithGoogle()
+        _auth.signInWithGoogle()
             .then((value) => _navigateAfterLogin())
         },
         child: Text(text));

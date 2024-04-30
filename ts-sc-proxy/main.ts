@@ -123,9 +123,9 @@ function getAccountPrivateKey(id: string) {
     return "0x" + (id + "43374337433eb8b9db305859812b374337eb8b9db777777759812b433743374337efefabba45343374337").substring(0, 64);
 }
 
-async function initOrder(orderID: number, price: number, ageRequired: boolean, credential: { sub?: string; privateKey: string; address?: string; email?: string; }) {
+async function initOrder(orderID: number, price: number, ageRequired: boolean) {
 
-    const signingKey = credential.privateKey;
+    const signingKey = getAccountPrivateKey("01");
     const signer = new ethers.Wallet(signingKey);
     const builder = await Presets.Builder.SimpleAccount.init(signer, rpcUrl, opts);
     const address = builder.getSender();
@@ -178,17 +178,6 @@ app.use(
 app.post('/api/initOrder', async (req, res) => {
     console.log("InitZKP")
 
-    const id_token = req.body.id_token;
-    const post_email = req.body.email;
-    const credentialObj = await authenticate(id_token, post_email);
-    if (credentialObj.code != 200) {
-        res.status(credentialObj.code).send(credentialObj.message);
-    }
-    const credential = credentialObj.credential;
-    if (!credential) {
-        return res.status(401).send("Account has not yet been initialized for this user");
-    }
-
     let orderID = req.query.orderID ? parseInt(req.query.orderID.toString()) : NaN;
     let price = req.query.price ? parseInt(req.query.price.toString()) : NaN;
     let ageRequired = req.query.ageReq ? parseInt(req.query.ageReq.toString()) : NaN;
@@ -209,12 +198,13 @@ app.post('/api/initOrder', async (req, res) => {
     orders.set(orderID, false);
 
     // TODO - complete the initialization properly | report order initialization "owner" issue (anyone can do it atm)
-    initOrder(orderID, price, ageRequired == 1, credential).catch((err) => console.error('Error:', err));
+    initOrder(orderID, price, ageRequired == 1).catch((err) => console.error('Error:', err));
     res.json({message: 'Init ZKP request sent!'});
 });
 
 app.post('/api/forwardZKP', async (req, res) => {
     console.log("ForwardZKP")
+    const proof = req.body.proof;
     const id_token = req.body.id_token;
     const post_email = req.body.email;
     const credentialObj = await authenticate(id_token, post_email);
@@ -226,7 +216,7 @@ app.post('/api/forwardZKP', async (req, res) => {
         return res.status(401).send("Account has not yet been initialized for this user");
     }
 
-    forwardZKP(req.body,credential).catch((err) => console.error('Error:', err));
+    forwardZKP(proof,credential).catch((err) => console.error('Error:', err));
 
     //TODO if error => notify smartmoney that verification failed (match error... => 'deny' verif)
 
@@ -276,9 +266,9 @@ app.post('/api/getbalance/:smcAddress', async (req, res) => {
     const addr = req.params.smcAddress;
     console.log(addr);
     const coin = req.body.coin;
-    let erc20_sc = coin == "DAI" ? TOKEN_ADDRESSES.get("dai"): TOKEN_ADDRESSES.get("usdt");
+    let erc20_sc = coin == "DAI" ? TOKEN_ADDRESSES.get("dai"): TOKEN_ADDRESSES.get("tusd");
     if (!erc20_sc) erc20_sc = "";
-    let erc20AbiPath = coin == "DAI" ? TOKEN_ABIS.get("dai") : TOKEN_ABIS.get("usdt");
+    let erc20AbiPath = coin == "DAI" ? TOKEN_ABIS.get("dai") : TOKEN_ABIS.get("tusd");
     if (!erc20AbiPath) erc20AbiPath = "";
 
     const erc20Abi = require(erc20AbiPath);

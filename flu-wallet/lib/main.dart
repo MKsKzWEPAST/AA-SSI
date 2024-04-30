@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
-import 'package:provider/provider.dart';
 import 'package:wallet_app/src/presentation/dependency_injection/dependencies_provider.dart'
     as di;
 import 'package:firebase_core/firebase_core.dart';
@@ -14,6 +13,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   //Dependency Injection initialization
   await di.init();
   PolygonIdSdk.I.switchLog(enabled: true);
@@ -26,17 +28,10 @@ Future<void> main() async {
 
   }
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-
   //finally, load the env variables
   await dotenv.load(fileName: ".env");
 
-  runApp(ChangeNotifierProvider
-    (create: (context) => AuthModel(),
-  child: const App())
-  );
+  runApp(const App());
 
 
 }

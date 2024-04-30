@@ -5,6 +5,7 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/iden3_message_type_mapper.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
+import 'package:wallet_app/utils/auth_model.dart';
 
 
 import 'package:wallet_app/utils/qr_code_parser_utils.dart';
@@ -32,6 +33,7 @@ Future<void> init() async {
   registerBackupIdentityDependencies();
   registerRestoreIdentityDependencies();
   registerUtilities();
+  registerAuthModel();
 }
 
 void registerEnv() {
@@ -128,4 +130,8 @@ void registerRestoreIdentityDependencies() {
 void registerUtilities() {
   getIt.registerLazySingleton<QrcodeParserUtils>(
       () => QrcodeParserUtils(getIt()));
+}
+
+void registerAuthModel() {
+  getIt.registerSingleton(AuthModel());
 }

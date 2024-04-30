@@ -5,8 +5,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:flutter/widgets.dart';
+import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 
-class AuthModel extends ChangeNotifier {
+class AuthModel {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   String _id_token = "";
@@ -38,7 +39,6 @@ class AuthModel extends ChangeNotifier {
       _email = _auth.currentUser?.email ?? "";
 
       _id_token = googleAuth?.idToken ?? "";
-      notifyListeners();
     } on Exception catch (e) {
       logger().i("error while signing up: " + e.toString());
     }
@@ -49,6 +49,5 @@ class AuthModel extends ChangeNotifier {
     _id_token = "";
     await _auth.signOut();
     await GoogleSignIn().signOut();
-    notifyListeners();
   }
 }
