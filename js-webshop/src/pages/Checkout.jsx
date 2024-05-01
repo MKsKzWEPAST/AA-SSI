@@ -24,7 +24,7 @@ const Checkout = () => {
 
     async function initOrder(orderID, price, requireAgeVerified) {
         const xhr = new XMLHttpRequest();
-        xhr.open('GET', `https://broadly-assured-piglet.ngrok-free.app/api/initOrder?orderID=${orderID}&price=${price}&ageReq=${requireAgeVerified ? 1 : 0}`, false);
+        xhr.open('POST', `https://broadly-assured-piglet.ngrok-free.app/api/initOrder?orderID=${orderID}&price=${price}&ageReq=${requireAgeVerified ? 1 : 0}`, false);
         xhr.setRequestHeader("ngrok-skip-browser-warning", "true");
 
         let result = false;
