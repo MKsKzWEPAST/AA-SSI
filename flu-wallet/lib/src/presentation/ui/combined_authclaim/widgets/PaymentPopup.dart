@@ -58,10 +58,11 @@ class _PaymentPopupState extends State<PaymentPopup> {
                   }).toList(),
                 ),
                 ElevatedButton(
-                    onPressed: () async {
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Pay')),
+                  onPressed: () async {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Cancel'),
+                ),
               ]
             : [const CircularProgressIndicator()],
       ),

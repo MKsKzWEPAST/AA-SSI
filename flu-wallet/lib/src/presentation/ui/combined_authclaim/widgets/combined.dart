@@ -30,6 +30,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:wallet_app/utils/wallet_utils.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:web3dart/web3dart.dart';
+import 'package:url_launcher/url_launcher.dart'; // TODO find why error showing up?
 
 import 'PaymentPopup.dart';
 import 'TokenWallet.dart';
@@ -66,15 +67,18 @@ class _CombinedScreenState extends State<CombinedScreen> {
       if (auth.id_token == "") {
         Navigator.popAndPushNamed(context, Routes.homePath);
       }
-      registerOrFetchSmartAccount(
-          auth.id_token, auth.email).then((_address) => setState(() {
-        if (_address != "") {
-          address = _address;
-          auth.setUserAddress(_address);
-          print("\n\n\n=========== " + _address + auth.address + "================\n\n\n");
-          _fetchCoinsBalance();
-        }
-      }) );
+      registerOrFetchSmartAccount(auth.id_token, auth.email)
+          .then((_address) => setState(() {
+                if (_address != "") {
+                  address = _address;
+                  auth.setUserAddress(_address);
+                  print("\n\n\n=========== " +
+                      _address +
+                      auth.address +
+                      "================\n\n\n");
+                  _fetchCoinsBalance();
+                }
+              }));
     });
   }
 
@@ -87,30 +91,8 @@ class _CombinedScreenState extends State<CombinedScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: CustomColors.background,
-      endDrawer: _buildDrawer(),
       appBar: _buildAppBar(),
       body: _buildBody(),
-    );
-  }
-
-  ///
-  Widget _buildDrawer() {
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          DrawerHeader(
-            decoration:
-                const BoxDecoration(color: Color.fromARGB(255, 129, 70, 227)),
-            child: Text('Settings',
-                style: CustomTextStyles.titleTextStyle
-                    .copyWith(color: Colors.white)),
-          ),
-          _buildRadioButtons(),
-          const SizedBox(height: 20),
-          _buildRemoveAllClaimsButton(),
-        ],
-      ),
     );
   }
 
@@ -184,7 +166,8 @@ class _CombinedScreenState extends State<CombinedScreen> {
             Column(
               children: [
                 address == ""
-                    ? const CircularProgressIndicator() : Text('Address: ${address.substring(0, 10)}...',
+                    ? const CircularProgressIndicator()
+                    : Text('Address: ${address.substring(0, 10)}...',
                         style: const TextStyle(fontStyle: FontStyle.italic)),
                 const SizedBox(height: 10),
                 TokenWallet(
@@ -193,9 +176,9 @@ class _CombinedScreenState extends State<CombinedScreen> {
                 ),
                 const SizedBox(height: 10),
                 TokenWalletActions(tokens),
-                const SizedBox(height: 10),
+                const SizedBox(height: 5),
                 _buildProgress(),
-                const SizedBox(height: 10),
+                const SizedBox(height: 5),
                 _buildAuthenticationSuccessSection(),
                 const SizedBox(height: 10),
                 _buildErrorSection(),
@@ -239,13 +222,13 @@ class _CombinedScreenState extends State<CombinedScreen> {
           },
           child: const Text('Refresh'),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 7),
         ElevatedButton(
           onPressed: () {
             showDialog(
               context: context,
               builder: (context) => AlertDialog(
-                backgroundColor: Colors.white60,
+                backgroundColor: Colors.white,
                 title: const Text('Wallet Public Key'),
                 content: SizedBox(
                   width: MediaQuery.of(context).size.width * 0.6,
@@ -278,11 +261,32 @@ class _CombinedScreenState extends State<CombinedScreen> {
           },
           child: const Text('Receive'),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 7),
         scanToPayButton(tokens, context),
-        const SizedBox(width: 10),
+        const SizedBox(width: 7),
+        ElevatedButton(
+          onPressed: () async {
+            final Uri url = Uri.parse(
+                "https://amoy.polygonscan.com/address/$address#tokentxns");
+            _launchUrl(url);
+          },
+          child: const Text('History'),
+        ),
       ],
     );
+  }
+
+  Future<void> _launchUrl(_url) async {
+    if (!await launchUrl(_url)) {
+      Fluttertoast.showToast(
+          msg: "Couldn't see history.",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    }
   }
 
   ElevatedButton scanToPayButton(
@@ -323,12 +327,17 @@ class _CombinedScreenState extends State<CombinedScreen> {
   Widget _buildBlocListener() {
     return BlocListener<CombinedBloc, CombinedState>(
       bloc: widget._bloc,
-      listener: (context, state) {
+      listener: (context, state) async {
         if (state is NavigateToQrCodeScannerCombinedState) {
           _handleNavigateToQrCodeScannerCombinedState();
         }
         if (state is QrCodeScannedCombinedState) {
           logger().i("[debugging-combined] --Checkpoint 2--");
+          bool? accept =
+              await _showConfirmationDialog(context, state.iden3message);
+          if (accept == null || !accept) {
+            return;
+          }
           _handleQrCodeScanned(state.iden3message);
         }
         if (state is NavigateToClaimDetailCombinedState) {
@@ -336,6 +345,60 @@ class _CombinedScreenState extends State<CombinedScreen> {
         }
       },
       child: const SizedBox.shrink(),
+    );
+  }
+
+  Future<bool?> _showConfirmationDialog(
+      BuildContext context, Iden3MessageEntity msg) async {
+    var actionText = "";
+    switch (msg.messageType) {
+      case Iden3MessageType.proofContractInvokeRequest:
+        actionText = "Sending proof on chain"; // TODO catch this one too (takes another path atm)
+        break;
+
+      case Iden3MessageType.credentialOffer:
+        actionText = "Receiving a credential";
+        break;
+
+      case Iden3MessageType.authRequest:
+        actionText = "Authentication request";
+        break;
+
+      default:
+        actionText = "Not supported";
+    }
+
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: false, // User must tap button to dismiss dialog
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmation'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Action: ${actionText}.'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Ok'),
+              onPressed: () {
+                Navigator.of(context)
+                    .pop(true); // Close the dialog and return true
+              },
+            ),
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context)
+                    .pop(false); // Close the dialog and return false
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -353,8 +416,8 @@ class _CombinedScreenState extends State<CombinedScreen> {
       builder: (BuildContext context, CombinedState state) {
         if (state is! LoadingCombinedState) {
           return const SizedBox(
-            height: 48,
-            width: 48,
+            height: 40,
+            width: 40,
           );
         }
         return Column(
@@ -484,7 +547,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
       },
       style: CustomButtonStyle.primaryButtonStyle,
       child: const Text(
-        "Scan QR code",
+        "Authenticate",
         style: CustomTextStyles.primaryButtonTextStyle,
       ),
     );

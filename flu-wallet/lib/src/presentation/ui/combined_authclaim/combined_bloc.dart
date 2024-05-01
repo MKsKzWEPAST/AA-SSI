@@ -85,9 +85,10 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
           "Thid: ${iden3message.thid}, Body: ${iden3message.body} "
           "From: ${iden3message.from}, To: ${iden3message.to ?? ''} [end]");
 
+
+
       switch (iden3message.messageType) {
         case Iden3MessageType.proofContractInvokeRequest:
-
           logger().i("[debugging-combined] -- On-chain verification: Checkpoint 1--");
 
           if (emit.isDone) return;
@@ -123,7 +124,7 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
           final config = EnvConfigEntity(ipfsNodeUrl: env.ipfsUrl,chainConfigs: env.chainConfigs,didMethods: []);
 
           final challenge = toLENumber(_auth.address);
-          final proofs = await _polygonIdSdk.iden3comm.getProofs(message: iden3message, genesisDid: did, privateKey: privateKey, profileNonce: nonce,challenge: challenge,config: config);
+          final proofs = await _polygonIdSdk.iden3comm.getProofs(message: iden3message, genesisDid: did, privateKey: privateKey, profileNonce: nonce,challenge: challenge, config: config);
           final proof = proofs[0];
 
           emit(const CombinedState.authenticated());
