@@ -39,8 +39,8 @@ const PaymentOptions = ({validatePayment, price, orderID}) => {
                 {QRHolder}
             </div>
             <div className={"d-flex"}>
-                <IconBox svgPath={"./assets/multi-collateral-dai-dai-logo.svg"} alt={""}/>
-                <IconBox svgPath={"./assets/tether-usdt-logo.svg"} alt={""}/>
+                <IconBox svgPath={"./assets/multi-collateral-dai-dai-logo.svg"} alt={"DAI"}/>
+                <IconBox svgPath={"./assets/tusd-logo.svg"} alt={"TUSD"}/>
             </div>
         </div>
     );
