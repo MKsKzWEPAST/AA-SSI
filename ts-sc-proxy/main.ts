@@ -36,12 +36,13 @@ async function payERC20(orderID: number, amountToken: number, token: string, sho
     const abi_path = TOKEN_ABIS.get(token);
     if (abi_path == undefined) {
         console.log(`Invalid token name: ${token}`);
-        return;
+        return false;
     }
     const ERC20_ABI = require(abi_path); // ERC-20 ABI in json format
     const provider = new ethers.providers.JsonRpcProvider(rpcUrl,);
     const erc20 = new ethers.Contract(tokenAddress, ERC20_ABI, provider);
     const amount = BigInt(amountToken) * (BigInt(10) ** TOKEN_DECIMALS);
+    console.log("Amount: ", amount)
 
     // Encode the calls
     const callTo = [tokenAddress, shopSmartMoney];
@@ -67,6 +68,7 @@ async function payERC20(orderID: number, amountToken: number, token: string, sho
     const ev = await res.wait();
     console.log(`Transaction hash: ${ev?.transactionHash ?? null}`);
     console.log(`View here: https://jiffyscan.xyz/userOpHash/${res.userOpHash}`);
+    return ev?.decodeError == undefined;
 }
 
 async function forwardZKP(proof: any,credential: { sub?: any; privateKey: any; address?: string; email?: string; }) {
@@ -159,6 +161,7 @@ async function initOrder(orderID: number, price: number, ageRequired: boolean) {
     console.log(`Transaction hash: ${ev?.transactionHash ?? null}`);
     console.log(`View here: https://jiffyscan.xyz/userOpHash/${res.userOpHash}`);
 
+    // TODO should check that the orderID given was not already in use
 
 }
 
@@ -174,7 +177,7 @@ app.use(
 );
 
 app.post('/api/initOrder', async (req, res) => {
-    console.log("InitZKP")
+    console.log("\n====InitOrder====")
 
     let orderID = req.query.orderID ? parseInt(req.query.orderID.toString()) : NaN;
     let price = req.query.price ? parseInt(req.query.price.toString()) : NaN;
@@ -201,13 +204,13 @@ app.post('/api/initOrder', async (req, res) => {
 });
 
 app.post('/api/forwardZKP', async (req, res) => {
-    console.log("ForwardZKP")
+    console.log("\n====ForwardZKP====")
     const proof = req.body.proof;
     const id_token = req.body.id_token;
     const post_email = req.body.email;
     const credentialObj = await authenticate(id_token, post_email);
     if (credentialObj.code != 200) {
-        res.status(credentialObj.code).send(credentialObj.message);
+        return res.status(credentialObj.code).send(credentialObj.message);
     }
     const credential = credentialObj.credential;
     if (!credential) {
@@ -222,13 +225,13 @@ app.post('/api/forwardZKP', async (req, res) => {
 });
 
 app.post('/api/sendRC20', async (req, res) => {
-    console.log("SendRC20")
+    console.log("\n====SendERC20====")
 
     const id_token = req.body.id_token;
     const post_email = req.body.email;
     const credentialObj = await authenticate(id_token, post_email);
     if (credentialObj.code != 200) {
-        res.status(credentialObj.code).send(credentialObj.message);
+        return res.status(credentialObj.code).send(credentialObj.message);
     }
     const credential = credentialObj.credential;
     if (!credential) {
@@ -254,9 +257,12 @@ app.post('/api/sendRC20', async (req, res) => {
         return res.status(400).send('The given `shop` is invalid.');
     }
 
-    payERC20(orderID, amount, token.toString(), shop.toString(), credential).catch((err) => console.error('Error:', err));
-
-    res.json({message: 'Sending token test (with account 01)!'});
+    const actionResult = await payERC20(orderID, amount, token.toString(), shop.toString(), credential).catch((err) => console.error('Error:', err));
+    if (actionResult) {
+        res.json({message: 'Sending token test (with account 01)!'});
+    } else {
+        return res.status(400).send("Couldn't send your tokens.")
+    }
 });
 
 

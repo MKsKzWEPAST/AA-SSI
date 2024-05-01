@@ -12,7 +12,6 @@ export async function verifyIDToken(idToken: string) {
         idToken,
         audience: CLIENT_ID, // Specify the CLIENT ID for the intended audience
     });
-    console.log(ticket);
     return ticket.getPayload();
 }
 
@@ -35,8 +34,6 @@ export async function authenticate(id_token: string, post_email: string) {
         if (email != post_email) {
             return {"code": 401,"credential": null,"sub": "", "message": 'Email verification failed'};
         }
-
-        console.log(sub);
 
         return {"code": 200,"credential": await getCredential(sub),"sub":sub,"message": ''};
 
