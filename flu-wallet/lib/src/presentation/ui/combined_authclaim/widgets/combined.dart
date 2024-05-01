@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
@@ -27,7 +28,10 @@ import 'package:wallet_app/src/presentation/ui/combined_authclaim/combined_event
 import 'package:wallet_app/src/presentation/ui/combined_authclaim/combined_state.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:wallet_app/utils/wallet_utils.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:web3dart/web3dart.dart';
 
+import 'PaymentPopup.dart';
 import 'TokenWallet.dart';
 
 const TUSD = 'tusd';
@@ -45,6 +49,7 @@ class CombinedScreen extends StatefulWidget {
 class _CombinedScreenState extends State<CombinedScreen> {
   late Timer _timer;
   Map<String, double> _stablecoinBalance = {TUSD: 0.0, DAI: 0.0};
+  bool loadedBalance = false;
 
   String currency = TUSD;
   String address = "";
@@ -55,11 +60,22 @@ class _CombinedScreenState extends State<CombinedScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget._bloc.add(const CombinedEvent.getClaims());
-      if (!SecureApplicationProvider.of(context)!.authenticated) {
+      /*if (!SecureApplicationProvider.of(context)!.authenticated) {
         SecureApplicationProvider.of(context)!.lock();
+      }*/
+      if (auth.id_token == "") {
+        Navigator.popAndPushNamed(context, Routes.homePath);
       }
+      registerOrFetchSmartAccount(
+          auth.id_token, auth.email).then((_address) => setState(() {
+        if (_address != "") {
+          address = _address;
+          auth.setUserAddress(_address);
+          print("\n\n\n=========== " + _address + auth.address + "================\n\n\n");
+          _fetchCoinsBalance();
+        }
+      }) );
     });
-    // TODO find how to refresh upon build... maybe with Timer(const Duration(seconds: 1), _fetchCoinsBalance);
   }
 
   @override
@@ -70,6 +86,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: CustomColors.background,
       endDrawer: _buildDrawer(),
       appBar: _buildAppBar(),
       body: _buildBody(),
@@ -104,9 +121,10 @@ class _CombinedScreenState extends State<CombinedScreen> {
       title: Text(
         "Wallet",
         textAlign: TextAlign.center,
-        style: CustomTextStyles.titleTextStyle
-            .copyWith(fontWeight: FontWeight.bold, color: Colors.deepPurpleAccent),
+        style: CustomTextStyles.titleTextStyle.copyWith(
+            fontWeight: FontWeight.bold, color: Colors.deepPurpleAccent),
       ),
+      backgroundColor: CustomColors.background,
       automaticallyImplyLeading: false,
       centerTitle: true,
     );
@@ -144,6 +162,18 @@ class _CombinedScreenState extends State<CombinedScreen> {
   Widget _buildBody() {
     var daiQty = _stablecoinBalance[DAI]!;
     var tusdQty = _stablecoinBalance[TUSD]!;
+    var tokens = {
+      'DAI': {
+        'quantity': daiQty,
+        'icon': 'assets/images/dai-logo.svg',
+        'symbolL': "dai"
+      },
+      'TrueUSD': {
+        'quantity': tusdQty,
+        'icon': 'assets/images/tusd-logo.svg',
+        'symbolL': "tusd"
+      }
+    };
 
     return SafeArea(
       child: SizedBox(
@@ -154,41 +184,15 @@ class _CombinedScreenState extends State<CombinedScreen> {
             Column(
               children: [
                 address == ""
-                    ? FutureBuilder<String>(
-                        future: registerOrFetchSmartAccount(
-                            auth.id_token, auth.email),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const CircularProgressIndicator();
-                          } else if (snapshot.hasError) {
-                            // Handle errors
-                            return Text('Error: ${snapshot.error}');
-                          } else {
-                            // data is fetched successfully
-                            address = snapshot.data!;
-                            return Text(
-                                'Address: ${snapshot.data?.substring(0, 10)}...',
-                                style: const TextStyle(fontStyle: FontStyle.italic));
-                          }
-                        },
-                      )
-                    : Text(
-                    'Address: ${address.substring(0, 10)}...',
-                    style: const TextStyle(fontStyle: FontStyle.italic)),
+                    ? const CircularProgressIndicator() : Text('Address: ${address.substring(0, 10)}...',
+                        style: const TextStyle(fontStyle: FontStyle.italic)),
                 const SizedBox(height: 10),
-                TokenWallet(address: address, tokens: {
-                  'DAI': {
-                    'quantity': daiQty,
-                    'icon': 'assets/images/dai-logo.svg'
-                  },
-                  'TrueUSD': {
-                    'quantity': tusdQty,
-                    'icon': 'assets/images/tusd-logo.svg'
-                  },
-                }),
+                TokenWallet(
+                  address: address,
+                  tokens: tokens,
+                ),
                 const SizedBox(height: 10),
-                TokenWalletActions(),
+                TokenWalletActions(tokens),
                 const SizedBox(height: 10),
                 _buildProgress(),
                 const SizedBox(height: 10),
@@ -225,65 +229,93 @@ class _CombinedScreenState extends State<CombinedScreen> {
     );
   }
 
-  Row TokenWalletActions() {
+  Row TokenWalletActions(Map<String, Map<String, Object>> tokens) {
     return Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          ElevatedButton(
-            onPressed: () {
-              _fetchCoinsBalance();
-            },
-            child: const Text('Refresh'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  backgroundColor: Colors.deepPurple,
-                  title: const Text('Wallet Public Key'),
-                  content: SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.6,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        QrImageView(
-                          data: address,
-                          version: QrVersions.auto,
-                          size: 200.0,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          address,
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                      ],
-                    ),
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ElevatedButton(
+          onPressed: () {
+            _fetchCoinsBalance();
+          },
+          child: const Text('Refresh'),
+        ),
+        const SizedBox(width: 10),
+        ElevatedButton(
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                backgroundColor: Colors.white60,
+                title: const Text('Wallet Public Key'),
+                content: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      QrImageView(
+                        data: address,
+                        version: QrVersions.auto,
+                        size: 200.0,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        address,
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ],
                   ),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text('Close'),
-                    ),
-                  ],
                 ),
-              );
-            },
-            child: const Text('Receive'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              String? qrCodeScanningResult =
-                  await Navigator.pushNamed(context, Routes.qrCodeScannerPath) as String?;
-              print(qrCodeScanningResult);
-              // TODO: display payment request and offer choice to pay with a token they have enough of.
-              //  If not enough funds, say "please reload your account, you don't have enough tokens to pay"
-            },
-            child: const Text('Pay'),
-          ),
-        ],
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Close'),
+                  ),
+                ],
+              ),
+            );
+          },
+          child: const Text('Receive'),
+        ),
+        const SizedBox(width: 10),
+        scanToPayButton(tokens, context),
+        const SizedBox(width: 10),
+      ],
+    );
+  }
+
+  ElevatedButton scanToPayButton(
+      Map<String, Map<String, Object>> tokens, context) {
+    return ElevatedButton(
+      onPressed: () async {
+        String? qrCodeScanningResult =
+            await Navigator.pushNamed(context, Routes.qrCodeScannerPath)
+                as String?;
+        var (ok, qr_chain, qr_address, qr_price, qr_orderID) =
+            _checkPaymentQR(qrCodeScanningResult);
+        if (ok) {
+          showDialog(
+              context: context,
+              builder: (context) => PaymentPopup(
+                  price: qr_price,
+                  address: qr_address,
+                  orderID: qr_orderID,
+                  tokens: tokens,
+                  payFunction: sendERC20Payment,
+                  exitFunction: exitPay));
+        } else {
+          Fluttertoast.showToast(
+              msg: "Invalid QR-code.",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0);
+        }
+      },
+      child: const Text('Pay'),
     );
   }
 
@@ -401,7 +433,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
         });
   }
 
-  // Auth (above)
+// Auth (above)
 // Claim (below)
 
   ///
@@ -410,8 +442,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Text(
         CustomStrings.claimsTitle,
-        style: CustomTextStyles.titleTextStyle
-            .copyWith(fontSize: 20, color: Colors.white),
+        style: CustomTextStyles.titleTextStyle.copyWith(fontSize: 20),
       ),
     );
   }
@@ -428,7 +459,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
     );
   }
 
-  /*Widget _buildTAPBar() {
+/*Widget _buildTAPBar() {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: ElevatedButton(
@@ -594,5 +625,57 @@ class _CombinedScreenState extends State<CombinedScreen> {
         return const Text("");
       },
     );
+  }
+
+  (bool, String, String, double, int) _checkPaymentQR(String? qrContent) {
+    try {
+      List<String> parts = qrContent!.split(':');
+      assert(parts.length == 4, "Content doesn't match payment QR.");
+
+      // Assign each part to the respective variable
+      String qr_chain = parts[0];
+      assert(qr_chain == "amoy", "Unsupported chain.");
+      String qr_address = parts[1];
+      EthereumAddress.fromHex(qr_address, enforceEip55: true);
+
+      double qr_price = double.parse(parts[2]);
+      assert(qr_price > 0, "Invalid price.");
+
+      int qr_orderID = int.parse(parts[3]);
+      assert(qr_orderID > 0, "Invalid order ID.");
+
+      return (true, qr_chain, qr_address, qr_price, qr_orderID);
+    } catch (e) {
+      // Error reading the qrContent
+      return (false, "", "", 0, 0);
+    }
+  }
+
+  Future<bool> sendERC20Payment(
+      String coin, String storeAddress, int orderID, double amount) async {
+    final proxy = dotenv.env["PROXY_URL"];
+    final response = await http.post(
+      Uri.parse(
+          '$proxy/api/sendRC20?storeAddress=$storeAddress&orderID=$orderID&amount=$amount&token=$coin'),
+      headers: {"content-type": "application/json"},
+      body: jsonEncode({
+        "coin": coin,
+        "id_token": widget._bloc.auth.id_token,
+        "email": widget._bloc.auth.email
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      // Handle errors
+
+      return false;
+    }
+  }
+
+  exitPay(BuildContext context) {
+    Navigator.pop(context);
+    _fetchCoinsBalance();
   }
 }

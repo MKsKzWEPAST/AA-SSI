@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
@@ -55,6 +56,8 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
     on<OnClickClaim>(_handleClickClaim);
     on<OnClaimDetailRemoveResponse>(_handleRemoveClaimResponse);
   }
+
+  AuthModel get auth => _auth;
 
   Future<void> _handleProfileSelected(
       ProfileSelectedEvent event, Emitter<CombinedState> emit) async {
@@ -118,8 +121,9 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
               did: did, privateKey: privateKey, from: iden3message.from);
 
           final config = EnvConfigEntity(ipfsNodeUrl: env.ipfsUrl,chainConfigs: env.chainConfigs,didMethods: []);
-          final proofs = await _polygonIdSdk.iden3comm.getProofs(message: iden3message, genesisDid: did, privateKey: privateKey, profileNonce: nonce,challenge: "1275620543470401730849761939194595208513403910607",config: config);
 
+          final challenge = toLENumber(_auth.address);
+          final proofs = await _polygonIdSdk.iden3comm.getProofs(message: iden3message, genesisDid: did, privateKey: privateKey, profileNonce: nonce,challenge: challenge,config: config);
           final proof = proofs[0];
 
           emit(const CombinedState.authenticated());
@@ -173,7 +177,7 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
           emit(const CombinedState.error("Iden3MessageType not auth.req nor cred.offer"));
       }
     } catch (error) {
-      emit(const CombinedState.error("Scanned code is not valid"));
+      emit(CombinedState.error("Scanned code is not valid" + error.toString()));
     }
   }
 
@@ -599,5 +603,19 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
     } catch (_) {
       emit(const CombinedState.error("error while removing claims"));
     }
+  }
+
+  toLENumber(String address) {
+    assert(address.length == 42, "Invalid address.");
+    String bigEndianAddress = address.substring(2); // Remove '0x' prefix
+
+    List<String> pairs = [];
+    for (int i = 0; i < bigEndianAddress.length; i += 2) {
+      pairs.add(bigEndianAddress.substring(i, i + 2));
+    }
+
+    pairs = pairs.reversed.toList(); // Reverse the order of pairs
+
+    return BigInt.parse(pairs.join(), radix: 16).toString();
   }
 }

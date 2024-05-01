@@ -47,22 +47,28 @@ class AppState extends State<App> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return SecureApplication(
+    /*return SecureApplication( // FIXME/TODO: remove to allow screenshots
       nativeRemoveDelay: 700,
       child: Builder(
         builder: (context) {
           // FIXME/TODO: remove both lines to use with no-bio-secured phones
           SecureApplicationProvider.of(context)?.secure();
-          SecureApplicationProvider.of(context)?.lock();
+          SecureApplicationProvider.of(context)?.lock();*/
           return MaterialApp(
             title: CustomStrings.appTitle,
             home: const SplashScreen(),
             routes: Routes.getRoutes(context),
             navigatorKey: navigatorKey,
-            theme: ThemeData.dark(),
+            theme: ThemeData(
+              primarySwatch: CustomColors.primaryWhite,
+              buttonTheme: const ButtonThemeData(
+                buttonColor: CustomColors.primaryOrange,
+                textTheme: ButtonTextTheme.accent,
+              ),
+            ),
           );
-        },
+        /*},
       ),
-    );
+    );*/
   }
 }
