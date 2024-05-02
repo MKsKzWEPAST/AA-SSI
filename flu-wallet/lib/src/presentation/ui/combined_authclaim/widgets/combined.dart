@@ -547,7 +547,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
       },
       style: CustomButtonStyle.primaryButtonStyle,
       child: const Text(
-        "Authenticate",
+        "QR scan (ID)",
         style: CustomTextStyles.primaryButtonTextStyle,
       ),
     );

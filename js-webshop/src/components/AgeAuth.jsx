@@ -17,7 +17,7 @@ export default function AgeAuth({orderID}) {
                     border: '1px solid #ccc',
                     boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)',
                 }}>
-                    <QRCodeSVG value={qrContent} size={window.innerHeight * 0.25}/>
+                    <QRCodeSVG value={qrContent} size={window.innerHeight * 0.20}/>
                 </div>
             </div>
         );

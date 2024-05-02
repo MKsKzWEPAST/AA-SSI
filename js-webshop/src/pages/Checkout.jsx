@@ -1,10 +1,11 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import {BsChevronDown, BsChevronUp} from 'react-icons/bs';
 import {clearCart} from "../redux/action";
 import {motion} from "framer-motion";
 import {PaymentOptions, AgeAuth} from "../components";
+import Spinner from 'react-bootstrap/Spinner';
 
 const maxOrderID = 2 ** 52; // fit with some margin in uint64 + no precision loss in js
 
@@ -23,38 +24,31 @@ const Checkout = () => {
     const [orderInitialized, setOrderInitialized] = useState(false);
 
     async function initOrder(orderID, price, requireAgeVerified) {
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', `https://broadly-assured-piglet.ngrok-free.app/api/initOrder?orderID=${orderID}&price=${price}&ageReq=${requireAgeVerified ? 1 : 0}`, false);
-        xhr.setRequestHeader("ngrok-skip-browser-warning", "true");
-
-        let result = false;
-        let done = false;
-
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-                result = xhr.status === 200;
-                done = true;
-            }
-        };
-
         try {
-            xhr.send();
+            const response = await fetch(`https://broadly-assured-piglet.ngrok-free.app/api/initOrder?orderID=${orderID}&price=${price}&ageReq=${requireAgeVerified ? 1 : 0}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                // You can add other options like credentials, etc. if needed
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to initialize order');
+            }
+
+            return true;
         } catch (error) {
-            console.log("Couldn't set the order");
+            console.error('Error initializing order:', error);
+            return false;
         }
-
-
-        while (!done) {
-            await new Promise(resolve => setTimeout(resolve, 1000))
-        }
-        return result;
     }
 
     async function checkOrderStatus(orderID) {
         while (true) {
             const headers = {
                 "ngrok-skip-browser-warning": "true",
-                "accept":"application/json",
+                "accept": "application/json",
             };
 
             const response = await fetch(`https://broadly-assured-piglet.ngrok-free.app/api/getOrderStatus?orderID=${orderID}`, {
@@ -79,7 +73,9 @@ const Checkout = () => {
     if (fastState != null && fastState.product.qty > 0) {
         state = [fastState.product];
         requireAgeVerified = fastState.product['18required'];
+    }
 
+    useEffect(() => {
         if (!orderInitialized) {
             initOrder(orderID, fastState.product.price * fastState.product.qty, requireAgeVerified).then(result => {
                 if (result) {
@@ -100,7 +96,7 @@ const Checkout = () => {
                 }
             });
         }
-    }
+    }, [fastState, requireAgeVerified, orderID, orderInitialized, navigate]);
 
 
     let nb_tickets = 0;
@@ -173,29 +169,23 @@ const Checkout = () => {
         }
 
         function paymentOptions() {
-
             return <div className="card mb-4">
                 <div className="card-header py-3">
                     <h4 className="mb-0">Payment</h4>
                 </div>
                 <div className="card-body">
-
                     <PaymentOptions validatePayment={validatePayment} price={subtotal} orderID={orderID}/>
-
                 </div>
             </div>;
         }
 
         function ageVerification() {
-
             return <div className="card mb-4">
                 <div className="card-header py-3">
                     <h4 className="mb-0">Age verification</h4>
                 </div>
                 <div className="card-body">
-
                     <AgeAuth orderID={orderID}/>
-
                 </div>
             </div>;
         }
@@ -346,13 +336,19 @@ const Checkout = () => {
                     <div className="row my-4">
                         <div className="col-md-5 col-lg-4 order-md-last">
                             {OrderSummary()}
-                            {/* TODO add button to verify payment and age verification! */}
                         </div>
                         <div className="col-md-7 col-lg-8">
 
-                            {paymentOptions()}
-                            {requireAgeVerified ? ageVerification() : <div/>}
-                            {billingAddress()}
+                            {orderInitialized ? <>
+                                {paymentOptions()}
+                                {requireAgeVerified ? ageVerification() : <div/>}
+                                {billingAddress()}
+                            </> : <div className={"d-flex flex-row"}>
+                                <Spinner animation="border" role="status">
+                                    <span className="visually-hidden">Loading...</span>
+                                </Spinner>
+                                <span style={{marginLeft: '8px', fontWeight: 'bold'}}>Initializing your order...</span>
+                            </div>}
                         </div>
                     </div>
                 </div>

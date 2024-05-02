@@ -161,8 +161,7 @@ async function initOrder(orderID: number, price: number, ageRequired: boolean) {
     console.log(`Transaction hash: ${ev?.transactionHash ?? null}`);
     console.log(`View here: https://jiffyscan.xyz/userOpHash/${res.userOpHash}`);
 
-    // TODO should check that the orderID given was not already in use
-
+    return ev?.decodeError == undefined;
 }
 
 // === server def
@@ -199,8 +198,12 @@ app.post('/api/initOrder', async (req, res) => {
     orders.set(orderID, false);
 
     // TODO - complete the initialization properly | report order initialization "owner" issue (anyone can do it atm)
-    initOrder(orderID, price, ageRequired == 1).catch((err) => console.error('Error:', err));
-    res.json({message: 'Init ZKP request sent!'});
+    const actionResult = await initOrder(orderID, price, ageRequired == 1).catch((err) => console.error('Error:', err));
+    if (actionResult) {
+        res.json({message: 'Init ZKP request sent!!'});
+    } else {
+        return res.status(400).send("Couldn't init the order.")
+    }
 });
 
 app.post('/api/forwardZKP', async (req, res) => {
@@ -259,7 +262,7 @@ app.post('/api/sendRC20', async (req, res) => {
 
     const actionResult = await payERC20(orderID, amount, token.toString(), shop.toString(), credential).catch((err) => console.error('Error:', err));
     if (actionResult) {
-        res.json({message: 'Sending token test (with account 01)!'});
+        res.json({message: 'Tokens sent!'});
     } else {
         return res.status(400).send("Couldn't send your tokens.")
     }
