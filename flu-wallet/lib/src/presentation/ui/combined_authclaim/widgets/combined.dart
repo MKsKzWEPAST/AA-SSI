@@ -333,11 +333,6 @@ class _CombinedScreenState extends State<CombinedScreen> {
         }
         if (state is QrCodeScannedCombinedState) {
           logger().i("[debugging-combined] --Checkpoint 2--");
-          bool? accept =
-              await _showConfirmationDialog(context, state.iden3message);
-          if (accept == null || !accept) {
-            return;
-          }
           _handleQrCodeScanned(state.iden3message);
         }
         if (state is NavigateToClaimDetailCombinedState) {
@@ -353,7 +348,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
     var actionText = "";
     switch (msg.messageType) {
       case Iden3MessageType.proofContractInvokeRequest:
-        actionText = "Sending proof on chain"; // TODO catch this one too (takes another path atm)
+        actionText = "Sending proof on chain";
         break;
 
       case Iden3MessageType.credentialOffer:
@@ -406,6 +401,16 @@ class _CombinedScreenState extends State<CombinedScreen> {
   Future<void> _handleNavigateToQrCodeScannerCombinedState() async {
     String? qrCodeScanningResult =
         await Navigator.pushNamed(context, Routes.qrCodeScannerPath) as String?;
+
+    final Iden3MessageEntity iden3message =
+    await widget._bloc.qrcodeParserUtils.getIden3MessageFromQrCode(qrCodeScanningResult);
+    if(mounted){
+      bool? accept = await _showConfirmationDialog(context, iden3message);
+      if (accept == null || !accept) {
+        return;
+      }
+    }
+
     widget._bloc.add(CombinedEvent.onScanQrCodeResponse(qrCodeScanningResult));
   }
 
@@ -522,23 +527,6 @@ class _CombinedScreenState extends State<CombinedScreen> {
     );
   }
 
-/*Widget _buildTAPBar() {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: ElevatedButton(
-        key: CustomWidgetsKeys.authScreenButtonConnect2,
-        onPressed: () {
-          widget._bloc.add(const CombinedEvent.clickTapButton());
-        },
-        style: CustomButtonStyle.primaryButtonStyle,
-        child: const Text(
-          "Tap for TAP",
-          style: CustomTextStyles.primaryButtonTextStyle,
-        ),
-      ),
-    );
-  }*/
-
   Widget _buildBottomBar() {
     return ElevatedButton(
       key: CustomWidgetsKeys.authScreenButtonConnect,
@@ -630,13 +618,6 @@ class _CombinedScreenState extends State<CombinedScreen> {
           ),
         )
         .toList();
-  }
-
-  ///
-  Future<void> _handleNavigateToQrCodeScannerClaimsState() async {
-    String? qrCodeScanningResult =
-        await Navigator.pushNamed(context, Routes.qrCodeScannerPath) as String?;
-    widget._bloc.add(CombinedEvent.onScanQrCodeResponse(qrCodeScanningResult));
   }
 
   ///

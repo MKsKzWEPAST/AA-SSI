@@ -59,6 +59,8 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
 
   AuthModel get auth => _auth;
 
+  get qrcodeParserUtils => _qrcodeParserUtils;
+
   Future<void> _handleProfileSelected(
       ProfileSelectedEvent event, Emitter<CombinedState> emit) async {
     selectedProfile = event.profile;
@@ -85,8 +87,6 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
           "Thid: ${iden3message.thid}, Body: ${iden3message.body} "
           "From: ${iden3message.from}, To: ${iden3message.to ?? ''} [end]");
 
-
-
       switch (iden3message.messageType) {
         case Iden3MessageType.proofContractInvokeRequest:
           logger().i("[debugging-combined] -- On-chain verification: Checkpoint 1--");
@@ -94,7 +94,6 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
           if (emit.isDone) return;
 
           emit(CombinedState.loaded(iden3message));
-
 
           emit(const CombinedState.loading());
 
