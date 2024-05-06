@@ -1,4 +1,3 @@
-// TOKEN decimals set at 18 (common decimals for price)
 import {Presets} from "userop";
 
 export const TOKEN_ADDRESSES = new Map([
@@ -16,7 +15,6 @@ export const TOKEN_ABIS = new Map([
 export const TOKEN_DECIMALS = BigInt(18);
 
 // stackup =======================
-
 export const rpcUrl = 'https://api.stackup.sh/v1/node/04832ebeb6088d4ca33e86e7bc9054fdc03115d2d1e295df3122acf11817fb95';
 export const paymasterUrl = 'https://api.stackup.sh/v1/paymaster/04832ebeb6088d4ca33e86e7bc9054fdc03115d2d1e295df3122acf11817fb95';
 export const paymasterMiddleware = Presets.Middleware.verifyingPaymaster(paymasterUrl, {type: 'payg'});

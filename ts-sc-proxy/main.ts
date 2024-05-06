@@ -167,6 +167,10 @@ async function initOrder(orderID: number, price: number, ageRequired: boolean) {
 const app = express();
 const PORT = process.env.PORT || 3003;
 
+// enables the use of ngrok without disabling protections
+const cors = require('cors');
+app.use(cors());
+
 app.use(bodyParser.json());
 app.use(
     bodyParser.urlencoded({
