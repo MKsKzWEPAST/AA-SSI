@@ -18,7 +18,7 @@ contract ageZKPVerifier is IZKPVerifier, Ownable2StepUpgradeable {
 
     uint64 public constant REQUEST_ID = 1;
 
-    address public smartMoneyAddress = 0x0000000000000000000000000000000000000000;
+    address public smartMoneyAddress = address(0);
 
     function setSmartMoneyAddress(address _smartMoneyAddress) external onlyOwner {
         smartMoneyAddress = _smartMoneyAddress;
