@@ -13,9 +13,14 @@ contract SmartMoney is Ownable(msg.sender) {
     // Define the mapping from orderID to order details
     mapping(uint256 => Order) public orders;
     address public shopAddress = 0x40775600Bb4E2E4Ab1c24B5c8bA4734cC47EE02E;
+    address public verifierAddress = 0x0000000000000000000000000000000000000000;
 
     function setShopAddress(address _shopAddress) external onlyOwner {
         shopAddress = _shopAddress;
+    }
+
+    function setVerifierAddress(address _verifierAddress) external onlyOwner {
+        verifierAddress = _verifierAddress;
     }
 
     struct Order {
@@ -54,7 +59,8 @@ contract SmartMoney is Ownable(msg.sender) {
     }
 
     // Notification function for the verification status of the order
-    function notify(uint256 orderID, bool verified) external onlyOwner {
+    function notify(uint256 orderID, bool verified) external {
+        require(msg.sender == verifierAddress, "Only the set verifier can notify.");
         require(orders[orderID].price > 0, "Order does not exist");
         require(orders[orderID].verified == false, "Order already verified");
         orders[orderID].verified = verified;
