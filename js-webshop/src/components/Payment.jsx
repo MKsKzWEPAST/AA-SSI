@@ -2,19 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {QRCodeSVG} from "qrcode.react";
 import {IconBox} from "./Graphical";
 
-function confirmCheckoutButton({valid, validatePayment}) {
-    return (<button
-        className="w-100 btn btn-primary "
-        type="submit"
-        disabled={!valid}
-        onClick={validatePayment}
-        style={{boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)'}}>
-        Confirm Checkout!
-
-    </button>);
-}
-
-const PaymentOptions = ({validatePayment, price, orderID}) => {
+const PaymentOptions = ({price, orderID}) => {
     const [QRHolder, setQRHolder] = useState(<div className="spinner-border" role="status">
         <span className="sr-only">Loading...</span>
     </div>);
@@ -24,7 +12,7 @@ const PaymentOptions = ({validatePayment, price, orderID}) => {
         if (orderID != null) {
             setQRHolder(<QRCodeSVG value={`amoy:0x1973dD4486c8BA89C7ab3988Cc54e60F6E54Ef66:${price}:${orderID}`} size={window.innerHeight * 0.2}/>);
         }
-    }, [orderID]);
+    }, [orderID, price]);
 
     return (
         <div className={"d-flex flex-column m-3 align-items-center justify-content-center"}>

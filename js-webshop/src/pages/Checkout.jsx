@@ -20,7 +20,7 @@ const Checkout = () => {
     const [isCollapsedBilling, setIsCollapsedBilling] = useState(true);
     let requireAgeVerified = false;
 
-    const [orderID, setOrderID] = useState(Math.floor(Math.random() * maxOrderID) + 1);
+    const [orderID] = useState(Math.floor(Math.random() * maxOrderID) + 1);
     const [orderInitialized, setOrderInitialized] = useState(false);
 
     async function initOrder(orderID, price, requireAgeVerified) {

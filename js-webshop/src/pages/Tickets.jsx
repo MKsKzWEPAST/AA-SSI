@@ -1,7 +1,6 @@
 import React from "react";
 import {Link, useLocation} from "react-router-dom";
-import {useDispatch,useSelector} from "react-redux";
-import {addTickets} from "../redux/action";
+import {useSelector} from "react-redux";
 import QRCode from 'qrcode.react';
 import './tickets.css'
 import {motion} from "framer-motion";
@@ -10,7 +9,6 @@ import sha256 from "crypto-js/sha256";
 
 
 const Tickets = () => {
-    const dispatch = useDispatch();
     const user = useSelector((state) => state.handleLogin)
     const location = useLocation();
     const nb_tickets = location.state.nb_of_tickets

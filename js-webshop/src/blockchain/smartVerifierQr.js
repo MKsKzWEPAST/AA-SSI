@@ -22,7 +22,7 @@ export default function GetAuthRequestAge(orderID) {
                         "context": "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v3.json-ld",
                         "credentialSubject": {
                             "birthday": {
-                                "$lt": 20060429 //getYYYYMMDD18()
+                                "$lt": 20060429 // getYYYYMMDD18()
                             }
                         },
                         "type": "KYCAgeCredential"
@@ -35,10 +35,10 @@ export default function GetAuthRequestAge(orderID) {
     return JSON.stringify(data);
 }
 
-function getYYYYMMDD18() {
+/* when verifier contract gets updated every day function getYYYYMMDD18() {
     const date = new Date();
     const year = date.getFullYear() - 18;
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return parseInt(`${year}${month}${day}`);
-}
+}*/
