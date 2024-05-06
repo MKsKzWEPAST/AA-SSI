@@ -14,3 +14,10 @@ contracts/scripts/package-lock.json
 /ts-sc-proxy/identifier.sqlite
 /ts-sc-proxy/proxydb.sqlite
 /ts-sc-proxy/package-lock.json
+contracts/scripts/.env
+flu-wallet/.env
+js-webshop/.env
+.idea/vcs.xml
+.idea/modules.xml
+.idea/AA-SSI.iml
+flu-wallet/devtools_options.yaml
