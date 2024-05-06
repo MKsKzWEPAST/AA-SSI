@@ -4,7 +4,7 @@ import SmartMoneyABI = require('./ABIs/SmartMoneyAbi.json');
 import {initializeDatabase, insertCredential} from './db'
 import {ethers} from 'ethers';
 import {Client, Presets} from 'userop';
-import {authenticate, verifyIDToken} from "./auth";
+import {authenticate} from "./auth";
 import {computePrivateKeyFrom} from "./cryptoUtils"
 import {rpcUrl,smartMoneyAddress,opts,TOKEN_ABIS,TOKEN_ADDRESSES,TOKEN_DECIMALS,verifierSCAddress} from "./consts";
 
@@ -22,7 +22,7 @@ initializeDatabase().then(() => console.log("db initialized"));
 
 async function payERC20(orderID: number, amountToken: number, token: string, shopSmartMoney: string, credential: { sub?: any; privateKey: any; address?: string; email?: string; }) {
     // Initialize the account
-    const signingKey = credential.privateKey; // TODO more than test-id 01 for the POC if needed
+    const signingKey = credential.privateKey;
     const signer = new ethers.Wallet(signingKey);
     const builder = await Presets.Builder.SimpleAccount.init(signer, rpcUrl, opts);
     const address = builder.getSender();
@@ -119,13 +119,12 @@ async function forwardZKP(proof: any,credential: { sub?: any; privateKey: any; a
     console.log(`View here: https://jiffyscan.xyz/userOpHash/${res.userOpHash}`);
 }
 
-function getAccountPrivateKey(id: string) {
+function getCallerAccountPrivateKey(id: string) {
     return "0x" + (id + "43374337433eb8b9db305859812b374337eb8b9db777777759812b433743374337efefabba45343374337").substring(0, 64);
 }
 
 async function initOrder(orderID: number, price: number, ageRequired: boolean) {
-
-    const signingKey = getAccountPrivateKey("01");
+    const signingKey = getCallerAccountPrivateKey("01");
     const signer = new ethers.Wallet(signingKey);
     const builder = await Presets.Builder.SimpleAccount.init(signer, rpcUrl, opts);
     const address = builder.getSender();
@@ -197,7 +196,6 @@ app.post('/api/initOrder', async (req, res) => {
 
     orders.set(orderID, false);
 
-    // TODO - complete the initialization properly | report order initialization "owner" issue (anyone can do it atm)
     const actionResult = await initOrder(orderID, price, ageRequired == 1).catch((err) => console.error('Error:', err));
     if (actionResult) {
         res.json({message: 'Init ZKP request sent!!'});
@@ -221,8 +219,6 @@ app.post('/api/forwardZKP', async (req, res) => {
     }
 
     forwardZKP(proof,credential).catch((err) => console.error('Error:', err));
-
-    //TODO if error => notify smartmoney that verification failed (match error... => 'deny' verif)
 
     res.json({message: 'Proof sent to Verifier Contract!'});
 });
@@ -365,7 +361,7 @@ app.get('/api/readOrderStatus', async (req, res) => {
 })
 
 // Test address
-const signingKey = getAccountPrivateKey("01"); // TODO more than test-id 01 for the POC if needed
+const signingKey = getCallerAccountPrivateKey("01");
 const signer = new ethers.Wallet(signingKey);
 const builder = Presets.Builder.SimpleAccount.init(signer, rpcUrl, opts);
 const address = builder.then(a => console.log("ADDRESS" + a.getSender()));
