@@ -10,7 +10,7 @@ import {IZKPVerifier} from "@iden3/contracts/interfaces/IZKPVerifier.sol";
 import {ArrayUtils} from "@iden3/contracts/lib/ArrayUtils.sol";
 import "../smart-money/smart-money.sol";
 
-    contract ageZKPVerifier is IZKPVerifier, Ownable2StepUpgradeable {
+contract ageZKPVerifier is IZKPVerifier, Ownable2StepUpgradeable {
     /**
      * @dev Max return array length for request queries
      */
@@ -18,7 +18,11 @@ import "../smart-money/smart-money.sol";
 
     uint64 public constant REQUEST_ID = 1;
 
-     SmartMoney public smc = SmartMoney(0x46B5B8D72c7475E30E949F32b373B6A388E077D6); 
+    address public smartMoneyAddress = 0x0000000000000000000000000000000000000000;
+
+    function setSmartMoneyAddress(address _smartMoneyAddress) external onlyOwner {
+        smartMoneyAddress = _smartMoneyAddress;
+    }
 
     /// @dev Main storage structure for the contract
     struct ZKPVerifierStorage {
@@ -28,7 +32,7 @@ import "../smart-money/smart-money.sol";
 
     // keccak256(abi.encode(uint256(keccak256("iden3.storage.ZKPVerifier")) - 1)) & ~bytes32(uint256(0xff));
     bytes32 internal constant ZKPVerifierStorageLocation =
-        0x512d18c55869273fec77e70d8a8586e3fb133e90f1db24c6bcf4ff3506ef6a00;
+    0x512d18c55869273fec77e70d8a8586e3fb133e90f1db24c6bcf4ff3506ef6a00;
 
     /// @dev Get the main storage using assembly to ensure specific storage location
     function _getZKPVerifierStorage() internal pure returns (ZKPVerifierStorage storage $) {
@@ -47,7 +51,7 @@ import "../smart-money/smart-money.sol";
      * This value is immutable: it can only be set once during
      * construction.
      */
-     
+
     function __ZKPVerifier_init(address initialOwner) internal onlyInitializing {
         ___ZKPVerifier_init_unchained(initialOwner);
     }
@@ -63,10 +67,10 @@ import "../smart-money/smart-money.sol";
         uint256[2][2] calldata b,
         uint256[2] calldata c
     ) public override {
-        
+
         ZKPVerifierStorage storage s = _getZKPVerifierStorage();
         IZKPVerifier.ZKPRequest storage request = s.request;
-        
+
         require(
             request.validator != ICircuitValidator(address(0)),
             "validator is not set for this request id"
@@ -97,7 +101,7 @@ import "../smart-money/smart-money.sol";
     }
 
     function requestIdExists(uint64 requestId) public pure override returns (bool) {
-       return (requestId == 1);
+        return (requestId == 1);
     }
 
     function getZKPRequests(
@@ -105,10 +109,10 @@ import "../smart-money/smart-money.sol";
         uint256 length
     ) public view override returns (IZKPVerifier.ZKPRequest[] memory) {
         ZKPVerifierStorage storage s = _getZKPVerifierStorage();
-       
+
         IZKPVerifier.ZKPRequest[] memory result = new IZKPVerifier.ZKPRequest[](1);
         result[0] = s.request;
-        
+
         return result;
     }
 
@@ -117,13 +121,15 @@ import "../smart-money/smart-money.sol";
      */
     function _afterProofSubmit(
         uint64 nonce
-    ) internal  {
-        // smartMoney logic 
+    ) internal {
+        // smartMoney logic
+        SmartMoney smc = SmartMoney(smartMoneyAddress);
         smc.notify(nonce, true);
     }
 
     function deny(uint64 requestId) public onlyOwner {
-        // smartMoney logic 
+        // smartMoney logic
+        SmartMoney smc = SmartMoney(smartMoneyAddress);
         smc.notify(requestId, false);
     }
 }
