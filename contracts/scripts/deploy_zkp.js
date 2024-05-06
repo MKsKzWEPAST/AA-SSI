@@ -2,12 +2,12 @@ const { Web3 } = require("web3");
 const { poseidon } = require("@iden3/js-crypto");
 const { SchemaHash } = require("@iden3/js-iden3-core");
 const { prepareCircuitArrayValues } = require("@0xpolygonid/js-sdk");
-const {ethers} = require('ethers');
+const { ethers} = require('ethers');
 require('dotenv').config()
 
 const deploy_private_key = "b" + process.env.DEPLOY_PRIVATE_KEY;
 const amoy_rpc = process.env.AMOY_RPC;
-const ageVerifierAddress = process.env.AGE_VERIFIER_ADDRESS;
+const age_verifier_address = process.env.AGE_VERIFIER_ADDRESS;
 
 const VerifierABI = require('./AgeVerifier.json');
 function packV2ValidatorParams(query, allowedIssuers= []) {
@@ -102,7 +102,7 @@ async function main() {
 
     const provider = new ethers.providers.JsonRpcProvider(amoy_rpc);
     const signer = new ethers.Wallet(deploy_private_key,provider)
-    const ageVerifier = new ethers.Contract(ageVerifierAddress, VerifierABI, signer);
+    const ageVerifier = new ethers.Contract(age_verifier_address, VerifierABI, signer);
 
     // current sig validator address on polygon amoy
     const validatorAddressSig = '0x8c99F13dc5083b1E4c16f269735EaD4cFbc4970d';
@@ -139,7 +139,7 @@ async function main() {
         body: {
             reason: 'verify your age',
             transaction_data: {
-                contract_address: ageVerifierAddress,
+                contract_address: age_verifier_address,
                 method_id: 'b68967e2',
                 chain_id: chainId,
                 network: network

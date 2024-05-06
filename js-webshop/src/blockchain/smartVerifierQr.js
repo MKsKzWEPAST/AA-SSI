@@ -1,3 +1,6 @@
+require('dotenv').config()
+const age_verifier_address = process.env.AGE_VERIFIER_ADDRESS;
+
 export default function GetAuthRequestAge(orderID) {
 
     const data = {
@@ -8,7 +11,7 @@ export default function GetAuthRequestAge(orderID) {
         "body": {
             "reason": "Age check for alcohol",
             "transaction_data": {
-                "contract_address": "0x1cf0a1819Dd8853d5c69f6896Fe78373Dd33b962",
+                "contract_address": age_verifier_address,
                 "method_id": "b68967e2",
                 "chain_id": 80002,
                 "network": "polygon-amoy"
@@ -22,7 +25,7 @@ export default function GetAuthRequestAge(orderID) {
                         "context": "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v3.json-ld",
                         "credentialSubject": {
                             "birthday": {
-                                "$lt": 20060429 // getYYYYMMDD18()
+                                "$lt": 20060506 // FIXME : set request every day on verifier. - getYYYYMMDD18()
                             }
                         },
                         "type": "KYCAgeCredential"

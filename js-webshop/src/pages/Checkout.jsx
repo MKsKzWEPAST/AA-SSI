@@ -7,6 +7,9 @@ import {motion} from "framer-motion";
 import {PaymentOptions, AgeAuth} from "../components";
 import Spinner from 'react-bootstrap/Spinner';
 
+require('dotenv').config()
+const back_end_base_url = process.env.BACK_END_BASE_URL;
+
 const maxOrderID = 2 ** 52; // fit with some margin in uint64 + no precision loss in js
 
 const Checkout = () => {
@@ -25,7 +28,7 @@ const Checkout = () => {
 
     async function initOrder(orderID, price, requireAgeVerified) {
         try {
-            const response = await fetch(`https://broadly-assured-piglet.ngrok-free.app/api/initOrder?orderID=${orderID}&price=${price}&ageReq=${requireAgeVerified ? 1 : 0}`, {
+            const response = await fetch(`${back_end_base_url}/api/initOrder?orderID=${orderID}&price=${price}&ageReq=${requireAgeVerified ? 1 : 0}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -51,7 +54,7 @@ const Checkout = () => {
                 "accept": "application/json",
             };
 
-            const response = await fetch(`https://broadly-assured-piglet.ngrok-free.app/api/getOrderStatus?orderID=${orderID}`, {
+            const response = await fetch(`${back_end_base_url}/api/getOrderStatus?orderID=${orderID}`, {
                 method: 'GET',
                 headers: headers
             });
