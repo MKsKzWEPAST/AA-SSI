@@ -6,9 +6,9 @@ import {clearCart} from "../redux/action";
 import {motion} from "framer-motion";
 import {PaymentOptions, AgeAuth} from "../components";
 import Spinner from 'react-bootstrap/Spinner';
+import {BACK_END_BASE_URL} from "../consts";
 
-require('dotenv').config()
-const back_end_base_url = process.env.BACK_END_BASE_URL;
+const back_end_base_url = BACK_END_BASE_URL;
 
 const maxOrderID = 2 ** 52; // fit with some margin in uint64 + no precision loss in js
 

@@ -6,6 +6,9 @@ import './tickets.css'
 import {motion} from "framer-motion";
 import axios from "axios";
 import sha256 from "crypto-js/sha256";
+import {BACK_END_BASE_URL} from "../consts";
+
+const back_end_base_url = BACK_END_BASE_URL;
 
 
 const Tickets = () => {
@@ -53,7 +56,7 @@ const Tickets = () => {
                         email: email
                     };
                     const fan_ticket = JSON.stringify(fan_tick)
-                    axios.post("https://griffon-loved-physically.ngrok-free.app/api/notify/purchase",fan_ticket)
+                    axios.post(`${back_end_base_url}/api/notify/purchase`,fan_ticket)
                         .then(r => null)
                     nonces.push(nonce)
                 }

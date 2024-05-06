@@ -1,5 +1,6 @@
-require('dotenv').config()
-const age_verifier_address = process.env.AGE_VERIFIER_ADDRESS;
+import {AGE_VERIFIER_ADDRESS} from "../consts";
+
+const age_verifier_address = AGE_VERIFIER_ADDRESS;
 
 export default function GetAuthRequestAge(orderID) {
 
