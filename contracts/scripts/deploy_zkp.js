@@ -3,6 +3,11 @@ const { poseidon } = require("@iden3/js-crypto");
 const { SchemaHash } = require("@iden3/js-iden3-core");
 const { prepareCircuitArrayValues } = require("@0xpolygonid/js-sdk");
 const {ethers} = require('ethers');
+require('dotenv').config()
+
+const deploy_private_key = "b" + process.env.DEPLOY_PRIVATE_KEY;
+const amoy_rpc = process.env.AMOY_RPC;
+const ageVerifierAddress = process.env.AGE_VERIFIER_ADDRESS;
 
 const VerifierABI = require('./AgeVerifier.json');
 function packV2ValidatorParams(query, allowedIssuers= []) {
@@ -95,16 +100,13 @@ async function main() {
     // set default query
     const circuitIdSig = 'credentialAtomicQuerySigV2OnChain';
 
-    const ageVerifierAddress = "0x1cf0a1819Dd8853d5c69f6896Fe78373Dd33b962";
-    const provider = new ethers.providers.JsonRpcProvider("https://polygon-amoy.g.alchemy.com/v2/tZIEm32QWH6cinpYSA8Yo7u0m2ZqtF1i");
-    const signer = new ethers.Wallet("b955724e0a636ee776023399c2555e48453072b7f0f4ab1deedc10e61dda4f31",provider)
+    const provider = new ethers.providers.JsonRpcProvider(amoy_rpc);
+    const signer = new ethers.Wallet(deploy_private_key,provider)
     const ageVerifier = new ethers.Contract(ageVerifierAddress, VerifierABI, signer);
 
     // current sig validator address on polygon amoy
     const validatorAddressSig = '0x8c99F13dc5083b1E4c16f269735EaD4cFbc4970d';
-
     const network = 'polygon-amoy';
-
     const chainId = 80002;
 
     const query = {
