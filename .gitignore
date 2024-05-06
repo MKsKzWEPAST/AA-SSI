@@ -21,3 +21,4 @@ js-webshop/.env
 .idea/modules.xml
 .idea/AA-SSI.iml
 flu-wallet/devtools_options.yaml
+js-webshop/src/consts.js
