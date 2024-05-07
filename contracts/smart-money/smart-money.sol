@@ -14,6 +14,7 @@ contract SmartMoney is Ownable(msg.sender) {
     mapping(uint256 => Order) public orders;
     address public shopAddress = 0x40775600Bb4E2E4Ab1c24B5c8bA4734cC47EE02E;
     address public verifierAddress = address(0);
+    mapping(address => bool) public validTokens;
 
     function setShopAddress(address _shopAddress) external onlyOwner {
         shopAddress = _shopAddress;
@@ -21,6 +22,14 @@ contract SmartMoney is Ownable(msg.sender) {
 
     function setVerifierAddress(address _verifierAddress) external onlyOwner {
         verifierAddress = _verifierAddress;
+    }
+
+    function addValidToken(address _tokenAddress) external onlyOwner {
+        validTokens[_tokenAddress] = true;
+    }
+
+    function remValidToken(address _tokenAddress) external onlyOwner {
+        validTokens[_tokenAddress] = false;
     }
 
     struct Order {
@@ -42,6 +51,7 @@ contract SmartMoney is Ownable(msg.sender) {
     function payErc20(uint256 orderID, address _token, uint256 amount) external {
         require(orders[orderID].price == amount && amount>0, "Order does not exist or price doesn't match [ERC20]");
         require(!orders[orderID].paid, "Order already paid [ERC20]");
+        require(validTokens[_token], "Unsupported token.");
 
         IERC20 tokenContract = IERC20(_token);
 
