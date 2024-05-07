@@ -6,6 +6,7 @@ import {motion} from "framer-motion";
 import {PaymentOptions, AgeAuth} from "../components";
 import Spinner from 'react-bootstrap/Spinner';
 import {BACK_END_BASE_URL} from "../consts";
+import {startListenForID} from "../blockchain/eventListner";
 
 const back_end_base_url = BACK_END_BASE_URL;
 
@@ -67,7 +68,7 @@ const Checkout = () => {
                 return true; // Order completed, exit loop
             }
 
-            await new Promise(resolve => setTimeout(resolve, 15000));
+            await new Promise(resolve => setTimeout(resolve, 5000));
         }
     }
 
@@ -89,6 +90,14 @@ const Checkout = () => {
                     setOrderInitialized(true);
                     console.log("Order initialized: ", orderID, fastState.product.price * fastState.product.qty, requireAgeVerified);
 
+                    /*startListenForID(orderID, (success) => {
+                        if (success === undefined || !success) {
+                            console.log("Failed to confirm that order was processed.");
+                        } else {
+                            console.log("Order paid and processed.");
+                            navigate('/thanks');
+                        }
+                    })*/
                     checkOrderStatus(orderID).then(success => {
                         if (success === undefined || !success) {
                             console.log("Failed to confirm that order was processed.");
@@ -99,7 +108,7 @@ const Checkout = () => {
                     });
                 } else {
                     console.log("Failed to initialize order: ", orderID, fastState.product.price * fastState.product.qty, requireAgeVerified);
-                    // TODO react if fail to init (or display toast)
+                    // TODO react if fail to init (or display toast) "something went wrong initializing the order sorry"
                 }
             });
         }
