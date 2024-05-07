@@ -2,9 +2,7 @@ import { OAuth2Client } from 'google-auth-library';
 
 import admin = require("firebase-admin");
 import {getCredential} from "./db";
-
-
-const CLIENT_ID = "423030272874-t2q3clv1q6cgnqbu29f545s690cp3bje.apps.googleusercontent.com";
+import {CLIENT_ID} from "./consts";
 
 const client = new OAuth2Client(CLIENT_ID);
 export async function verifyIDToken(idToken: string) {

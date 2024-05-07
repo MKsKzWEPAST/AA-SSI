@@ -22,3 +22,4 @@ js-webshop/.env
 .idea/AA-SSI.iml
 flu-wallet/devtools_options.yaml
 js-webshop/src/consts.js
+ts-sc-proxy/proxydb.sqlite
