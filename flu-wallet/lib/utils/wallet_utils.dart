@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -38,6 +40,14 @@ Future<String> registerOrFetchSmartAccount(String id_token, String email) async 
     } else {
       // Handle the case where the server did not return a 200 OK response
       logger().i("Error, received non-200 response when fetching address: ${response.reasonPhrase}");
+      Fluttertoast.showToast(
+          msg: "Couldn't retrieve account",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
       return "";
     }
   } catch (e) {
