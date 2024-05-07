@@ -700,7 +700,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
     final proxy = dotenv.env["PROXY_URL"];
     final response = await http.post(
       Uri.parse(
-          '$proxy/api/sendRC20?storeAddress=$storeAddress&orderID=$orderID&amount=$amount&token=$coin'),
+          '$proxy/api/sendERC20?storeAddress=$storeAddress&orderID=$orderID&amount=$amount&token=$coin'),
       headers: {"content-type": "application/json"},
       body: jsonEncode({
         "coin": coin,

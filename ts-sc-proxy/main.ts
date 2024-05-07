@@ -227,7 +227,7 @@ app.post('/api/forwardZKP', async (req, res) => {
     res.json({message: 'Proof sent to Verifier Contract!'});
 });
 
-app.post('/api/sendRC20', async (req, res) => {
+app.post('/api/sendERC20', async (req, res) => {
     console.log("\n====SendERC20====")
 
     const id_token = req.body.id_token;
