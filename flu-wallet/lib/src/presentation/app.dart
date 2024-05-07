@@ -40,7 +40,8 @@ class AppState extends State<App> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused || state == AppLifecycleState.detached) {
+    // if the app is terminated, log out
+    if (state == AppLifecycleState.detached) {
      getIt<AuthModel>().signOutFromGoogle().then((value) =>  logger().i("signed-out"));
     }
   }
