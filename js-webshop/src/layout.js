@@ -5,7 +5,6 @@ import {
     Checkout,
     Home,
     PageNotFound,
-    Tickets,
     Thanks
 } from "./pages";
 import {AnimatePresence} from "framer-motion";
@@ -18,9 +17,7 @@ const Layout = () => {
             <Routes location={location} key={location.pathname}>
                 <Route path="/" element={<Home/>}/>
                 <Route path="/checkout" element={<Checkout/>}/>
-                <Route path="/tickets" element={<Tickets/>}/>
                 <Route path="*" element={<PageNotFound/>}/>
-                <Route path="/product/*" element={<PageNotFound/>}/>
                 <Route path="/thanks" element={<Thanks/>}/>
             </Routes>
         </AnimatePresence>

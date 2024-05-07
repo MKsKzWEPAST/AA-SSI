@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from "react";
-import {useDispatch, useSelector} from "react-redux";
+import {useSelector} from "react-redux";
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import {BsChevronDown, BsChevronUp} from 'react-icons/bs';
-import {clearCart} from "../redux/action";
 import {motion} from "framer-motion";
 import {PaymentOptions, AgeAuth} from "../components";
 import Spinner from 'react-bootstrap/Spinner';
@@ -19,7 +18,6 @@ const Checkout = () => {
 
     let state = useSelector((state) => state.handleCart);
     const navigate = useNavigate();
-    let dispatch = useDispatch();
     const [isCollapsedBilling, setIsCollapsedBilling] = useState(true);
     let requireAgeVerified = false;
 
@@ -73,13 +71,19 @@ const Checkout = () => {
         }
     }
 
-    if (fastState != null && fastState.product.qty > 0) {
+    if (fastState != null && fastState.product != null && fastState.product.qty > 0) {
         state = [fastState.product];
         requireAgeVerified = fastState.product['18required'];
     }
 
     useEffect(() => {
-        if (!orderInitialized) {
+        if (fastState == null || fastState.product == null || fastState.product.qty === 0) {
+            navigate('/*');
+        }
+    });
+
+    useEffect(() => {
+        if (!orderInitialized && fastState != null && fastState.product != null && fastState.product.qty > 0) {
             initOrder(orderID, fastState.product.price * fastState.product.qty, requireAgeVerified).then(result => {
                 if (result) {
                     setOrderInitialized(true);
@@ -99,7 +103,7 @@ const Checkout = () => {
                 }
             });
         }
-    }, [fastState, requireAgeVerified, orderID, orderInitialized, navigate]);
+    }, );
 
 
     let nb_tickets = 0;
@@ -166,18 +170,13 @@ const Checkout = () => {
             </div>;
         }
 
-        function validatePayment() {
-            navigate("/Tickets", {state: {nb_of_tickets: nb_tickets}});
-            dispatch(clearCart(null));
-        }
-
         function paymentOptions() {
             return <div className="card mb-4">
                 <div className="card-header py-3">
                     <h4 className="mb-0">Payment</h4>
                 </div>
                 <div className="card-body">
-                    <PaymentOptions validatePayment={validatePayment} price={subtotal} orderID={orderID}/>
+                    <PaymentOptions  price={subtotal} orderID={orderID}/>
                 </div>
             </div>;
         }
