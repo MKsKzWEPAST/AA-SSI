@@ -29,6 +29,8 @@ class CustomStrings {
       "Authenticate through verifier provider by scanning QR Code.\nIf you are already authenticated, you can skip this step";
   static const String authSuccess = "Authenticated successfully";
 
+  static const String proofSentSuccess = "Proof sent for verification";
+
   // CLAIMS
   static const String claimsTitle = "Your credentials:";
   static const String claimsDescription =

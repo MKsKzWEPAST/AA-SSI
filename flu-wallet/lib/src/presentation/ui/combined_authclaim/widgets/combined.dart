@@ -179,6 +179,8 @@ class _CombinedScreenState extends State<CombinedScreen> {
                 const SizedBox(height: 5),
                 _buildProgress(),
                 const SizedBox(height: 5),
+                _buildProofSentSuccessSection(),
+                const SizedBox(height: 5),
                 _buildAuthenticationSuccessSection(),
                 const SizedBox(height: 10),
                 _buildErrorSection(),
@@ -401,14 +403,26 @@ class _CombinedScreenState extends State<CombinedScreen> {
   Future<void> _handleNavigateToQrCodeScannerCombinedState() async {
     String? qrCodeScanningResult =
         await Navigator.pushNamed(context, Routes.qrCodeScannerPath) as String?;
+    try {
+      final Iden3MessageEntity iden3message =
+      await widget._bloc.qrcodeParserUtils.getIden3MessageFromQrCode(qrCodeScanningResult);
 
-    final Iden3MessageEntity iden3message =
-    await widget._bloc.qrcodeParserUtils.getIden3MessageFromQrCode(qrCodeScanningResult);
-    if(mounted){
-      bool? accept = await _showConfirmationDialog(context, iden3message);
-      if (accept == null || !accept) {
-        return;
+      if(mounted){
+        bool? accept = await _showConfirmationDialog(context, iden3message);
+        if (accept == null || !accept) {
+          return;
+        }
       }
+    } catch (error) {
+      Fluttertoast.showToast(
+          msg: "Wrong QR Code...",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+      // return;
     }
 
     widget._bloc.add(CombinedEvent.onScanQrCodeResponse(qrCodeScanningResult));
@@ -452,12 +466,33 @@ class _CombinedScreenState extends State<CombinedScreen> {
   }
 
   ///
+  Widget _buildProofSentSuccessSection() {
+    return BlocBuilder(
+      bloc: widget._bloc,
+      builder: (BuildContext context, CombinedState state) {
+        if (state is! ProofSentCombinedState) {
+          return const SizedBox.shrink();
+        }
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Text(
+            CustomStrings.proofSentSuccess,
+            style: CustomTextStyles.descriptionTextStyle
+                .copyWith(color: CustomColors.greenSuccess),
+          ),
+        );
+      },
+    );
+  }
+
+  ///
   Widget _buildAuthenticationSuccessSection() {
     return BlocBuilder(
       bloc: widget._bloc,
       builder: (BuildContext context, CombinedState state) {
-        if (state is! AuthenticatedCombinedState)
+        if (state is! AuthenticatedCombinedState) {
           return const SizedBox.shrink();
+        }
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Text(
@@ -700,7 +735,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
     final proxy = dotenv.env["PROXY_URL"];
     final response = await http.post(
       Uri.parse(
-          '$proxy/api/sendRC20?storeAddress=$storeAddress&orderID=$orderID&amount=$amount&token=$coin'),
+          '$proxy/api/sendERC20?storeAddress=$storeAddress&orderID=$orderID&amount=$amount&token=$coin'),
       headers: {"content-type": "application/json"},
       body: jsonEncode({
         "coin": coin,

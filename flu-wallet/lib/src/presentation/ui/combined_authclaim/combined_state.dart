@@ -38,6 +38,8 @@ class CombinedState with _$CombinedState {
 
   const factory CombinedState.authenticated() = AuthenticatedCombinedState;
 
+  const factory CombinedState.proofSent() = ProofSentCombinedState;
+
   const factory CombinedState.loadedClaims(List<ClaimModel> claimList) =
   LoadedDataCombinedState;
 

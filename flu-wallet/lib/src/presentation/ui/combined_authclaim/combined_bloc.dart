@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
@@ -126,8 +127,6 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
           final proofs = await _polygonIdSdk.iden3comm.getProofs(message: iden3message, genesisDid: did, privateKey: privateKey, profileNonce: nonce,challenge: challenge, config: config);
           final proof = proofs[0];
 
-          emit(const CombinedState.authenticated());
-
           logger().i("[debugging-combined] -- Verification with proof $proof");
 
           final proxy = dotenv.env["PROXY_URL"];
@@ -140,8 +139,10 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
 
           if (response.statusCode == 200) {
             logger().i('Success: ${response.body}');
+            emit(const CombinedState.proofSent());
           } else {
             logger().i('Error: ${response.statusCode}');
+            emit(const CombinedState.error("Couldn't send proof..."));
           }
           break;
 
