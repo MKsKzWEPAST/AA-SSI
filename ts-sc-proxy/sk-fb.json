@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "swisscom-4337-ssi",
+  "private_key_id": "a990487d1768788d800f5f675eb78d1704b512d8",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCfxNE4DU+mL1ZP\nJA5Nj85TNXzUlfYKD+QrJOJOGKqUaboxK/NnmjIp2AX/E/zY9cLtoSpgViu4GqvO\nGAZQ/KIbbmcRx5netlhThdErLsJ1qrcli7EqyfNe1E1o1OTLz/eO5KZfWc3qm8B4\n7nFbZcO+vR37cPW+aVn+RWQKiutBwMgPMtHrjUTBpZoItnREMkjIr2LDn+7XXXv8\n/W74C6uT6ychHUBBgJmMMDtQtPFfHmZvTltKpdXRBM+YMax/dp/4kcAtBzP4nEFj\notpIBRxiuZeN/WVMkeFpPh9BiO13mWZaNEpI0x4M0TtAgUf2cW5YN7cEkxOGsqmH\nHHN7VVWfAgMBAAECggEAFW76AmMGxGylT4iuwokATPln/b0AfOkU2xTfp0p31+E3\nMVGMHeH5yNNKOqYbzZ9qvyZX4QSuaMxrMALZFhROSw/Mk/4LDm23+7yACyMCw3Zb\ni5Xp9quREq+4ks+8wfrsYycZisEpdsfeUlrqqjBEylnko87LqPfJMutsOF3aob9c\nxQcJzH8/xI6C6VdkrXe2vZo1JPUYbeixlxHdYDuO0zvZRNyzZoh+s46gu3X4gbHn\niuDcTojWq0I+oxLiUgIuodYZGt/bS9D9Y/2Ilv6XjP0hxBN8O5sYwZ/pCsKNN6O/\nXpmeEA43DlmAFZ2TNHylEb4JWWnrqZJMCi5xAGm5gQKBgQDT4f8Q7VZR3ig4On0H\n27cZtDUCbmlNgDuJNrOUxdC7zk2fMoBg1yu3SdgAl8IrBsLJUxo6KMJCQ8asXzd9\nN24ioj9XNOeLcZ8OGZlgDKzCNE07euXDSTV/wHXkWLnl3K+WAjah/SQycePKrEb+\nHpHki/rjRrGiVyd4wp6Fr1gP2QKBgQDBCPxZO3J0/aEJhqUZVx2nHypl8p1utIIq\nr9NjzVcmUJojg8C82KGZ7hk2ALs4QxcX9nStYRk72Ova20qf4aROoeOtqG42R7zf\nwISRoHbo3mOLU3apugEs4KsI+5J3WiDQ+WOMhvVLNdDVd6TzXOLBDSMdIi6hTWtY\n74NtP3KeNwKBgBHZexRg+iGhdn/uJXRRBSbMMJ8I0CQwRlOz4QMKeyAnLBDaP0hp\nOAyT0veR0VCwnB47uvzlTCAq94Sz7MfGsKeIRY/CLDNqGf0lGO+ngbJGl68IFm0S\nMMiXXRckhlyf78bSXuncmn0JbSg4xS5JQv8e777PyM0lTHT26EXY1LFZAoGASP/s\n7pHcpwGDdObGaN7ZB+pxTjyB7Ou2jg4QEx4EZyj0IZohuUjzVBMG1bVRF+XHRfie\nBzNBJ7DRAOMNRYk/ab0vLO0VQNHAS52yhJ/6V/ZCDt5xcZ4185LDG5KHwTsETgMB\n8pLXEKo5X4DvkFkAJ6GgNdRHbhipD+kD+ryTy+ECgYBNlPbUaU7ws9D+rMOEW3uz\nMOqSkir1HUiPBeRDKEQAMYo30ZPseK78zBjaFxp+SmYrZE4q7TQaCojnz87+5Y92\nO/lBgisLudMbfs5N9iplEio9/ZZ8WqBQajqzu9YfyShFvjv52kbxVtgU7Jw/4qfQ\n1rJCv3pPM0u/8kZcfz4HAQ==\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-cvdsu@swisscom-4337-ssi.iam.gserviceaccount.com",
+  "client_id": "104081074580297716927",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-cvdsu%40swisscom-4337-ssi.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

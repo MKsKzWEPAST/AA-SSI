@@ -7,6 +7,7 @@ import {Client, Presets} from 'userop';
 import {authenticate} from "./auth";
 import {computePrivateKeyFrom} from "./cryptoUtils"
 import {rpcUrl,smartMoneyAddress,opts,TOKEN_ABIS,TOKEN_ADDRESSES,TOKEN_DECIMALS,verifierSCAddress} from "./consts";
+import admin = require('firebase-admin');
 
 // initializing smart money contracts
 const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
@@ -15,6 +16,9 @@ const smartMoney = new ethers.Contract(smartMoneyAddress, SmartMoneyABI, provide
 // orders from the website
 const orders: Map<number, boolean> = new Map();
 
+export const fbApp = admin.initializeApp({
+    credential: admin.credential.cert("./sk-fb.json")
+});
 
 // user credentials database initialization
 initializeDatabase().then(() => console.log("db initialized"));

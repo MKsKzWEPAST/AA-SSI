@@ -26,7 +26,8 @@ import 'package:http/http.dart' as http;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../../../utils/auth_model.dart';
-
+import 'package:flutter_login/flutter_login.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -54,7 +55,31 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return FlutterLogin(
+      title: 'Secutix Wallet',
+      logo: null,
+      onLogin: signIn,
+      onSignup: signUp,
+
+      loginProviders: <LoginProvider>[
+        LoginProvider(
+          icon: FontAwesomeIcons.google,
+          label: 'Google',
+          callback: () async {
+            await signInGoogle();
+            return null;
+          },
+        ),
+      ],
+      onSubmitAnimationCompleted: () {
+        Navigator.pushNamed(context, Routes.combinedPath);
+      },
+      onRecoverPassword: (v) {
+        Future.delayed(const Duration(milliseconds: 100)).then((value) => "Can't recover password");
+        },
+    );
+
+    /*return Scaffold(
       backgroundColor: CustomColors.background,
         body: Container(
         alignment: Alignment.center,
@@ -83,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ]
         )
     )
-    );
+    );*/
   }
 
   ///
@@ -210,7 +235,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   CrossAxisAlignment.center,
                   children: [
                     const SizedBox(height: 10),
-                    _buildEnterButton(CustomStrings.homeSocialLogin),
+                    _buildGoogleButton(CustomStrings.homeSocialLogin),
                   ],
                 );
               },
@@ -224,28 +249,45 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   ///
-  Widget _buildEnterButton(String text){
+  Widget _buildGoogleButton(String text){
     return ElevatedButton(
         onPressed: () => {
-          signInAndNavigate()
+          signInGoogle()
         },
         child: Text(text));
   }
-  
-  void signInAndNavigate() {
+  Future<String?> signIn(LoginData data) async {
     try {
-      _auth.signInWithGoogle()
-          .then( (v) {
-        {
-          logger().i("logged in");
-          _bloc.add(const HomeEvent.createIdentity());
-          Navigator.pushNamed(context, Routes.combinedPath);
-        }
-      });
+      final s = _auth.signInPassword(data);
+    } catch (e) {
+      return "Issue with the sign-in: $e";
+    }
+    logger().i("logged in");
+    _bloc.add(const HomeEvent.createIdentity());
+    return null;
+  }
+
+  Future<String?> signUp(SignupData data) async {
+    try {
+      final s = _auth.signUpPassword(data);
+    } catch (e) {
+      return "Issue with the sign-in: $e";
+    }
+    logger().i("logged in");
+    _bloc.add(const HomeEvent.createIdentity());
+    return null;
+  }
+
+
+  Future<String> signInGoogle() async {
+    try {
+      return _auth.signInWithGoogle();
     } catch (error) {
       logger().i("Error while signing in: $error");
-      return;
+      return "";
     }
+    logger().i("logged in");
+    _bloc.add(const HomeEvent.createIdentity());
   }
   ///
   Widget _buildErrorSection() {
