@@ -31,46 +31,5 @@ export const clearCart = (products) =>{
     }
 }
 
-// ================ handle store mode ====================
-//========================================================
-
-// switch store mode
-export const switchMode = () =>{
-    return{
-        type:"SWITCH"
-    }
-}
-
-// ================ handle login ====================
-//========================================================
-
-export const signIn = (email,firstName,lastName,sessionToken,phone) => {
-    return{
-        type:"SIGN_IN",
-        payload: {
-            email: email,
-            first_name: firstName,
-            last_name: lastName,
-            session_token: sessionToken,
-            phone: phone,
-            tickets: []
-        }
-    }
-}
-
-export const clear = () => {
-    return{
-        type:"CLEAR",
-        payload: "",
-    }
-}
-
-export const addTickets = (tickets) => {
-    return{
-        type:"CLEAR",
-        payload: tickets
-    }
-}
-
 
 
