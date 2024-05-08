@@ -44,14 +44,16 @@ const Checkout = () => {
         } catch (error) {
             console.error('Error initializing order:', error);
             toast.error("Couldn't initialize the order",
-                {position: "top-center", autoClose: 2500,
+                {
+                    position: "top-center", autoClose: 2500,
                     hideProgressBar: false,
                     closeOnClick: true,
                     pauseOnHover: false,
                     draggable: false,
                     progress: undefined,
                     theme: "dark",
-                    transition: Bounce, onClose: props => navigate('/')});
+                    transition: Bounce, onClose: props => navigate('/')
+                });
             return false;
         }
     }
@@ -63,55 +65,67 @@ const Checkout = () => {
                 "accept": "application/json",
             };
 
-            const response = await fetch(`${back_end_base_url}/api/getOrderStatus?orderID=${orderID}`, {
-                method: 'GET',
-                headers: headers
-            });
+            try {
 
-            if (!response.ok) {
-                console.log('Failed to fetch order status');
-                toast.error("Failed to check the order status",
-                    {position: "top-center", autoClose: 2500,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: false,
-                        draggable: false,
-                        progress: undefined,
-                        theme: "dark",
-                        onClose: props => navigate('/')});
-                return false;
-            }
 
-            const {event_status} = await response.json();
-            switch (event_status) {
-                case 0: // Still waiting for an update
-                    break;
-                case 1:
-                    toast.success("Payment successful!",
-                        {position: "top-center", autoClose: 2500,
+                const response = await fetch(`${back_end_base_url}/api/getOrderStatus?orderID=${orderID}`, {
+                    method: 'GET',
+                    headers: headers
+                });
+
+                if (!response.ok) {
+                    console.log('Failed to fetch order status');
+                    toast.error("Failed to check the order status",
+                        {
+                            position: "top-center", autoClose: 2500,
                             hideProgressBar: false,
                             closeOnClick: true,
                             pauseOnHover: false,
                             draggable: false,
                             progress: undefined,
-                            theme: "dark"});
-                    //TODO cover qr
-                    break;
-                case 2:
-                    toast.success("Age verification successful!",
-                        {position: "top-center", autoClose: 2500,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: false,
-                            draggable: false,
-                            progress: undefined,
-                            theme: "dark"});
-                    //TODO cover qr
-                    break;
-                case 3:
-                    return true;
-                default:
+                            theme: "dark",
+                            onClose: props => navigate('/')
+                        });
                     return false;
+                }
+
+                const {event_status} = await response.json();
+                switch (event_status) {
+                    case 0: // Still waiting for an update
+                        break;
+                    case 1:
+                        toast.success("Payment successful!",
+                            {
+                                position: "top-center", autoClose: 2500,
+                                hideProgressBar: false,
+                                closeOnClick: true,
+                                pauseOnHover: false,
+                                draggable: false,
+                                progress: undefined,
+                                theme: "dark"
+                            });
+                        //TODO cover qr
+                        break;
+                    case 2:
+                        toast.success("Age verification successful!",
+                            {
+                                position: "top-center", autoClose: 2500,
+                                hideProgressBar: false,
+                                closeOnClick: true,
+                                pauseOnHover: false,
+                                draggable: false,
+                                progress: undefined,
+                                theme: "dark"
+                            });
+                        //TODO cover qr
+                        break;
+                    case 3:
+                        return true;
+                    default:
+                        return false;
+                }
+            } catch (error) {
+                return false;
             }
             await new Promise(resolve => setTimeout(resolve, 5000));
         }
@@ -139,14 +153,16 @@ const Checkout = () => {
                         if (success === undefined || !success) {
                             console.log("Failed to confirm that order was processed.");
                             toast.error("Something went wrong sorry...",
-                                {position: "top-center", autoClose: 2500,
+                                {
+                                    position: "top-center", autoClose: 2500,
                                     hideProgressBar: false,
                                     closeOnClick: true,
                                     pauseOnHover: false,
                                     draggable: false,
                                     progress: undefined,
                                     theme: "dark",
-                                    onClose: props => navigate('/')});
+                                    onClose: props => navigate('/')
+                                });
                         } else {
                             console.log("Order paid and processed.");
                             fetch(`${back_end_base_url}/api/readOrderStatus?orderID=${orderID}`);
@@ -156,7 +172,7 @@ const Checkout = () => {
                 }
             });
         }
-    }, );
+    },);
 
 
     let nb_tickets = 0;
@@ -229,7 +245,7 @@ const Checkout = () => {
                     <h4 className="mb-0">Payment</h4>
                 </div>
                 <div className="card-body">
-                    <PaymentOptions  price={subtotal} orderID={orderID}/>
+                    <PaymentOptions price={subtotal} orderID={orderID}/>
                 </div>
             </div>;
         }
@@ -419,7 +435,7 @@ const Checkout = () => {
                 <h1 className="text-center">Checkout</h1>
                 <hr/>
                 {state.length ? <ShowCheckout/> : <EmptyCart/>}
-                <ToastContainer pauseOnFocusLoss={false} />
+                <ToastContainer pauseOnFocusLoss={false}/>
             </div>
 
         </motion.div>

@@ -26,7 +26,7 @@ export default function GetAuthRequestAge(orderID) {
                         "context": "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v3.json-ld",
                         "credentialSubject": {
                             "birthday": {
-                                "$lt": 20060506 // FIXME : set request every day on verifier. - getYYYYMMDD18()
+                                "$lt": 20060508 // FIXME : set request every day on verifier. - getYYYYMMDD18()
                             }
                         },
                         "type": "KYCAgeCredential"
