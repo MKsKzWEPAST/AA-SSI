@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 contract SmartMoney is Ownable(msg.sender) {
 
     //define event when finishing purchase workflow
-    event CompletePurchase(uint256 requestId, bool success);
+    event CompletePurchase(uint256 requestId, uint8 eventStatus);
 
     // Define the mapping from orderID to order details
     mapping(uint256 => Order) public orders;
@@ -65,6 +65,9 @@ contract SmartMoney is Ownable(msg.sender) {
 
         orders[orderID].paid = true;
         orders[orderID].token = tokenContract;
+
+        emit CompletePurchase(orderID, 1);
+
         conditionalOutput(orderID, false);
     }
 
@@ -74,6 +77,9 @@ contract SmartMoney is Ownable(msg.sender) {
         require(orders[orderID].price > 0, "Order does not exist");
         require(orders[orderID].verified == false, "Order already verified");
         orders[orderID].verified = verified;
+        if (verified) {
+            emit CompletePurchase(orderID, 2);
+        }
         conditionalOutput(orderID, true);
     }
 
@@ -89,9 +95,9 @@ contract SmartMoney is Ownable(msg.sender) {
             uint256 price = orders[orderID].price;
             IERC20 token = orders[orderID].token;
             delete orders[orderID];
-            emit CompletePurchase(orderID,true);
             // Cash-out to the shop's account
             token.transfer(shopAddress, price);
+            emit CompletePurchase(orderID, 3);
         }
     }
 }

@@ -14,7 +14,7 @@ const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
 const smartMoney = new ethers.Contract(smartMoneyAddress, SmartMoneyABI, provider);
 
 // orders from the website
-const orders: Map<number, boolean> = new Map();
+const orders: Map<number, number> = new Map();
 
 export const fbApp = admin.initializeApp({
     credential: admin.credential.cert("./sk-fb.json")
@@ -202,7 +202,7 @@ app.post('/api/initOrder', async (req, res) => {
         return res.status(400).send('Invalid age requirement.');
     }
 
-    orders.set(orderID, false);
+    orders.set(orderID, 0);
 
     const actionResult = await initOrder(orderID, price, ageRequired == 1).catch((err) => console.error('Error:', err));
     if (actionResult) {
@@ -348,7 +348,7 @@ app.get('/api/getOrderStatus', async (req, res) => {
 
     const status = orders.get(orderID);
     if (status != undefined) {
-        res.json({complete: status});
+        res.json({event_status: status});
 
     } else {
         res.status(400).send('No entry found for orderID: ' + orderID);
@@ -376,9 +376,9 @@ const address = builder.then(a => console.log("ADDRESS" + a.getSender()));
 
 console.log(`Account address: ${address}`);
 
-smartMoney.on("CompletePurchase", (requestID, success) => {
-    console.log("\nPurchase completed: requestId", requestID, " - success=", success, "\n");
-    orders.set(requestID.toNumber(), success);
+smartMoney.on("CompletePurchase", (requestID, event_status) => {
+    console.log("\nPurchase completed: requestId", requestID, " - status=", event_status, "\n");
+    orders.set(requestID.toNumber(), event_status);
 })
 
 app.listen(PORT, () => {
