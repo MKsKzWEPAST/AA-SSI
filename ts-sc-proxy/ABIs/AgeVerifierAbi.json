@@ -280,6 +280,19 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "_smartMoneyAddress",
+        "type": "address"
+      }
+    ],
+    "name": "setSmartMoneyAddress",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint64",
         "name": "requestId",
         "type": "uint64"
@@ -314,10 +327,10 @@
   },
   {
     "inputs": [],
-    "name": "smc",
+    "name": "smartMoneyAddress",
     "outputs": [
       {
-        "internalType": "contract SmartMoney",
+        "internalType": "address",
         "name": "",
         "type": "address"
       }

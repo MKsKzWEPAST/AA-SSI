@@ -22,8 +22,8 @@ export const opts = {paymasterMiddleware: paymasterMiddleware};
 
 
 // smart contracts ===================
-export const verifierSCAddress = "0x1cf0a1819Dd8853d5c69f6896Fe78373Dd33b962";
-export const smartMoneyAddress = "0x1973dD4486c8BA89C7ab3988Cc54e60F6E54Ef66";
+export const verifierSCAddress = "0xf463aefB5975e712059eAF56276a7dfe7D4B5542";
+export const smartMoneyAddress = "0x46346F5Db118505707F17B6c1805D0a557bb3ADA";
 
 // google auth ==================
 export const CLIENT_ID = "450618253210-eaoigvic0jsf099369qaf0a6nfs8903q.apps.googleusercontent.com";
