@@ -281,13 +281,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<String> signInGoogle() async {
     try {
-      return _auth.signInWithGoogle();
+      final s = await _auth.signInWithGoogle();
+      logger().i("logged in");
+      _bloc.add(const HomeEvent.createIdentity());
+      return s;
     } catch (error) {
       logger().i("Error while signing in: $error");
       return "";
     }
-    logger().i("logged in");
-    _bloc.add(const HomeEvent.createIdentity());
+
   }
   ///
   Widget _buildErrorSection() {
