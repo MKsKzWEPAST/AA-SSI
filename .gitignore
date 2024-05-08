@@ -23,3 +23,7 @@ js-webshop/.env
 flu-wallet/devtools_options.yaml
 js-webshop/src/consts.js
 ts-sc-proxy/proxydb.sqlite
+contracts/.idea/modules.xml
+/contracts/.idea
+ts-sc-proxy/proxydb.sqlite
+ts-sc-proxy/proxydb.sqlite

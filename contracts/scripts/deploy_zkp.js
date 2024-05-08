@@ -5,7 +5,7 @@ const { prepareCircuitArrayValues } = require("@0xpolygonid/js-sdk");
 const { ethers} = require('ethers');
 require('dotenv').config()
 
-const deploy_private_key = "b" + process.env.DEPLOY_PRIVATE_KEY;
+const deploy_private_key = "0x" + process.env.DEPLOY_PRIVATE_KEY;
 const amoy_rpc = process.env.AMOY_RPC;
 const age_verifier_address = process.env.AGE_VERIFIER_ADDRESS;
 
