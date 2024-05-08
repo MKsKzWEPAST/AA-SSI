@@ -32,9 +32,9 @@
       },
       {
         "indexed": false,
-        "internalType": "bool",
-        "name": "success",
-        "type": "bool"
+        "internalType": "uint8",
+        "name": "eventStatus",
+        "type": "uint8"
       }
     ],
     "name": "CompletePurchase",

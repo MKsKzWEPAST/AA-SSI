@@ -2,7 +2,7 @@ class CustomStrings {
   CustomStrings._();
 
   // APP
-  static const String appTitle = "PolygonID Example App";
+  static const String appTitle = "Secutix Wallet";
 
   // HOME
   static const String homeDescription =

@@ -45,6 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _bloc = getIt<HomeBloc>();
+    _bloc.add(const HomeEvent.createIdentity());
     _auth = getIt<AuthModel>();
   }
 
@@ -55,28 +56,36 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return FlutterLogin(
-      title: 'Secutix Wallet',
-      logo: null,
-      onLogin: signIn,
-      onSignup: signUp,
+    return BlocBuilder(
+      bloc: _bloc,
+      builder: (BuildContext context, HomeState state) {
+        return FlutterLogin(
+          title: 'Secutix Wallet',
+          logo: null,
+          onLogin: signIn,
+          onSignup: signUp,
 
-      loginProviders: <LoginProvider>[
-        LoginProvider(
-          icon: FontAwesomeIcons.google,
-          label: 'Google',
-          callback: () async {
-            await signInGoogle();
+          loginProviders: <LoginProvider>[
+            LoginProvider(
+              icon: FontAwesomeIcons.google,
+              label: 'Google',
+              callback: () async {
+                await signInGoogle();
+                return null;
+              },
+            ),
+          ],
+          onSubmitAnimationCompleted: () {
+            Navigator.pushNamed(context, Routes.combinedPath);
+          },
+          onRecoverPassword: (v) {
+            Future.delayed(const Duration(milliseconds: 100)).then((value) => "Can't recover password");
             return null;
           },
-        ),
-      ],
-      onSubmitAnimationCompleted: () {
-        Navigator.pushNamed(context, Routes.combinedPath);
+        );
       },
-      onRecoverPassword: (v) {
-        Future.delayed(const Duration(milliseconds: 100)).then((value) => "Can't recover password");
-        },
+      buildWhen: (_, currentState) =>
+      currentState is LoadedIdentifierHomeState,
     );
 
     /*return Scaffold(
@@ -109,73 +118,6 @@ class _HomeScreenState extends State<HomeScreen> {
         )
     )
     );*/
-  }
-
-  ///
-  Widget _buildIdentityActionButton() {
-    return Align(
-      alignment: Alignment.center,
-      child: BlocBuilder(
-        bloc: _bloc,
-        builder: (BuildContext context, HomeState state) {
-          bool enabled = state is! LoadingDataHomeState;
-          bool showCreateIdentityButton =
-              state.identifier == null || state.identifier!.isEmpty;
-
-          return showCreateIdentityButton
-              ? _buildCreateIdentityButton(enabled)
-              : _buildRemoveIdentityButton(enabled);
-        },
-      ),
-    );
-  }
-
-  ///
-  Widget _buildCreateIdentityButton(bool enabled) {
-    return AbsorbPointer(
-      absorbing: !enabled,
-      child: ElevatedButton(
-        key: CustomWidgetsKeys.homeScreenButtonCreateIdentity,
-        onPressed: () {
-          _bloc.add(const HomeEvent.createIdentity());
-        },
-        style: enabled
-            ? CustomButtonStyle.primaryButtonStyle
-            : CustomButtonStyle.disabledPrimaryButtonStyle,
-        child: const FittedBox(
-          child: Text(
-            CustomStrings.createID,
-            textAlign: TextAlign.center,
-            style: CustomTextStyles.primaryButtonTextStyle,
-          ),
-        ),
-      ),
-    );
-  }
-
-  ///
-  Widget _buildRemoveIdentityButton(bool enabled) {
-    return AbsorbPointer(
-      absorbing: !enabled,
-      child: ElevatedButton(
-        key: CustomWidgetsKeys.homeScreenButtonRemoveIdentity,
-        onPressed: () {
-          _bloc.add(const HomeEvent.removeIdentity());
-        },
-        style: enabled
-            ? CustomButtonStyle.outlinedPrimaryButtonStyle
-            : CustomButtonStyle.disabledPrimaryButtonStyle,
-        child: FittedBox(
-          child: Text(
-            CustomStrings.homeButtonRemoveIdentityCTA,
-            textAlign: TextAlign.center,
-            style: CustomTextStyles.primaryButtonTextStyle.copyWith(
-              color: CustomColors.primaryButton,
-            ),
-          ),
-        ),
-      ),
-    );
   }
 
   ///
@@ -258,32 +200,26 @@ class _HomeScreenState extends State<HomeScreen> {
   }
   Future<String?> signIn(LoginData data) async {
     try {
-      final s = _auth.signInPassword(data);
+      final s = await _auth.signInPassword(data);
+      return s;
     } catch (e) {
       return "Issue with the sign-in: $e";
     }
-    logger().i("logged in");
-    _bloc.add(const HomeEvent.createIdentity());
-    return null;
   }
 
   Future<String?> signUp(SignupData data) async {
     try {
-      final s = _auth.signUpPassword(data);
+      final s = await _auth.signUpPassword(data);
+      return s;
     } catch (e) {
       return "Issue with the sign-in: $e";
     }
-    logger().i("logged in");
-    _bloc.add(const HomeEvent.createIdentity());
-    return null;
   }
 
 
   Future<String> signInGoogle() async {
     try {
       final s = await _auth.signInWithGoogle();
-      logger().i("logged in");
-      _bloc.add(const HomeEvent.createIdentity());
       return s;
     } catch (error) {
       logger().i("Error while signing in: $error");

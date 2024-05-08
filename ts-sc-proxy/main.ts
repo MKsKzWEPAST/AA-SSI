@@ -32,6 +32,7 @@ async function payERC20(orderID: number, amountToken: number, token: string, sho
     const address = builder.getSender();
 
     console.log(`Account address: ${address}`);
+    console.log("OrderID: ", orderID);
 
     // Create the call data
     let tokenAddress = TOKEN_ADDRESSES.get(token)!;
