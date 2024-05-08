@@ -89,7 +89,7 @@ contract SmartMoney is Ownable(msg.sender) {
         if (fromVerify && !orders[orderID].verified) {
             // Cancel the order
             delete orders[orderID];
-            emit CompletePurchase(orderID, -1);
+            emit CompletePurchase(orderID, 4);
         }
         if (orders[orderID].paid && orders[orderID].verified) {
             uint256 price = orders[orderID].price;
