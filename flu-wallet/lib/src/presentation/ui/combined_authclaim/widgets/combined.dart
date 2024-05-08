@@ -265,62 +265,13 @@ class _CombinedScreenState extends State<CombinedScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        ElevatedButton(
-          onPressed: () {
-            _fetchCoinsBalance();
-          },
-          child: const Text('Refresh'),
-        ),
+        Flexible(flex:1,child:refreshButton()),
         const SizedBox(width: 7),
-        ElevatedButton(
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                backgroundColor: Colors.white,
-                title: const Text('Wallet Public Key'),
-                content: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.6,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      QrImageView(
-                        data: address,
-                        version: QrVersions.auto,
-                        size: 200.0,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        address,
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    ],
-                  ),
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Close'),
-                  ),
-                ],
-              ),
-            );
-          },
-          child: const Text('Receive'),
-        ),
+        Flexible(flex:1,child:receiveButton()),
         const SizedBox(width: 7),
-        scanToPayButton(tokens, context),
+        Flexible(flex:1,child:scanToPayButton(tokens, context)),
         const SizedBox(width: 7),
-        ElevatedButton(
-          onPressed: () async {
-            final Uri url = Uri.parse(
-                "https://amoy.polygonscan.com/address/$address#tokentxns");
-            _launchUrl(url);
-          },
-          child: const Text('History'),
-        ),
+        Flexible(flex:1,child: historyButton()),
       ],
     );
   }
@@ -338,6 +289,87 @@ class _CombinedScreenState extends State<CombinedScreen> {
     }
   }
 
+  ElevatedButton refreshButton() {
+    return   ElevatedButton(
+      onPressed: () {
+        _fetchCoinsBalance();
+      },
+      child: const FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Text(
+          "Refresh",
+          maxLines: 1,
+        ),
+      ),
+    );
+  }
+  ElevatedButton receiveButton() {
+    return ElevatedButton(
+      onPressed: () {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            backgroundColor: Colors.white,
+            title: const Text('Wallet Public Key'),
+            content: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.6,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  QrImageView(
+                    data: address,
+                    version: QrVersions.auto,
+                    size: 200.0,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    address,
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const  FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    "Receive",
+                    maxLines: 1,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+      child: const FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Text(
+        "Receive",
+        maxLines: 1,
+      ),
+    ));
+  }
+  ElevatedButton historyButton() {
+    return ElevatedButton(
+      onPressed: () async {
+        final Uri url = Uri.parse(
+            "https://amoy.polygonscan.com/address/$address#tokentxns");
+        _launchUrl(url);
+      },
+      child: const  FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Text(
+          "History",
+          maxLines: 1,
+        ),
+      ),
+    );
+  }
   ElevatedButton scanToPayButton(
       Map<String, Map<String, Object>> tokens, context) {
     return ElevatedButton(
@@ -368,7 +400,13 @@ class _CombinedScreenState extends State<CombinedScreen> {
               fontSize: 16.0);
         }
       },
-      child: const Text('Pay'),
+      child: const FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Text(
+          "Pay",
+          maxLines: 1,
+        ),
+      ),
     );
   }
 
