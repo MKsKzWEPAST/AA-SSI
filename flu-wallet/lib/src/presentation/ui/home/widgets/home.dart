@@ -88,36 +88,6 @@ class _HomeScreenState extends State<HomeScreen> {
       currentState is LoadedIdentifierHomeState,
     );
 
-    /*return Scaffold(
-      backgroundColor: CustomColors.background,
-        body: Container(
-        alignment: Alignment.center,
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 50),
-                      _buildLogo(),
-                      const SizedBox(height: 50),
-                      _buildDescription(),
-                      const SizedBox(height: 20),
-                      _buildProgress(),
-                      _buildWalletSection(),
-                      //_buildCreateIdentityButton(true),
-                      const SizedBox(height: 20),
-                      _buildErrorSection(),
-                    ],
-                  ),
-                ),
-              ),
-            ]
-        )
-    )
-    );*/
   }
 
   ///

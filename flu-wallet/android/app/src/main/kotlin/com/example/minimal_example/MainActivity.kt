@@ -1,4 +1,4 @@
-package com.example.wallet_app
+package come.secutix.wallet_app
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 

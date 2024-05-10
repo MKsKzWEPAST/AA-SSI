@@ -31,7 +31,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:wallet_app/utils/wallet_utils.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:web3dart/web3dart.dart';
-import 'package:url_launcher/url_launcher.dart'; // TODO find why error showing up?
+import 'package:url_launcher/url_launcher.dart';
 
 import 'PaymentPopup.dart';
 import 'TokenWallet.dart';
@@ -62,9 +62,6 @@ class _CombinedScreenState extends State<CombinedScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget._bloc.add(const CombinedEvent.getClaims());
-      /*if (!SecureApplicationProvider.of(context)!.authenticated) {
-        SecureApplicationProvider.of(context)!.lock();
-      }*/
       if (auth.id_token == "") {
         Navigator.popAndPushNamed(context, Routes.homePath);
       }

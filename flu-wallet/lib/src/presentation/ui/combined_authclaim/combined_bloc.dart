@@ -150,7 +150,7 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
         case Iden3MessageType.credentialOffer:
           logger().i("[debugging-combined] -- Claims: Checkpoint 1--");
           emit(CombinedState.qrCodeScanned(iden3message));
-          break; // TODO web3 approach: put any claims we want in our wallet ?
+          break;
 
         case Iden3MessageType.authRequest:
           logger().i("[debugging-combined] -- Auth: Checkpoint 1--");

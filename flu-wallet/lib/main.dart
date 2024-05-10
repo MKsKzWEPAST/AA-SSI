@@ -23,13 +23,6 @@ Future<void> main() async {
   // App UI locked in portrait mode
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-  if (true) { // todo: replace later with "wallet initialized with did and bio set-up"
-
-  }
-  /*
-  //finally, load the env variables
-  await dotenv.load(fileName: ".env");*/
-
   runApp(const App());
 
 

@@ -11,7 +11,7 @@ class TokenWallet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: new EdgeInsets.symmetric(horizontal:10.0),
+      padding: const EdgeInsets.symmetric(horizontal:10.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -58,7 +58,7 @@ class TokenWallet extends StatelessWidget {
                             ),
                             const SizedBox(width: 10),
                             Text(
-                              '$tokenName',
+                              tokenName,
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -85,23 +85,3 @@ class TokenWallet extends StatelessWidget {
     );
   }
 }
-
-/*
-TODO : chose token when paying
-DropdownButton<String>(hint: const Text("Choose your currency"),
-value: currency,
-items: const <String>[DAI,USDT].map<DropdownMenuItem<String>>((String v) {
-return DropdownMenuItem<String>(
-value: v,
-child: Text(v),
-);
-}).toList(),
-onChanged: (String? value) {
-setState(() {
-currency = value ?? "ERROR";
-_fetchCoinBalance(value);
-});
-
-}),
-
- */

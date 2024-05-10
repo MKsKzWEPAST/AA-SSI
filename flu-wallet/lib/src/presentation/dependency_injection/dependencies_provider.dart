@@ -53,29 +53,6 @@ void registerEnv() {
     },
     didMethods: [],
   )};
-
-  /*{
-    "mumbai": EnvEntity(
-      blockchain: polygonMumbai['blockchain'],
-      network: polygonMumbai['network'],
-      web3Url: polygonMumbai['web3Url'],
-      web3RdpUrl: polygonMumbai['web3RdpUrl'],
-      web3ApiKey: polygonMumbai['web3ApiKey'],
-      idStateContract: polygonMumbai['idStateContract'],
-      pushUrl: polygonMumbai['pushUrl'],
-      ipfsUrl: polygonMumbai['ipfsUrl'],
-    ),
-    "mainnet": EnvEntity(
-      blockchain: polygonMainnet['blockchain'],
-      network: polygonMainnet['network'],
-      web3Url: polygonMainnet['web3Url'],
-      web3RdpUrl: polygonMainnet['web3RdpUrl'],
-      web3ApiKey: polygonMainnet['web3ApiKey'],
-      idStateContract: polygonMainnet['idStateContract'],
-      pushUrl: polygonMainnet['pushUrl'],
-      ipfsUrl: polygonMainnet['ipfsUrl'],
-    )
-  };*/
   getIt.registerSingleton<Map<String, EnvEntity>>(env);
 }
 
