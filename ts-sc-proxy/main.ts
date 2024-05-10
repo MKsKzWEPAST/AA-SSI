@@ -32,10 +32,12 @@ async function payERC20(orderID: number, amountToken: number, token: string, sho
     const address = builder.getSender();
 
     console.log(`Account address: ${address}`);
-    console.log("OrderID: ", orderID);
+    console.log(`OrderID: >${orderID}<`);
 
     // Create the call data
     let tokenAddress = TOKEN_ADDRESSES.get(token)!;
+    console.log("Token Address: ", tokenAddress);
+    console.log("SmartMoney Address: ", smartMoneyAddress);
 
     // Read the ERC-20 token contract
     const abi_path = TOKEN_ABIS.get(token);
@@ -47,7 +49,7 @@ async function payERC20(orderID: number, amountToken: number, token: string, sho
     const provider = new ethers.providers.JsonRpcProvider(rpcUrl,);
     const erc20 = new ethers.Contract(tokenAddress, ERC20_ABI, provider);
     const amount = BigInt(amountToken) * (BigInt(10) ** TOKEN_DECIMALS);
-    console.log("Amount: ", amount)
+    console.log(`Amount: >${amount}<`);
 
     // Encode the calls
     const callTo = [tokenAddress, shopSmartMoney];
@@ -135,6 +137,7 @@ async function initOrder(orderID: number, price: number, ageRequired: boolean) {
     const address = builder.getSender();
 
     console.log(`Account address: ${address}`);
+    console.log(`OrderID: >${orderID}<`);
 
     // Read the ERC-20 token contract
     const SmartMoneyABI = require('./ABIs/SmartMoneyAbi.json');
@@ -367,6 +370,16 @@ app.get('/api/readOrderStatus', async (req, res) => {
 
     orders.delete(orderID);
     res.json({message: "ok"});
+})
+
+const lastAgeUpdate = 20060508
+// Returns the date of birth required to match the 18+ requirement
+app.get('/api/getReqDate', async (req, res) => {
+    const date = new Date();
+    const year = date.getFullYear() - 18;
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    res.json({date: lastAgeUpdate ?? parseInt(`${year}${month}${day}`)});
 })
 
 // Test address
