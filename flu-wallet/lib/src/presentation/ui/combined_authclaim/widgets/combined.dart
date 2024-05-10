@@ -13,6 +13,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:secure_application/secure_application_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:wallet_app/utils/auth_model.dart';
+import 'package:wallet_app/utils/backend_plug.dart';
 import 'package:wallet_app/utils/custom_button_style.dart';
 import 'package:wallet_app/utils/custom_colors.dart';
 import 'package:wallet_app/utils/custom_strings.dart';
@@ -160,7 +161,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
   }
 
   Future<void> _fetchCoinBalance(coin) async {
-    final proxy = dotenv.env["PROXY_URL"];
+    final proxy = getIt<BackendPlugUtils>().backend_url;
     final response = await http.post(
       Uri.parse('$proxy/api/getBalance/$address'),
       // replace with your POST request body
@@ -817,7 +818,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
 
   Future<bool> sendERC20Payment(
       String coin, String storeAddress, int orderID, double amount) async {
-    final proxy = dotenv.env["PROXY_URL"];
+    final proxy = getIt<BackendPlugUtils>().backend_url;
     final response = await http.post(
       Uri.parse(
           '$proxy/api/sendERC20?storeAddress=$storeAddress&orderID=$orderID&amount=$amount&token=$coin'),

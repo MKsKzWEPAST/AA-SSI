@@ -16,6 +16,7 @@ import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/reque
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:wallet_app/utils/backend_plug.dart';
 
 import '../../../../utils/auth_model.dart';
 import '../../../../utils/custom_strings.dart';
@@ -129,7 +130,7 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
 
           logger().i("[debugging-combined] -- Verification with proof $proof");
 
-          final proxy = dotenv.env["PROXY_URL"];
+          final proxy = getIt<BackendPlugUtils>().backend_url;
           var url = Uri.parse('$proxy/api/forwardZKP');
           var response = await http.post(
             url,

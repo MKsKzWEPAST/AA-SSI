@@ -369,6 +369,11 @@ app.get('/api/readOrderStatus', async (req, res) => {
     res.json({message: "ok"});
 })
 
+// backend health check
+app.get('api/ping', async (req,res) => {
+    return res.status(200).send("pong");
+})
+
 // Test address
 const signingKey = getCallerAccountPrivateKey("01");
 const signer = new ethers.Wallet(signingKey);

@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
+import 'package:wallet_app/src/presentation/dependency_injection/dependencies_provider.dart';
+import 'package:wallet_app/utils/backend_plug.dart';
 
 Future<String> registerOrFetchSmartAccount(String id_token, String email) async {
   try {
@@ -16,7 +18,7 @@ Future<String> registerOrFetchSmartAccount(String id_token, String email) async 
       'email': email,
     };
 
-    final proxy = dotenv.env["PROXY_URL"];
+    final proxy = getIt<BackendPlugUtils>().backend_url;
     logger().i(proxy);
     // Make the HTTP POST request to the provided URL
     http.Response response = await http.post(
