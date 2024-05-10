@@ -1,0 +1,12 @@
+services:
+  frontend:
+    build:
+      context: js-webshop
+    ports:
+      - ":3000"
+
+  backend:
+    build:
+      context: ts-sc-proxy
+    ports:
+      - ":3003"
