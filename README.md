@@ -44,8 +44,8 @@ You can clone the repository from [here](https://github.com/MKsKzWEPAST/AA-SSI).
 This software uses the following open source packages:
 
 - [Node.js](https://nodejs.org/)
-- [PolygonID](https://github.com/chjj/marked)
-- [Stackup](http://showdownjs.github.io/showdown/)
+- [PolygonID](https://github.com/0xPolygonID/polygonid-flutter-sdk)
+- [Stackup](https://www.stackup.sh/)
 - [React.js](https://react.dev/)
 - [Express.js](https://expressjs.com/)
 
