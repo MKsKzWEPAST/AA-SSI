@@ -2,7 +2,7 @@ import {AGE_VERIFIER_ADDRESS} from "../consts";
 
 const age_verifier_address = AGE_VERIFIER_ADDRESS;
 
-export default function GetAuthRequestAge(orderID) {
+export default function GetAuthRequestAge(orderID, date) {
 
     const data = {
         "id": "7f38a193-0918-4a48-9fac-36adfdb8b542",
@@ -26,7 +26,7 @@ export default function GetAuthRequestAge(orderID) {
                         "context": "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v3.json-ld",
                         "credentialSubject": {
                             "birthday": {
-                                "$lt": 20060508 // FIXME : set request every day on verifier. - getYYYYMMDD18()
+                                "$lt": date
                             }
                         },
                         "type": "KYCAgeCredential"
@@ -38,11 +38,3 @@ export default function GetAuthRequestAge(orderID) {
 
     return JSON.stringify(data);
 }
-
-/* when verifier contract gets updated every day function getYYYYMMDD18() {
-    const date = new Date();
-    const year = date.getFullYear() - 18;
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return parseInt(`${year}${month}${day}`);
-}*/

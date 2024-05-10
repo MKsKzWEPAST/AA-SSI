@@ -9,7 +9,7 @@ import {ToastContainer, toast, Bounce} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {BACK_END_BASE_URL} from "../consts";
 
-const back_end_base_url = BACK_END_BASE_URL;
+
 
 const maxOrderID = 2 ** 52; // fit with some margin in uint64 + no precision loss in js
 
@@ -24,11 +24,35 @@ const Checkout = () => {
     let requireAgeVerified = false;
 
     const [orderID] = useState(Math.floor(Math.random() * maxOrderID) + 1);
+    const [date, setDate] = useState(null);
+    useEffect(() => {
+        getYYYYMMDD18().then(date => setDate(date));
+    }, []);
+
     const [orderInitialized, setOrderInitialized] = useState(false);
+    const [orderStatus, setOrderStatus ] = useState(0);
+
+    async function getYYYYMMDD18() {
+        const headers = {
+            "ngrok-skip-browser-warning": "true",
+            "accept": "application/json",
+        };
+
+        const result = await fetch(`${BACK_END_BASE_URL}/api/getReqDate`, {
+            method: 'GET',
+            headers: headers
+        });
+        if (!result.ok) {
+            throw new Error('Failed to fetch req date');
+        }
+        const {date} = await result.json()
+        console.log(date)
+        return date;
+    }
 
     async function initOrder(orderID, price, requireAgeVerified) {
         try {
-            const response = await fetch(`${back_end_base_url}/api/initOrder?orderID=${orderID}&price=${price}&ageReq=${requireAgeVerified ? 1 : 0}`, {
+            const response = await fetch(`${BACK_END_BASE_URL}/api/initOrder?orderID=${orderID}&price=${price}&ageReq=${requireAgeVerified ? 1 : 0}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -58,17 +82,37 @@ const Checkout = () => {
         }
     }
 
-    async function checkOrderStatus(orderID) {
-        while (true) {
+    if (fastState != null && fastState.product != null && fastState.product.qty > 0) {
+        state = [fastState.product];
+        requireAgeVerified = fastState.product['18required'];
+    }
+
+    useEffect(() => {
+        if (fastState == null || fastState.product == null || fastState.product.qty === 0) {
+            navigate('/*');
+        }
+    });
+
+    useEffect(() => {
+        if (!orderInitialized && fastState != null && fastState.product != null && fastState.product.qty > 0) {
+            initOrder(orderID, fastState.product.price * fastState.product.qty, requireAgeVerified).then(result => {
+                if (result) {
+                    setOrderInitialized(true);
+                    console.log("Order initialized: ", orderID, fastState.product.price * fastState.product.qty, requireAgeVerified);
+                }
+            });
+        }
+    });
+
+    useEffect( () => {
+        async function checkOrderStatus(orderID) {
             const headers = {
                 "ngrok-skip-browser-warning": "true",
                 "accept": "application/json",
             };
 
             try {
-
-
-                const response = await fetch(`${back_end_base_url}/api/getOrderStatus?orderID=${orderID}`, {
+                const response = await fetch(`${BACK_END_BASE_URL}/api/getOrderStatus?orderID=${orderID}`, {
                     method: 'GET',
                     headers: headers
                 });
@@ -94,65 +138,8 @@ const Checkout = () => {
                     case 0: // Still waiting for an update
                         break;
                     case 1:
-                        toast.success("Payment successful!",
-                            {
-                                position: "top-center", autoClose: 2500,
-                                hideProgressBar: false,
-                                closeOnClick: true,
-                                pauseOnHover: false,
-                                draggable: false,
-                                progress: undefined,
-                                theme: "dark"
-                            });
-                        //TODO cover qr
-                        break;
-                    case 2:
-                        toast.success("Age verification successful!",
-                            {
-                                position: "top-center", autoClose: 2500,
-                                hideProgressBar: false,
-                                closeOnClick: true,
-                                pauseOnHover: false,
-                                draggable: false,
-                                progress: undefined,
-                                theme: "dark"
-                            });
-                        //TODO cover qr
-                        break;
-                    case 3:
-                        return true;
-                    default:
-                        return false;
-                }
-            } catch (error) {
-                return false;
-            }
-            await new Promise(resolve => setTimeout(resolve, 5000));
-        }
-    }
-
-    if (fastState != null && fastState.product != null && fastState.product.qty > 0) {
-        state = [fastState.product];
-        requireAgeVerified = fastState.product['18required'];
-    }
-
-    useEffect(() => {
-        if (fastState == null || fastState.product == null || fastState.product.qty === 0) {
-            navigate('/*');
-        }
-    });
-
-    useEffect(() => {
-        if (!orderInitialized && fastState != null && fastState.product != null && fastState.product.qty > 0) {
-            initOrder(orderID, fastState.product.price * fastState.product.qty, requireAgeVerified).then(result => {
-                if (result) {
-                    setOrderInitialized(true);
-                    console.log("Order initialized: ", orderID, fastState.product.price * fastState.product.qty, requireAgeVerified);
-
-                    checkOrderStatus(orderID).then(success => {
-                        if (success === undefined || !success) {
-                            console.log("Failed to confirm that order was processed.");
-                            toast.error("Something went wrong sorry...",
+                        if (orderStatus !== 1) {
+                            toast.success("Payment successful!",
                                 {
                                     position: "top-center", autoClose: 2500,
                                     hideProgressBar: false,
@@ -160,19 +147,63 @@ const Checkout = () => {
                                     pauseOnHover: false,
                                     draggable: false,
                                     progress: undefined,
-                                    theme: "dark",
-                                    onClose: props => navigate('/')
+                                    theme: "dark"
                                 });
-                        } else {
-                            console.log("Order paid and processed.");
-                            fetch(`${back_end_base_url}/api/readOrderStatus?orderID=${orderID}`);
-                            navigate('/thanks');
                         }
-                    });
+                        setOrderStatus(1);
+                        return true;
+                    case 2:
+                        if (orderStatus !== 2) {
+                            toast.success("Age verification successful!",
+                                {
+                                    position: "top-center", autoClose: 2500,
+                                    hideProgressBar: false,
+                                    closeOnClick: true,
+                                    pauseOnHover: false,
+                                    draggable: false,
+                                    progress: undefined,
+                                    theme: "dark"
+                                });
+                        }
+                        setOrderStatus(2);
+                        return true;
+                    case 3:
+                        setOrderStatus(3);
+                        console.log("Order paid and processed.");
+                        fetch(`${BACK_END_BASE_URL}/api/readOrderStatus?orderID=${orderID}`);
+                        navigate('/thanks');
+                        return true;
+                    default:
+                        return false;
                 }
-            });
+            } catch (error) {
+                return false;
+            }
         }
-    },);
+
+        if(orderInitialized){
+            const intervalId = setInterval(() => {
+                const ok = checkOrderStatus(orderID);
+                if(!ok) {
+                    console.log("Failed to confirm that order was processed.");
+                    toast.error("Something went wrong sorry...",
+                        {
+                            position: "top-center", autoClose: 2500,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: false,
+                            draggable: false,
+                            progress: undefined,
+                            theme: "dark",
+                            onClose: props => navigate('/')
+                        });
+                    clearInterval(intervalId)
+                }
+            }, 5000);
+
+            return () => clearInterval(intervalId);
+        }
+    }, [orderInitialized, orderStatus, navigate, orderID]);
 
 
     let nb_tickets = 0;
@@ -239,10 +270,10 @@ const Checkout = () => {
             </div>;
         }
 
-        function paymentOptions() {
+        function paymentOptions(step) {
             return <div className="card mb-4">
                 <div className="card-header py-3">
-                    <h4 className="mb-0">Payment</h4>
+                    <h4 className="mb-0">Payment {step?<i> (1/2)</i>:<></>}</h4>
                 </div>
                 <div className="card-body">
                     <PaymentOptions price={subtotal} orderID={orderID}/>
@@ -250,13 +281,13 @@ const Checkout = () => {
             </div>;
         }
 
-        function ageVerification() {
+        function ageVerification(step) {
             return <div className="card mb-4">
                 <div className="card-header py-3">
-                    <h4 className="mb-0">Age verification</h4>
+                    <h4 className="mb-0">Age verification {step?<i> (2/2)</i>:<></>}</h4>
                 </div>
                 <div className="card-body">
-                    <AgeAuth orderID={orderID}/>
+                    <AgeAuth orderID={orderID} date={date}/>
                 </div>
             </div>;
         }
@@ -401,6 +432,12 @@ const Checkout = () => {
             </div>;
         }
 
+        function carousel2Step() {
+            return <>
+                {orderStatus === 0? paymentOptions(true):ageVerification(true)}
+            </>
+        }
+
         return (
             <>
                 <div className="container py-5">
@@ -411,8 +448,7 @@ const Checkout = () => {
                         <div className="col-md-7 col-lg-8">
 
                             {orderInitialized ? <>
-                                {paymentOptions()}
-                                {requireAgeVerified ? ageVerification() : <div/>}
+                                {requireAgeVerified ? carousel2Step() : paymentOptions(false)}
                                 {billingAddress()}
                             </> : <div className={"d-flex flex-row"}>
                                 <Spinner animation="border" role="status">

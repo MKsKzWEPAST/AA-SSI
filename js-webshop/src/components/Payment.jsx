@@ -1,6 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {QRCodeSVG} from "qrcode.react";
 import {IconBox} from "./Graphical";
+import {SMART_MONEY_ADDRESS} from "../consts";
+
+const smartMoneyAddress = SMART_MONEY_ADDRESS;
 
 const PaymentOptions = ({price, orderID}) => {
     const [QRHolder, setQRHolder] = useState(<div className="spinner-border" role="status">
@@ -10,7 +13,7 @@ const PaymentOptions = ({price, orderID}) => {
 
     useEffect(() => {
         if (orderID != null) {
-            setQRHolder(<QRCodeSVG value={`amoy:0x1973dD4486c8BA89C7ab3988Cc54e60F6E54Ef66:${price}:${orderID}`} size={window.innerHeight * 0.2}/>);
+            setQRHolder(<QRCodeSVG value={`amoy:${smartMoneyAddress}:${price}:${orderID}`} size={window.innerHeight * 0.2}/>);
         }
     }, [orderID, price]);
 
