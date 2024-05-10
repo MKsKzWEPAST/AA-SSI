@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:wallet_app/src/presentation/dependency_injection/dependencies_provider.dart';
 import 'package:wallet_app/src/presentation/navigations/routes.dart';
@@ -27,6 +28,7 @@ class BackendPlug extends StatefulWidget {
 class _BackendPlugState extends State<BackendPlug> {
 
   final _formKey = GlobalKey<FormState>();
+  String url = "";
 
   @override
   void initState() {
@@ -78,27 +80,50 @@ class _BackendPlugState extends State<BackendPlug> {
                           if (value == null || value.isEmpty) {
                             return 'Enter backend URL';
                           }
-                          try {
-                            http.get(Uri.parse('$value/api/ping')).then(
-                                  (response) {
-                                if (response.statusCode != 200) {
-                                  return "Backend is down or unavailable";
-                                }
-                                getIt<BackendPlugUtils>().setBackendURL(value);
-                                return null;
-                              },
-                            );
-                          } catch (e) {
-                            logger().i('An error occurred: $e');
+                          else if (!value.startsWith("https://")) {
+                            return "The url format is not valid";
                           }
+                          setState(() {
+                            url = value;
+                          });
                           return null;
                         },
                       ),
                       const SizedBox(height: 20),
                       ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                            _validURL();
+                            if (url != "") {
+                              logger().i("ah ?");
+                              try {
+                                final response = await http.get(
+                                    Uri.parse('$url/api/ping'));
+                                if (response.statusCode != 200) {
+                                  logger().i("Error with url $url");
+                                  Fluttertoast.showToast(
+                                      msg: "Failed to reach the backend: ${response.reasonPhrase}",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.TOP,
+                                      timeInSecForIosWeb: 1,
+                                      backgroundColor: Colors.red,
+                                      textColor: Colors.white,
+                                      fontSize: 16.0);
+                                } else {
+                                  getIt<BackendPlugUtils>().setBackendURL(url);
+                                  _validURL();
+                                }
+                              } catch(e) {
+                                Fluttertoast.showToast(
+                                    msg: "URL $url is not valid: $e",
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.TOP,
+                                    timeInSecForIosWeb: 1,
+                                    backgroundColor: Colors.red,
+                                    textColor: Colors.white,
+                                    fontSize: 16.0);
+                              }
+                            }
+
                           }
                         },
                         child: const Text('Submit'),
