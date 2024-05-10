@@ -36,8 +36,6 @@ async function payERC20(orderID: number, amountToken: number, token: string, sho
 
     // Create the call data
     let tokenAddress = TOKEN_ADDRESSES.get(token)!;
-    console.log("Token Address: ", tokenAddress);
-    console.log("SmartMoney Address: ", smartMoneyAddress);
 
     // Read the ERC-20 token contract
     const abi_path = TOKEN_ABIS.get(token);
@@ -380,6 +378,11 @@ app.get('/api/getReqDate', async (req, res) => {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     res.json({date: lastAgeUpdate ?? parseInt(`${year}${month}${day}`)});
+})
+
+// backend health check
+app.get('api/ping', async (req,res) => {
+    return res.status(200).send("pong");
 })
 
 // Test address

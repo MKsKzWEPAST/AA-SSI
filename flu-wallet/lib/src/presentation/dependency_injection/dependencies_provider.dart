@@ -6,6 +6,7 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/iden3_message_type_mapper.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:wallet_app/utils/auth_model.dart';
+import 'package:wallet_app/utils/backend_plug.dart';
 
 
 import 'package:wallet_app/utils/qr_code_parser_utils.dart';
@@ -34,6 +35,7 @@ Future<void> init() async {
   registerRestoreIdentityDependencies();
   registerUtilities();
   registerAuthModel();
+  registerBackendPlug();
 }
 
 void registerEnv() {
@@ -51,29 +53,6 @@ void registerEnv() {
     },
     didMethods: [],
   )};
-
-  /*{
-    "mumbai": EnvEntity(
-      blockchain: polygonMumbai['blockchain'],
-      network: polygonMumbai['network'],
-      web3Url: polygonMumbai['web3Url'],
-      web3RdpUrl: polygonMumbai['web3RdpUrl'],
-      web3ApiKey: polygonMumbai['web3ApiKey'],
-      idStateContract: polygonMumbai['idStateContract'],
-      pushUrl: polygonMumbai['pushUrl'],
-      ipfsUrl: polygonMumbai['ipfsUrl'],
-    ),
-    "mainnet": EnvEntity(
-      blockchain: polygonMainnet['blockchain'],
-      network: polygonMainnet['network'],
-      web3Url: polygonMainnet['web3Url'],
-      web3RdpUrl: polygonMainnet['web3RdpUrl'],
-      web3ApiKey: polygonMainnet['web3ApiKey'],
-      idStateContract: polygonMainnet['idStateContract'],
-      pushUrl: polygonMainnet['pushUrl'],
-      ipfsUrl: polygonMainnet['ipfsUrl'],
-    )
-  };*/
   getIt.registerSingleton<Map<String, EnvEntity>>(env);
 }
 
@@ -134,4 +113,8 @@ void registerUtilities() {
 
 void registerAuthModel() {
   getIt.registerSingleton(AuthModel());
+}
+
+void registerBackendPlug() {
+  getIt.registerSingleton(BackendPlugUtils());
 }

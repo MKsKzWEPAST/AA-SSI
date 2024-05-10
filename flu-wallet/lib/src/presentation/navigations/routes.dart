@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:wallet_app/src/presentation/ui/backend_plug/widgets/backend_plug.dart';
 import 'package:wallet_app/src/presentation/ui/backup_identity/widgets/backup_identity.dart';
 import 'package:wallet_app/src/presentation/ui/claim_detail/widgets/claim_detail.dart';
 import 'package:wallet_app/src/presentation/ui/claims/models/claim_model.dart';
@@ -21,6 +22,7 @@ class Routes {
   static const String claimDetailPath = "/claim_detail";
   static const String backupIdentityPath = "/backup_identity";
   static const String restoreIdentityPath = "/restore_identity";
+  static const String backendPlugPath = "/backend_plug";
 
   ///
   static Map<String, WidgetBuilder> getRoutes(context) {
@@ -33,6 +35,7 @@ class Routes {
       claimDetailPath: _claimDetailPath(),
       backupIdentityPath: _backupIdentityRoute(),
       restoreIdentityPath: _restoreIdentityRoute(),
+      backendPlugPath: _backendPlugRoute()
     };
   }
 
@@ -44,6 +47,10 @@ class Routes {
   ///
   static WidgetBuilder _homeRoute() {
     return (BuildContext context) => const HomeScreen();
+  }
+
+  static WidgetBuilder _backendPlugRoute() {
+    return (BuildContext context) => const BackendPlug();
   }
 
 

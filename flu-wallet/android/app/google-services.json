@@ -7,18 +7,26 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:450618253210:android:c4ab50378c497e91c06423",
+        "mobilesdk_app_id": "1:450618253210:android:a2708e28abaac6b0c06423",
         "android_client_info": {
-          "package_name": "com.example.wallet_app"
+          "package_name": "com.secutix.wallet_app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "450618253210-fd3g3qc3on0bvpgjpd1j5s23rsldngjo.apps.googleusercontent.com",
+          "client_id": "450618253210-4l6ublm20fr22um4q9e4lsu05mktf7cq.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.wallet_app",
+            "package_name": "com.secutix.wallet_app",
             "certificate_hash": "4207f1fb10139df11534363617957801ce249853"
+          }
+        },
+        {
+          "client_id": "450618253210-8ofru9eehu1mf2hvotegpt6jk3d3nach.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.secutix.wallet_app",
+            "certificate_hash": "ca5c8a1d569c0212489a044b9fec17b92df27478"
           }
         },
         {

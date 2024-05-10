@@ -128,7 +128,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   ///
   void _handleWaitingTimeEnded() {
-    Navigator.of(context).pushReplacementNamed(Routes.homePath);
+    Navigator.of(context).pushReplacementNamed(Routes.backendPlugPath);
   }
 
   ///

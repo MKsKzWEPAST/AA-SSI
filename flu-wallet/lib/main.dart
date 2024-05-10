@@ -8,7 +8,6 @@ import 'package:wallet_app/utils/auth_model.dart';
 import 'firebase_options.dart';
 import 'package:wallet_app/src/presentation/app.dart';
 import 'dart:async';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,13 +22,6 @@ Future<void> main() async {
 
   // App UI locked in portrait mode
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-
-  if (true) { // todo: replace later with "wallet initialized with did and bio set-up"
-
-  }
-
-  //finally, load the env variables
-  await dotenv.load(fileName: ".env");
 
   runApp(const App());
 

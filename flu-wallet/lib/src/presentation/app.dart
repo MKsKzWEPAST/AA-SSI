@@ -48,13 +48,6 @@ class AppState extends State<App> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    /*return SecureApplication( // FIXME/TODO: remove to allow screenshots
-      nativeRemoveDelay: 700,
-      child: Builder(
-        builder: (context) {
-          // FIXME/TODO: remove both lines to use with no-bio-secured phones
-          SecureApplicationProvider.of(context)?.secure();
-          SecureApplicationProvider.of(context)?.lock();*/
           return MaterialApp(
             title: CustomStrings.appTitle,
             home: const SplashScreen(),
@@ -67,9 +60,7 @@ class AppState extends State<App> with WidgetsBindingObserver {
                 textTheme: ButtonTextTheme.accent,
               ),
             ),
+            debugShowCheckedModeBanner: false,
           );
-        /*},
-      ),
-    );*/
   }
 }

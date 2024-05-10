@@ -27,9 +27,6 @@ class CombinedEvent with _$CombinedEvent {
   const factory CombinedEvent.onScanQrCodeResponse(String? response) =
   ScanQrCodeResponse;
 
-  // no QR code flow
-  /*const factory CombinedEvent.clickTapButton() = ClickTapButtonEvent;*/
-
   // prev claims
   const factory CombinedEvent.fetchAndSaveClaims(
       {required Iden3MessageEntity iden3message}) = FetchAndSaveClaimsEvent;
