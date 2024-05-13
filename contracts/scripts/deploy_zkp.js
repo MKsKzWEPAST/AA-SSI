@@ -5,11 +5,14 @@ const { prepareCircuitArrayValues } = require("@0xpolygonid/js-sdk");
 const { ethers} = require('ethers');
 require('dotenv').config()
 
+// getting env variables
 const deploy_private_key = "0x" + process.env.DEPLOY_PRIVATE_KEY;
 const amoy_rpc = process.env.AMOY_RPC;
 const age_verifier_address = process.env.AGE_VERIFIER_ADDRESS;
 
 const VerifierABI = require('./AgeVerifier.json');
+
+// serialization helper function
 function packV2ValidatorParams(query, allowedIssuers= []) {
     const web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545');
     return web3.eth.abi.encodeParameter(
@@ -42,6 +45,7 @@ function packV2ValidatorParams(query, allowedIssuers= []) {
     );
 }
 
+// conversion helper function to get a date in the right format
 function getYYYYMMDD18() {
     const date = new Date();
     const year = date.getFullYear() - 18;
@@ -49,6 +53,8 @@ function getYYYYMMDD18() {
     const day = String(date.getDate()).padStart(2, '0');
     return parseInt(`${year}${month}${day}`);
 }
+
+// ZKP op
 const Operators = {
     NOOP: 0, // No operation, skip query verification in circuit
     EQ: 1, // equal
@@ -59,6 +65,8 @@ const Operators = {
     NE: 6 // not equal
 };
 
+
+// poseidon hash function
 function calculateQueryHashV2(
     values,
     schema,
@@ -100,6 +108,7 @@ async function main() {
     // set default query
     const circuitIdSig = 'credentialAtomicQuerySigV2OnChain';
 
+    // loading the age verifier contract
     const provider = new ethers.providers.JsonRpcProvider(amoy_rpc);
     const signer = new ethers.Wallet(deploy_private_key,provider)
     const ageVerifier = new ethers.Contract(age_verifier_address, VerifierABI, signer);
@@ -109,6 +118,7 @@ async function main() {
     const network = 'polygon-amoy';
     const chainId = 80002;
 
+    // ZKP query
     const query = {
         schema: schema,
         claimPathKey: schemaClaimPathKey,
@@ -131,6 +141,7 @@ async function main() {
 
     const requestIdSig = 1;
 
+    // metadate for proof query
     const invokeRequestMetadata = {
         id: '7f38a193-0918-4a48-9fac-36adfdb8b542',
         typ: 'application/iden3comm-plain-json',
