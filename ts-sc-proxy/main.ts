@@ -8,6 +8,7 @@ import {authenticate} from "./auth";
 import {computePrivateKeyFrom} from "./cryptoUtils"
 import {rpcUrl,smartMoneyAddress,opts,TOKEN_ABIS,TOKEN_ADDRESSES,TOKEN_DECIMALS,verifierSCAddress} from "./consts";
 import admin = require('firebase-admin');
+import {maintainZKPRequest} from "./cron";
 
 // initializing smart money contracts
 const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
@@ -398,6 +399,11 @@ smartMoney.on("CompletePurchase", (requestID, event_status) => {
     orders.set(requestID.toNumber(), event_status);
 })
 
+const cron = maintainZKPRequest();
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+
+// Gracefully stops the cron task
+cron.then(timeout => clearTimeout(timeout));
