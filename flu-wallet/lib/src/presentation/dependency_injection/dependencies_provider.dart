@@ -1,15 +1,8 @@
-import 'dart:convert';
-
 import 'package:get_it/get_it.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/chain_config_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/data/mappers/iden3_message_type_mapper.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
-import 'package:wallet_app/utils/auth_model.dart';
-import 'package:wallet_app/utils/backend_plug.dart';
-
-
-import 'package:wallet_app/utils/qr_code_parser_utils.dart';
 import 'package:wallet_app/src/presentation/ui/backup_identity/bloc/backup_identity_bloc.dart';
 import 'package:wallet_app/src/presentation/ui/claim_detail/bloc/claim_detail_bloc.dart';
 import 'package:wallet_app/src/presentation/ui/claims/mappers/claim_model_mapper.dart';
@@ -19,6 +12,9 @@ import 'package:wallet_app/src/presentation/ui/combined_authclaim/combined_bloc.
 import 'package:wallet_app/src/presentation/ui/home/home_bloc.dart';
 import 'package:wallet_app/src/presentation/ui/restore_identity/bloc/restore_identity_bloc.dart';
 import 'package:wallet_app/src/presentation/ui/splash/splash_bloc.dart';
+import 'package:wallet_app/utils/auth_model.dart';
+import 'package:wallet_app/utils/backend_plug.dart';
+import 'package:wallet_app/utils/qr_code_parser_utils.dart';
 
 final getIt = GetIt.instance;
 
@@ -38,6 +34,7 @@ Future<void> init() async {
   registerBackendPlug();
 }
 
+//  blockchain environment variables
 void registerEnv() {
   Map<String, EnvEntity> env = {"amoy": EnvEntity(
     pushUrl: 'https://push-staging.polygonid.com/api/v1',
@@ -111,10 +108,12 @@ void registerUtilities() {
       () => QrcodeParserUtils(getIt()));
 }
 
+// handler for firebase authentication
 void registerAuthModel() {
   getIt.registerSingleton(AuthModel());
 }
 
+// handler for backend url setter
 void registerBackendPlug() {
   getIt.registerSingleton(BackendPlugUtils());
 }

@@ -1,8 +1,7 @@
 import 'dart:convert';
-import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
+import 'package:http/http.dart' as http;
 import 'package:polygonid_flutter_sdk/common/domain/domain_constants.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/env_config_entity.dart';
@@ -10,12 +9,10 @@ import 'package:polygonid_flutter_sdk/common/domain/entities/env_entity.dart';
 import 'package:polygonid_flutter_sdk/common/domain/entities/filter_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/exceptions/credential_exceptions.dart';
-import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/authorization/request/auth_body_request.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/credential/request/offer_iden3_message_entity.dart';
 import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:wallet_app/utils/backend_plug.dart';
 
 import '../../../../utils/auth_model.dart';
@@ -30,7 +27,6 @@ import '../claims/models/claim_model.dart';
 import '../common/widgets/profile_radio_button.dart';
 import 'combined_event.dart';
 import 'combined_state.dart';
-import 'package:http/http.dart' as http;
 
 class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
   final ClaimModelMapper _mapper;

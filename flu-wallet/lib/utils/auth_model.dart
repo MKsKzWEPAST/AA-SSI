@@ -1,13 +1,7 @@
-import 'dart:collection';
-
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
-import 'package:flutter/widgets.dart';
-import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
-import 'package:wallet_app/utils/wallet_utils.dart';
 
 class AuthModel {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -27,8 +21,6 @@ class AuthModel {
   Future<String> signInWithGoogle() async {
     await signOutFromGoogle();
     try {
-      logger().i("SIGNING IN WITH GOOGLE");
-
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
       final GoogleSignInAuthentication? googleAuth =
@@ -44,7 +36,7 @@ class AuthModel {
       _email = _auth.currentUser?.email ?? "";
 
       _id_token = await _auth.currentUser?.getIdToken(true) ?? "";
-      return "signed-in";
+      return "";
     } on Exception catch (e) {
       logger().i("error while signing in with google: " + e.toString());
       return e.toString();
@@ -60,12 +52,12 @@ class AuthModel {
       _email = _auth.currentUser?.email ?? "";
 
       _id_token = await _auth.currentUser?.getIdToken(true) ?? "";
+      return null;
     } on Exception catch (e) {
       logger().i("error while signing in: " + e.toString());
-      return "Couldn't sign in";
+      return e.toString();
 
     }
-    return null;
   }
 
   Future<String?> signUpPassword(SignupData data) async {
@@ -80,11 +72,11 @@ class AuthModel {
       _email = _auth.currentUser?.email ?? "";
 
       _id_token = await _auth.currentUser?.getIdToken(true) ?? "";
+      return null;
     } on Exception catch (e) {
       logger().i("error while signing up: " + e.toString());
-        return "Couldn't sign up";
+        return e.toString();
     }
-    return null;
   }
 
   Future<void> signOutFromGoogle() async {

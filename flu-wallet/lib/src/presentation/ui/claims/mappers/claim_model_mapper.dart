@@ -1,10 +1,8 @@
 import 'package:intl/intl.dart';
-import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:polygonid_flutter_sdk/common/mappers/from_mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
 import 'package:wallet_app/src/presentation/ui/claims/mappers/proof_model_type_mapper.dart';
 import 'package:wallet_app/src/presentation/ui/claims/models/claim_detail_model.dart';
-
 import 'package:wallet_app/src/presentation/ui/claims/models/claim_model.dart';
 import 'package:wallet_app/utils/claim_utils.dart';
 
