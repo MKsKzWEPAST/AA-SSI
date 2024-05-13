@@ -25,6 +25,32 @@
 
 ## How To Use
 
+### Setting up the backend url
+
+The backend is located under ts-sc-proxy. The file consts.ts contains constants and configuration variables that are
+necessary for the backend to communicate with the different smart contracts as well as the flutter app and the webshop.
+
+The webshop (frontend) is located under js-webshop. In order for the webshop to access your backend, you should provide
+the url at which it can be accessed. Please edit the config.json file under js-webshop in order to do so:
+
+```
+{
+  "verifier_address": "0xf463aefB5975e712059eAF56276a7dfe7D4B5542", 
+  "smart_money_address": "0x46346F5Db118505707F17B6c1805D0a557bb3ADA",
+  "backend_url": "[BACKEND'S PUBLIC FACING URL]"
+}
+```
+
+The easiest way to generate a public url is to set up an HTTP endpoint at port 3003 using ngrok ([here](https://ngrok.com/docs/http/));
+This endpoint will allow access to your localhost backend using a publicly url.
+
+#### Wallet App backend url setup
+
+In the wallet application, there is a screen dedicated to configuring backend URL settings. Please input the public URL 
+previously mentioned.
+
+### Running the project
+
 To clone and run this application, you'll need [Git](https://git-scm.com) and [Node.js](https://nodejs.org/en/download/) (which comes with [npm](http://npmjs.com)) installed on your computer. From your command line:
 
 ```bash
@@ -34,6 +60,7 @@ $ git clone https://github.com/MKsKzWEPAST/AA-SSI
 # Start with docker-compose
 $ docker-compose up
 ```
+
 
 ## Repository
 
