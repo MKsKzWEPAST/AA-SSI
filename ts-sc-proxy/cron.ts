@@ -1,6 +1,6 @@
 import * as fs from "node:fs";
-// @ts-ignore
-import setZKPRequest from '../contracts/scripts/deploy_zkp';
+
+import { setZKPRequest }  from '../contracts/scripts/deploy_zkp';
 
 function getLastZKPDate(): Date | null {
     try {
@@ -8,7 +8,7 @@ function getLastZKPDate(): Date | null {
         const parsedData = JSON.parse(data);
         return new Date(parsedData.lastUpdated);
     } catch (error) {
-        console.error('Error reading or parsing ZKPDate.json:', error);
+        console.error('ZKPDate.json didn\'t exist or wasn\'t properly formatted.');
         return null;
     }
 }
@@ -19,29 +19,32 @@ function saveDateToFile(date: Date) {
     console.log('Current date saved to ZKPDate.json');
 }
 
+async function setZKPnWrite(currentDate: Date) {
+    console.log(`Setting ZKP Request to ${currentDate.toISOString()}`);
+    await setZKPRequest();
+    console.log(`Date set!`);
+    saveDateToFile(currentDate);
+}
+
 export async function maintainZKPRequest() {
     const currentDate = new Date();
     const lastZKPDate = getLastZKPDate();
 
-    if (!lastZKPDate || isNaN(lastZKPDate.getTime()) || lastZKPDate.getDate() > currentDate.getDate()) {
-        setZKPRequest();
-        saveDateToFile(currentDate);
-    }else if (currentDate.getDate() > lastZKPDate.getDate()) {
-            setZKPRequest();
-            saveDateToFile(new Date());
-    } else {
-        console.log('No action needed.');
+    if (!lastZKPDate || isNaN(lastZKPDate.getTime()) || lastZKPDate.getTime() > currentDate.getTime()) {
+        await setZKPnWrite(currentDate);
+    } else if (currentDate.getTime() > lastZKPDate.getTime()
+        && currentDate.getDate() != lastZKPDate.getDate()) {
+        await setZKPnWrite(currentDate);
     }
 
     const midnight = new Date();
     midnight.setHours(0, 0,0, 0);
     midnight.setDate(midnight.getDate() + 1);
     return setTimeout(() => {
-        setZKPRequest();
-        saveDateToFile(new Date());
+        console.log("hi");
+        setZKPnWrite(new Date());
         return setInterval(() => {
-            setZKPRequest();
-            saveDateToFile(new Date());
+            setZKPnWrite(new Date());
         }, 1000 * 60 * 60 * 24); // called every 24h
-    }, midnight.getTime() - currentDate.getTime()); // called on next midnight
+    }, 1000); // called on next midnight (+ 1 minute)
 }

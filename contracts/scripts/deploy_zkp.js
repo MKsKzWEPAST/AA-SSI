@@ -4,11 +4,12 @@ const { SchemaHash } = require("@iden3/js-iden3-core");
 const { prepareCircuitArrayValues } = require("@0xpolygonid/js-sdk");
 const { ethers} = require('ethers');
 require('dotenv').config()
+const { DEPLOY_PRIVATE_KEY, AMOY_RPC, AGE_VERIFIER_ADDRESS } = require('./consts');
 
 // getting env variables
-const deploy_private_key = "0x" + process.env.DEPLOY_PRIVATE_KEY;
-const amoy_rpc = process.env.AMOY_RPC;
-const age_verifier_address = process.env.AGE_VERIFIER_ADDRESS;
+const deploy_private_key = "0x" + DEPLOY_PRIVATE_KEY;
+const amoy_rpc = AMOY_RPC;
+const age_verifier_address = AGE_VERIFIER_ADDRESS;
 
 const VerifierABI = require('./AgeVerifier.json');
 
@@ -47,10 +48,11 @@ function packV2ValidatorParams(query, allowedIssuers= []) {
 
 // conversion helper function to get a date in the right format
 function getYYYYMMDD18() {
-    const date = new Date();
-    const year = date.getFullYear() - 18;
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    const now = new Date();
+    const tomorrow = new Date(now.getTime() + 1000 * 60 * 60 * 24);
+    const year = tomorrow.getFullYear() - 18;
+    const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
+    const day = String(tomorrow.getDate()).padStart(2, '0');
     return parseInt(`${year}${month}${day}`);
 }
 
@@ -93,7 +95,7 @@ const coreSchemaFromStr = (schemaIntString) => {
     return SchemaHash.newSchemaHashFromInt(schemaInt);
 };
 
-async function setZKPRequest() {
+export async function setZKPRequest() {
     // you can run https://go.dev/play/p/3id7HAhf-Wi to get schema hash and claimPathKey using YOUR schema
     const schema = '74977327600848231385663280181476307657';
     // merklized path to field in the W3C credential according to JSONLD  schema e.g. birthday in the KYCAgeCredential under the url "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v3.json-ld"
@@ -186,17 +188,8 @@ async function setZKPRequest() {
             gasLimit:  3000000,
         });
         await txSig.wait();
-        console.log(txSig.hash);
+        console.log('Transaction hash:', txSig.hash);
     } catch (e) {
         console.log('error: ', e);
     }
 }
-
-setZKPRequest()
-    .then(() => process.exit(0))
-    .catch((error) => {
-        console.error(error);
-        process.exit(1);
-    });
-
-module.exports = setZKPRequest();
