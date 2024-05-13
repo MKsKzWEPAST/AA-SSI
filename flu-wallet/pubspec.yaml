@@ -60,6 +60,7 @@ dependencies:
   flutter_login: ^5.0.0
 
 dev_dependencies:
+  dependency_validator: 4.0.0
   mockito: ^5.3.2
   envied_generator: ^0.5.3
   build_runner: ^2.3.3
