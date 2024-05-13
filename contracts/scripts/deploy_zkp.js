@@ -93,7 +93,7 @@ const coreSchemaFromStr = (schemaIntString) => {
     return SchemaHash.newSchemaHashFromInt(schemaInt);
 };
 
-async function main() {
+async function setZKPRequest() {
     // you can run https://go.dev/play/p/3id7HAhf-Wi to get schema hash and claimPathKey using YOUR schema
     const schema = '74977327600848231385663280181476307657';
     // merklized path to field in the W3C credential according to JSONLD  schema e.g. birthday in the KYCAgeCredential under the url "https://raw.githubusercontent.com/iden3/claim-schema-vocab/main/schemas/json-ld/kyc-v3.json-ld"
@@ -192,9 +192,11 @@ async function main() {
     }
 }
 
-main()
+setZKPRequest()
     .then(() => process.exit(0))
     .catch((error) => {
         console.error(error);
         process.exit(1);
     });
+
+module.exports = setZKPRequest();
