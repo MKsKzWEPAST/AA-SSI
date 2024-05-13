@@ -7,7 +7,7 @@
 
 ### Install
 1. Clone the `polygonid-flutter-sdk` repository.
-2. Run `flutter pub get` from example directory.
+2. Run `flutter pub get` from root directory.
 3. Configure the environment per the instructions below.
 4. Run `build_runner` to generate `.g.dart` files:
 ```bash
