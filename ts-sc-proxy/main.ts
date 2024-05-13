@@ -371,14 +371,14 @@ app.get('/api/readOrderStatus', async (req, res) => {
     res.json({message: "ok"});
 })
 
-const lastAgeUpdate = 20060508
 // Returns the date of birth required to match the 18+ requirement
 app.get('/api/getReqDate', async (req, res) => {
-    const date = new Date();
-    const year = date.getFullYear() - 18;
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    res.json({date: lastAgeUpdate ?? parseInt(`${year}${month}${day}`)});
+    const now = new Date();
+    const tomorrow = new Date(now.getTime() + 1000 * 60 * 60 * 24);
+    const year = tomorrow.getFullYear() - 18;
+    const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
+    const day = String(tomorrow.getDate()).padStart(2, '0');
+    res.json({date: parseInt(`${year}${month}${day}`)});
 })
 
 // backend health check

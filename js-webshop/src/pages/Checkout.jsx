@@ -30,6 +30,7 @@ const Checkout = () => {
     }, []);
 
     const [orderInitialized, setOrderInitialized] = useState(false);
+    const [initOrderSent, setinitOrderSent] = useState(false);
     const [orderStatus, setOrderStatus ] = useState(0);
 
     async function getYYYYMMDD18() {
@@ -94,7 +95,8 @@ const Checkout = () => {
     });
 
     useEffect(() => {
-        if (!orderInitialized && fastState != null && fastState.product != null && fastState.product.qty > 0) {
+        if (!initOrderSent && fastState != null && fastState.product != null && fastState.product.qty > 0) {
+            setinitOrderSent(true);
             initOrder(orderID, fastState.product.price * fastState.product.qty, requireAgeVerified).then(result => {
                 if (result) {
                     setOrderInitialized(true);

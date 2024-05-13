@@ -1,5 +1,5 @@
 
-import config from "../config.json" assert {type: 'json'}
+import config from "./config.json"
 
 export const AGE_VERIFIER_ADDRESS=config.verifier_address
 export const SMART_MONEY_ADDRESS = config.smart_money_address
