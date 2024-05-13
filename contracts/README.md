@@ -11,13 +11,17 @@ Below is a brief overview of each subdirectory:
 
 - **scripts**: contains a deployment script (deploy_contracts) and a script for updating the query for age verification (deploy_zkp)
 
-
 Feel free to explore each subdirectory for detailed contract implementations, deployment instructions, and scripts.
+
+
+## Environment variables
+
+In the scripts directory, please copy the .env.sample file to .env and fill the variables accordingly. In order to 
+get an RPC node url, please use an RPC provider such as Alchemy.
 
 ## Notes
 
 * All the contracts are currently deployed, and ready to use
-
 
 * The need for deploying the proof for age verification on a daily basis is due to the fact that the proof query contains 
 the minimum date for which an individual is 18 years old. Thus, this date is changing every day.
