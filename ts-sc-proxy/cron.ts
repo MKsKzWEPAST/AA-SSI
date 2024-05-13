@@ -40,11 +40,12 @@ export async function maintainZKPRequest() {
     const midnight = new Date();
     midnight.setHours(0, 0,0, 0);
     midnight.setDate(midnight.getDate() + 1);
-    return setTimeout(() => {
+    setTimeout(() => {
         console.log("hi");
         setZKPnWrite(new Date());
-        return setInterval(() => {
-            setZKPnWrite(new Date());
-        }, 1000 * 60 * 60 * 24); // called every 24h
-    }, 1000); // called on next midnight (+ 1 minute)
+    }, midnight.getTime() - currentDate.getTime() + 1000 * 60 ); // called on next midnight (+ 1 minute)
+
+    return setInterval(() => {
+        setZKPnWrite(new Date());
+    }, 1000 * 60 * 60 * 24); // called every 24h
 }
