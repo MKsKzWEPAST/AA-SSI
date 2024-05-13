@@ -30,11 +30,11 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
           bucketUrl:
               "https://circuits.polygonid.me/circuits/v1.0.0/polygonid-keys.zip",
         ),
-        CircuitsToDownloadParam(
+        /*CircuitsToDownloadParam(
           circuitsName: "circuitsV3",
           bucketUrl:
               "https://iden3-circuits-bucket.s3.eu-west-1.amazonaws.com/circuitsv3-beta-0.zip",
-        ),
+        ),*/
       ],
     );
 

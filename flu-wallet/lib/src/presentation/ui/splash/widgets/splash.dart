@@ -23,8 +23,6 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   StreamSubscription? _changeStateStreamSubscription;
   SplashBloc _bloc = getIt<SplashBloc>();
-  double half = 0;
-  bool isHalf = false;
 
   @override
   void initState() {
@@ -75,12 +73,6 @@ class _SplashScreenState extends State<SplashScreen> {
       builder: (BuildContext context, SplashState state) {
         if (state is DownloadProgressSplashState) {
           final percentage = (state.downloaded / state.contentLength * 100);
-          if (!isHalf && (percentage >= 100)) {
-            isHalf = true;
-          }
-          if (percentage < 100 && isHalf && half == 0) {
-            half = 1;
-          }
           // return percentage
           return Column(
             mainAxisSize: MainAxisSize.min,
@@ -88,12 +80,10 @@ class _SplashScreenState extends State<SplashScreen> {
               const Text("We are setting up the app..."),
               const SizedBox(height: 2),
               Text(
-                  "${(50*half + (percentage / 2)).toStringAsFixed(2)} %"),
+                  "${percentage.toStringAsFixed(2)} %"),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
-                  isHalf = false;
-                  half = 0;
                   _bloc.add(const SplashEvent.cancelDownloadEvent());
                 },
                 style: CustomButtonStyle.primaryButtonStyle,
