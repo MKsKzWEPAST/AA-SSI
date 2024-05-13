@@ -1,4 +1,3 @@
-
 import 'claim_detail_model.dart';
 import 'claim_model_state.dart';
 

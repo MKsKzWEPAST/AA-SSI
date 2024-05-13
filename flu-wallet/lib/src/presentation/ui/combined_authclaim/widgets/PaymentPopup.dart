@@ -11,17 +11,16 @@ class PaymentPopup extends StatefulWidget {
   final Function exitFunction;
 
   const PaymentPopup(
-      {Key? key,
+      {super.key,
       required this.price,
       required this.address,
       required this.orderID,
       required this.tokens,
       required this.payFunction,
-      required this.exitFunction})
-      : super(key: key);
+      required this.exitFunction});
 
   @override
-  _PaymentPopupState createState() => _PaymentPopupState();
+  State<PaymentPopup> createState() => _PaymentPopupState();
 }
 
 class _PaymentPopupState extends State<PaymentPopup> {

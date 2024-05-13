@@ -36,20 +36,23 @@ Future<void> init() async {
 
 //  blockchain environment variables
 void registerEnv() {
-  Map<String, EnvEntity> env = {"amoy": EnvEntity(
-    pushUrl: 'https://push-staging.polygonid.com/api/v1',
-    ipfsUrl:
-    "https://[YOUR-IPFS-API-KEY]:[YOUR-IPFS-API-KEY-SECRET]@ipfs.infura.io:5001",
-    chainConfigs: {
-      "80002": ChainConfigEntity(
-        blockchain: 'polygon',
-        network: 'amoy',
-        rpcUrl: 'https://polygon-amoy.g.alchemy.com/v2/tZIEm32QWH6cinpYSA8Yo7u0m2ZqtF1i',
-        stateContractAddr: '0x1a4cC30f2aA0377b0c3bc9848766D90cb4404124',
-      )
-    },
-    didMethods: [],
-  )};
+  Map<String, EnvEntity> env = {
+    "amoy": EnvEntity(
+      pushUrl: 'https://push-staging.polygonid.com/api/v1',
+      ipfsUrl:
+          "https://[YOUR-IPFS-API-KEY]:[YOUR-IPFS-API-KEY-SECRET]@ipfs.infura.io:5001",
+      chainConfigs: {
+        "80002": ChainConfigEntity(
+          blockchain: 'polygon',
+          network: 'amoy',
+          rpcUrl:
+              'https://polygon-amoy.g.alchemy.com/v2/tZIEm32QWH6cinpYSA8Yo7u0m2ZqtF1i',
+          stateContractAddr: '0x1a4cC30f2aA0377b0c3bc9848766D90cb4404124',
+        )
+      },
+      didMethods: [],
+    )
+  };
   getIt.registerSingleton<Map<String, EnvEntity>>(env);
 }
 

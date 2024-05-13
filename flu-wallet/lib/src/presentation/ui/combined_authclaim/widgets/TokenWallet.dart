@@ -5,12 +5,12 @@ class TokenWallet extends StatelessWidget {
   final String address;
   final Map<String, Map<String, Object>> tokens;
 
-  TokenWallet({super.key, required this.address, required this.tokens});
+  const TokenWallet({super.key, required this.address, required this.tokens});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal:10.0),
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

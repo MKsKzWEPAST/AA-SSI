@@ -7,7 +7,8 @@ import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:wallet_app/src/presentation/dependency_injection/dependencies_provider.dart';
 import 'package:wallet_app/utils/backend_plug.dart';
 
-Future<String> registerOrFetchSmartAccount(String id_token, String email) async {
+Future<String> registerOrFetchSmartAccount(
+    String id_token, String email) async {
   try {
     Map<String, String> headers = {
       'Content-Type': 'application/json',
@@ -33,15 +34,16 @@ Future<String> registerOrFetchSmartAccount(String id_token, String email) async 
       Map<String, dynamic> res = jsonDecode(response.body);
 
       // Check if the response body contains 'success' and 'address'
-      if (res.containsKey('success') && res.containsKey('address')){
+      if (res.containsKey('success') && res.containsKey('address')) {
         return res['success'] ? res['address'] : "";
       } else {
         logger().i("Invalid response body, missing success or address");
-         return "";
+        return "";
       }
     } else {
       // Handle the case where the server did not return a 200 OK response
-      logger().i("Error, received non-200 response when fetching address: ${response.reasonPhrase}");
+      logger().i(
+          "Error, received non-200 response when fetching address: ${response.reasonPhrase}");
       Fluttertoast.showToast(
           msg: "Couldn't retrieve account",
           toastLength: Toast.LENGTH_SHORT,

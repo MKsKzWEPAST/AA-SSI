@@ -50,5 +50,4 @@ class DefaultFirebaseOptions {
     projectId: 'swisscom-4337-ssi',
     storageBucket: 'swisscom-4337-ssi.appspot.com',
   );
-
 }

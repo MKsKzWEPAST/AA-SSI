@@ -10,7 +10,6 @@ import 'package:wallet_app/utils/secure_storage_keys.dart';
 import 'claim_detail_event.dart';
 import 'claim_detail_state.dart';
 
-
 class ClaimDetailBloc extends Bloc<ClaimDetailEvent, ClaimDetailState> {
   final PolygonIdSdk _polygonIdSdk;
 
@@ -42,10 +41,7 @@ class ClaimDetailBloc extends Bloc<ClaimDetailEvent, ClaimDetailState> {
       final network = chainConfig.network;
 
       String? did = await _polygonIdSdk.identity.getDidIdentifier(
-          privateKey: privateKey,
-          blockchain: blockchain,
-          network: network
-      );
+          privateKey: privateKey, blockchain: blockchain, network: network);
 
       await _polygonIdSdk.credential.removeClaims(
         claimIds: [event.claimId],

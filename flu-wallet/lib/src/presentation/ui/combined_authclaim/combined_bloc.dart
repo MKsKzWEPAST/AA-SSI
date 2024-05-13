@@ -75,19 +75,22 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
     emit(const CombinedState.navigateToQrCodeScanner());
   }
 
-  Future<void> _handleIden3Message(String response, Emitter<CombinedState> emit) async {
+  Future<void> _handleIden3Message(
+      String response, Emitter<CombinedState> emit) async {
     try {
       final Iden3MessageEntity iden3message =
-      await _qrcodeParserUtils.getIden3MessageFromQrCode(response);
+          await _qrcodeParserUtils.getIden3MessageFromQrCode(response);
 
-      logger().i("[debugging-combined] Message content: [start] Id: ${iden3message.id}, Typ: ${iden3message.typ} "
+      logger().i(
+          "[debugging-combined] Message content: [start] Id: ${iden3message.id}, Typ: ${iden3message.typ} "
           "Type: ${iden3message.type}, Message Type: ${iden3message.messageType.toString()} "
           "Thid: ${iden3message.thid}, Body: ${iden3message.body} "
           "From: ${iden3message.from}, To: ${iden3message.to ?? ''} [end]");
 
       switch (iden3message.messageType) {
         case Iden3MessageType.proofContractInvokeRequest:
-          logger().i("[debugging-combined] -- On-chain verification: Checkpoint 1--");
+          logger().i(
+              "[debugging-combined] -- On-chain verification: Checkpoint 1--");
 
           if (emit.isDone) return;
 
@@ -96,7 +99,7 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
           emit(const CombinedState.loading());
 
           String? privateKey =
-          await SecureStorage.read(key: SecureStorageKeys.privateKey);
+              await SecureStorage.read(key: SecureStorageKeys.privateKey);
 
           if (privateKey == null) {
             emit(const CombinedState.error("no private key found"));
@@ -109,19 +112,26 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
           final network = chainConfig.network;
 
           String? did = await _polygonIdSdk.identity.getDidIdentifier(
-              privateKey: privateKey,
-              blockchain: blockchain,
-              network: network);
+              privateKey: privateKey, blockchain: blockchain, network: network);
 
           final BigInt nonce = selectedProfile == SelectedProfile.public
               ? GENESIS_PROFILE_NONCE
               : await NonceUtils(getIt()).getPrivateProfileNonce(
-              did: did, privateKey: privateKey, from: iden3message.from);
+                  did: did, privateKey: privateKey, from: iden3message.from);
 
-          final config = EnvConfigEntity(ipfsNodeUrl: env.ipfsUrl,chainConfigs: env.chainConfigs,didMethods: []);
+          final config = EnvConfigEntity(
+              ipfsNodeUrl: env.ipfsUrl,
+              chainConfigs: env.chainConfigs,
+              didMethods: []);
 
           final challenge = toLENumber(_auth.address);
-          final proofs = await _polygonIdSdk.iden3comm.getProofs(message: iden3message, genesisDid: did, privateKey: privateKey, profileNonce: nonce,challenge: challenge, config: config);
+          final proofs = await _polygonIdSdk.iden3comm.getProofs(
+              message: iden3message,
+              genesisDid: did,
+              privateKey: privateKey,
+              profileNonce: nonce,
+              challenge: challenge,
+              config: config);
           final proof = proofs[0];
 
           logger().i("[debugging-combined] -- Verification with proof $proof");
@@ -131,7 +141,11 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
           var response = await http.post(
             url,
             headers: {"Content-Type": "application/json"},
-            body: jsonEncode({"proof": proof.toJson(), "id_token": _auth.id_token,"email":_auth.email}),
+            body: jsonEncode({
+              "proof": proof.toJson(),
+              "id_token": _auth.id_token,
+              "email": _auth.email
+            }),
           );
 
           if (response.statusCode == 200) {
@@ -156,7 +170,7 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
           emit(CombinedState.loaded(iden3message));
 
           String? privateKey =
-          await SecureStorage.read(key: SecureStorageKeys.privateKey);
+              await SecureStorage.read(key: SecureStorageKeys.privateKey);
 
           if (privateKey == null) {
             emit(const CombinedState.error("no private key found"));
@@ -172,7 +186,8 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
           break;
 
         default:
-          emit(const CombinedState.error("Iden3MessageType not auth.req nor cred.offer"));
+          emit(const CombinedState.error(
+              "Iden3MessageType not auth.req nor cred.offer"));
       }
     } catch (error) {
       emit(CombinedState.error("Scanned code is not valid" + error.toString()));
@@ -181,13 +196,12 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
 
   Future<void> _handleScanQrCodeResponse(
       ScanQrCodeResponse event, Emitter<CombinedState> emit) async {
-
     String? qrCodeResponse = event.response;
     if (qrCodeResponse == null || qrCodeResponse.isEmpty) {
       emit(const CombinedState.error("no qr code scanned"));
       return;
     }
-   await  _handleIden3Message(qrCodeResponse,emit);
+    await _handleIden3Message(qrCodeResponse, emit);
   }
 
   ///
@@ -199,15 +213,12 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
     emit(const CombinedState.loading());
     logger().i("[debugging-combined] -- Auth: Checkpoint 2--");
 
-
     EnvEntity env = await _polygonIdSdk.getEnv();
     final chainConfig = env.chainConfigs["80002"]!;
     final blockchain = chainConfig.blockchain;
     final network = chainConfig.network;
     String? did = await _polygonIdSdk.identity.getDidIdentifier(
-        privateKey: privateKey,
-        blockchain: blockchain,
-        network: network);
+        privateKey: privateKey, blockchain: blockchain, network: network);
     logger().i("[debugging-combined] -- Auth: Checkpoint 3--");
 
     try {
@@ -258,9 +269,7 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
     final network = chainConfig.network;
 
     String didIdentifier = await _polygonIdSdk.identity.getDidIdentifier(
-        privateKey: privateKey,
-        blockchain: blockchain,
-        network: network);
+        privateKey: privateKey, blockchain: blockchain, network: network);
 
     logger().i("[debugging-combined] --Checkpoint 5--");
 
@@ -299,7 +308,8 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
         add(const GetClaimsEvent());
       }
     } catch (exception) {
-      logger().e("[debugging-combined] Checkpoint: error - ${exception.toString()}");
+      logger().e(
+          "[debugging-combined] Checkpoint: error - ${exception.toString()}");
       emit(const CombinedState.error(CustomStrings.iden3messageGenericError));
     }
   }
@@ -538,7 +548,8 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
   }
 
   ///
-  Future<void> _handleClickClaim(OnClickClaim event, Emitter<CombinedState> emit) async {
+  Future<void> _handleClickClaim(
+      OnClickClaim event, Emitter<CombinedState> emit) async {
     emit(const CombinedState.loading());
     emit(CombinedState.navigateToClaimDetail(event.claimModel));
   }

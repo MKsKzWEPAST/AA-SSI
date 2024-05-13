@@ -1,5 +1,3 @@
-
-
 abstract class SplashState {
   SplashState();
 

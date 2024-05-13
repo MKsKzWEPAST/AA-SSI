@@ -10,29 +10,30 @@ part 'combined_event.freezed.dart';
 
 @freezed
 class CombinedEvent with _$CombinedEvent {
-
   // prev auth
   const factory CombinedEvent.profileSelected(SelectedProfile profile) =
-  ProfileSelectedEvent;
+      ProfileSelectedEvent;
+
   const factory CombinedEvent.clickScanQrCode() = ClickScanQrCodeEvent;
+
   const factory CombinedEvent.onScanQrCodeResponse(String? response) =
-  ScanQrCodeResponse;
+      ScanQrCodeResponse;
 
   // prev claims
   const factory CombinedEvent.fetchAndSaveClaims(
       {required Iden3MessageEntity iden3message}) = FetchAndSaveClaimsEvent;
 
   const factory CombinedEvent.getClaims({List<FilterEntity>? filters}) =
-  GetClaimsEvent;
+      GetClaimsEvent;
 
   const factory CombinedEvent.getClaimsByIds({required List<String> ids}) =
-  GetClaimsByIdsEvent;
+      GetClaimsByIdsEvent;
 
   const factory CombinedEvent.removeClaim({required String id}) =
-  RemoveClaimEvent;
+      RemoveClaimEvent;
 
   const factory CombinedEvent.removeClaims({required List<String> ids}) =
-  RemoveClaimsEvent;
+      RemoveClaimsEvent;
 
   const factory CombinedEvent.removeAllClaims() = RemoveAllClaimsEvent;
 
@@ -46,9 +47,9 @@ class CombinedEvent with _$CombinedEvent {
     Map<String, dynamic>? data,
   }) = UpdateClaimEvent;
 
-  const factory CombinedEvent.onClickClaim(ClaimModel claimModel) = OnClickClaim;
+  const factory CombinedEvent.onClickClaim(ClaimModel claimModel) =
+      OnClickClaim;
 
   const factory CombinedEvent.onClaimDetailRemoveResponse(bool? removed) =
-  OnClaimDetailRemoveResponse;
-
+      OnClaimDetailRemoveResponse;
 }

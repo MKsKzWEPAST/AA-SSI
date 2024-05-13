@@ -1,1 +1,21 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"swisscom-4337-ssi","appId":"1:450618253210:android:a2708e28abaac6b0c06423","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"swisscom-4337-ssi","configurations":{"android":"1:450618253210:android:a2708e28abaac6b0c06423"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "swisscom-4337-ssi",
+          "appId": "1:450618253210:android:a2708e28abaac6b0c06423",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "swisscom-4337-ssi",
+          "configurations": {
+            "android": "1:450618253210:android:a2708e28abaac6b0c06423"
+          }
+        }
+      }
+    }
+  }
+}

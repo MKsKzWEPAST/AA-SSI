@@ -13,17 +13,17 @@ class CombinedState with _$CombinedState {
   const factory CombinedState.loading() = LoadingCombinedState;
 
   const factory CombinedState.profileSelected(SelectedProfile profile) =
-  ProfileSelectedCombinedState;
+      ProfileSelectedCombinedState;
 
   //qrcode
   const factory CombinedState.navigateToQrCodeScanner() =
-  NavigateToQrCodeScannerCombinedState;
+      NavigateToQrCodeScannerCombinedState;
 
   const factory CombinedState.qrCodeScanned(Iden3MessageEntity iden3message) =
-  QrCodeScannedCombinedState;
+      QrCodeScannedCombinedState;
 
   const factory CombinedState.loaded(Iden3MessageEntity iden3message) =
-  LoadedCombinedState;
+      LoadedCombinedState;
 
   const factory CombinedState.error(String message) = ErrorCombinedState;
 
@@ -32,8 +32,8 @@ class CombinedState with _$CombinedState {
   const factory CombinedState.proofSent() = ProofSentCombinedState;
 
   const factory CombinedState.loadedClaims(List<ClaimModel> claimList) =
-  LoadedDataCombinedState;
+      LoadedDataCombinedState;
 
   const factory CombinedState.navigateToClaimDetail(ClaimModel claimModel) =
-  NavigateToClaimDetailCombinedState;
+      NavigateToClaimDetailCombinedState;
 }

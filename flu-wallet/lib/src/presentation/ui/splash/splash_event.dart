@@ -6,7 +6,9 @@ part 'splash_event.freezed.dart';
 @freezed
 class SplashEvent {
   const factory SplashEvent.startDownload() = StartDownloadSplashEvent;
+
   const factory SplashEvent.downloadProgressEvent(DownloadInfo downloadInfo) =
       DownloadProgressSplashEvent;
+
   const factory SplashEvent.cancelDownloadEvent() = CancelDownloadSplashEvent;
 }

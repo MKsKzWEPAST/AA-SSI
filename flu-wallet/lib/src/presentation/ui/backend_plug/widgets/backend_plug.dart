@@ -15,7 +15,6 @@ class BackendPlug extends StatefulWidget {
 }
 
 class _BackendPlugState extends State<BackendPlug> {
-
   final _formKey = GlobalKey<FormState>();
   String url = "";
 
@@ -68,8 +67,7 @@ class _BackendPlugState extends State<BackendPlug> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Enter backend URL';
-                          }
-                          else if (!value.startsWith("https://")) {
+                          } else if (!value.startsWith("https://")) {
                             return "The url format is not valid";
                           }
                           setState(() {
@@ -85,12 +83,13 @@ class _BackendPlugState extends State<BackendPlug> {
                             if (url != "") {
                               logger().i("ah ?");
                               try {
-                                final response = await http.get(
-                                    Uri.parse('$url/api/ping'));
+                                final response =
+                                    await http.get(Uri.parse('$url/api/ping'));
                                 if (response.statusCode != 200) {
                                   logger().i("Error with url $url");
                                   Fluttertoast.showToast(
-                                      msg: "Failed to reach the backend: ${response.reasonPhrase}",
+                                      msg:
+                                          "Failed to reach the backend: ${response.reasonPhrase}",
                                       toastLength: Toast.LENGTH_SHORT,
                                       gravity: ToastGravity.TOP,
                                       timeInSecForIosWeb: 1,
@@ -101,7 +100,7 @@ class _BackendPlugState extends State<BackendPlug> {
                                   getIt<BackendPlugUtils>().setBackendURL(url);
                                   _validURL();
                                 }
-                              } catch(e) {
+                              } catch (e) {
                                 Fluttertoast.showToast(
                                     msg: "URL $url is not valid: $e",
                                     toastLength: Toast.LENGTH_SHORT,
@@ -112,21 +111,22 @@ class _BackendPlugState extends State<BackendPlug> {
                                     fontSize: 16.0);
                               }
                             }
-
                           }
                         },
                         child: const Text('Submit'),
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          getIt<BackendPlugUtils>().setBackendURL("https://broadly-assured-piglet.ngrok-free.app");
+                          getIt<BackendPlugUtils>().setBackendURL(
+                              "https://broadly-assured-piglet.ngrok-free.app");
                           _validURL();
                         },
                         child: const Text('Léo NGROK'),
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          getIt<BackendPlugUtils>().setBackendURL("https://griffon-loved-physically.ngrok-free.app");
+                          getIt<BackendPlugUtils>().setBackendURL(
+                              "https://griffon-loved-physically.ngrok-free.app");
                           _validURL();
                         },
                         child: const Text('Victor NGROK'),
@@ -141,9 +141,9 @@ class _BackendPlugState extends State<BackendPlug> {
       ),
     );
   }
+
   ///
   void _validURL() {
     Navigator.of(context).pushReplacementNamed(Routes.homePath);
   }
-
 }

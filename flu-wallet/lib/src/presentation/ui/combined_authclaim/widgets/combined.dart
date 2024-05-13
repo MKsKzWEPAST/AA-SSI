@@ -88,10 +88,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
           actions: <Widget>[
             TextButton(
               style: TextButton.styleFrom(
-                textStyle: Theme
-                    .of(context)
-                    .textTheme
-                    .labelLarge,
+                textStyle: Theme.of(context).textTheme.labelLarge,
               ),
               child: const Text('Nevermind'),
               onPressed: () {
@@ -100,10 +97,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
             ),
             TextButton(
               style: TextButton.styleFrom(
-                textStyle: Theme
-                    .of(context)
-                    .textTheme
-                    .labelLarge,
+                textStyle: Theme.of(context).textTheme.labelLarge,
               ),
               child: const Text('Leave'),
               onPressed: () {
@@ -119,17 +113,16 @@ class _CombinedScreenState extends State<CombinedScreen> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: false,
-      onPopInvoked: (bool didPop) {
-        if (didPop) return;
-        _showBackDialog();
-      },
-      child: Scaffold(
-        backgroundColor: CustomColors.background,
-        appBar: _buildAppBar(),
-        body: _buildBody(),
-      )
-    );
+        canPop: false,
+        onPopInvoked: (bool didPop) {
+          if (didPop) return;
+          _showBackDialog();
+        },
+        child: Scaffold(
+          backgroundColor: CustomColors.background,
+          appBar: _buildAppBar(),
+          body: _buildBody(),
+        ));
   }
 
   ///
@@ -254,13 +247,13 @@ class _CombinedScreenState extends State<CombinedScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Flexible(flex:1,child:refreshButton()),
+        Flexible(flex: 1, child: refreshButton()),
         const SizedBox(width: 7),
-        Flexible(flex:1,child:receiveButton()),
+        Flexible(flex: 1, child: receiveButton()),
         const SizedBox(width: 7),
-        Flexible(flex:1,child:scanToPayButton(tokens, context)),
+        Flexible(flex: 1, child: scanToPayButton(tokens, context)),
         const SizedBox(width: 7),
-        Flexible(flex:1,child: historyButton()),
+        Flexible(flex: 1, child: historyButton()),
       ],
     );
   }
@@ -279,7 +272,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
   }
 
   ElevatedButton refreshButton() {
-    return   ElevatedButton(
+    return ElevatedButton(
       onPressed: () {
         _fetchCoinsBalance();
       },
@@ -292,57 +285,59 @@ class _CombinedScreenState extends State<CombinedScreen> {
       ),
     );
   }
+
   ElevatedButton receiveButton() {
     return ElevatedButton(
-      onPressed: () {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            backgroundColor: Colors.white,
-            title: const Text('Wallet Public Key'),
-            content: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.6,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  QrImageView(
-                    data: address,
-                    version: QrVersions.auto,
-                    size: 200.0,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    address,
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const  FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    "Receive",
-                    maxLines: 1,
-                  ),
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
+              title: const Text('Wallet Public Key'),
+              content: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.6,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    QrImageView(
+                      data: address,
+                      version: QrVersions.auto,
+                      size: 200.0,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      address,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ],
                 ),
               ),
-            ],
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      "Receive",
+                      maxLines: 1,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+        child: const FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            "Receive",
+            maxLines: 1,
           ),
-        );
-      },
-      child: const FittedBox(
-      fit: BoxFit.scaleDown,
-      child: Text(
-        "Receive",
-        maxLines: 1,
-      ),
-    ));
+        ));
   }
+
   ElevatedButton historyButton() {
     return ElevatedButton(
       onPressed: () async {
@@ -350,7 +345,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
             "https://amoy.polygonscan.com/address/$address#tokentxns");
         _launchUrl(url);
       },
-      child: const  FittedBox(
+      child: const FittedBox(
         fit: BoxFit.scaleDown,
         child: Text(
           "History",
@@ -359,6 +354,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
       ),
     );
   }
+
   ElevatedButton scanToPayButton(
       Map<String, Map<String, Object>> tokens, context) {
     return ElevatedButton(
@@ -478,10 +474,11 @@ class _CombinedScreenState extends State<CombinedScreen> {
     String? qrCodeScanningResult =
         await Navigator.pushNamed(context, Routes.qrCodeScannerPath) as String?;
     try {
-      final Iden3MessageEntity iden3message =
-      await widget._bloc.qrcodeParserUtils.getIden3MessageFromQrCode(qrCodeScanningResult);
+      final Iden3MessageEntity iden3message = await widget
+          ._bloc.qrcodeParserUtils
+          .getIden3MessageFromQrCode(qrCodeScanningResult);
 
-      if(mounted){
+      if (mounted) {
         bool? accept = await _showConfirmationDialog(context, iden3message);
         if (accept == null || !accept) {
           return;

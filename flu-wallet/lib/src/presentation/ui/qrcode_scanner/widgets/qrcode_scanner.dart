@@ -74,7 +74,8 @@ class _QRCodeScannerPageState extends State<QRCodeScannerPage> {
   Future<void> processImage(InputImage inputImage) async {
     if (!_canProcess) return;
     if (_isBusy) return;
-    if (!_skippedFirst) { // fixes potential scan of "previously scanned qr"
+    if (!_skippedFirst) {
+      // fixes potential scan of "previously scanned qr"
       _skippedFirst = true;
       return;
     }

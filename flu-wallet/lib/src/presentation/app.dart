@@ -9,6 +9,7 @@ import 'package:wallet_app/utils/custom_colors.dart';
 import 'package:wallet_app/utils/custom_strings.dart';
 
 import 'dependency_injection/dependencies_provider.dart';
+
 class App extends StatefulWidget {
   const App({Key? key}) : super(key: key);
 
@@ -25,6 +26,7 @@ class AppState extends State<App> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
   }
+
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
@@ -35,25 +37,27 @@ class AppState extends State<App> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     // if the app is terminated, log out
     if (state == AppLifecycleState.detached) {
-     getIt<AuthModel>().signOutFromGoogle().then((value) =>  logger().i("signed-out"));
+      getIt<AuthModel>()
+          .signOutFromGoogle()
+          .then((value) => logger().i("signed-out"));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-          return MaterialApp(
-            title: CustomStrings.appTitle,
-            home: const SplashScreen(),
-            routes: Routes.getRoutes(context),
-            navigatorKey: navigatorKey,
-            theme: ThemeData(
-              primarySwatch: CustomColors.primaryWhite,
-              buttonTheme: const ButtonThemeData(
-                buttonColor: CustomColors.primaryOrange,
-                textTheme: ButtonTextTheme.accent,
-              ),
-            ),
-            debugShowCheckedModeBanner: false,
-          );
+    return MaterialApp(
+      title: CustomStrings.appTitle,
+      home: const SplashScreen(),
+      routes: Routes.getRoutes(context),
+      navigatorKey: navigatorKey,
+      theme: ThemeData(
+        primarySwatch: CustomColors.primaryWhite,
+        buttonTheme: const ButtonThemeData(
+          buttonColor: CustomColors.primaryOrange,
+          textTheme: ButtonTextTheme.accent,
+        ),
+      ),
+      debugShowCheckedModeBanner: false,
+    );
   }
 }

@@ -45,9 +45,8 @@ class AuthModel {
 
   Future<String?> signInPassword(LoginData data) async {
     try {
-
-
-      await _auth.signInWithEmailAndPassword(email: data.name, password: data.password);
+      await _auth.signInWithEmailAndPassword(
+          email: data.name, password: data.password);
 
       _email = _auth.currentUser?.email ?? "";
 
@@ -56,7 +55,6 @@ class AuthModel {
     } on Exception catch (e) {
       logger().i("error while signing in: " + e.toString());
       return e.toString();
-
     }
   }
 
@@ -67,7 +65,7 @@ class AuthModel {
       if (n == "" || p == "") {
         return "email or password is empty";
       }
-      await _auth.createUserWithEmailAndPassword(email: n,password: p);
+      await _auth.createUserWithEmailAndPassword(email: n, password: p);
 
       _email = _auth.currentUser?.email ?? "";
 
@@ -75,7 +73,7 @@ class AuthModel {
       return null;
     } on Exception catch (e) {
       logger().i("error while signing up: " + e.toString());
-        return e.toString();
+      return e.toString();
     }
   }
 

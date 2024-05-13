@@ -40,9 +40,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     final network = chainConfig.network;
 
     String? identifier = await _polygonIdSdk.identity.getDidIdentifier(
-        privateKey: privateKey,
-        blockchain: blockchain,
-        network: network);
+        privateKey: privateKey, blockchain: blockchain, network: network);
     emit(HomeState.loaded(identifier: identifier));
   }
 
@@ -53,7 +51,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     try {
       String? privateKey =
-      await SecureStorage.read(key: SecureStorageKeys.privateKey);
+          await SecureStorage.read(key: SecureStorageKeys.privateKey);
       if (privateKey != null) {
         EnvEntity env = await _polygonIdSdk.getEnv();
         final chainConfig = env.chainConfigs["80002"]!;
@@ -61,9 +59,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         final network = chainConfig.network;
 
         String? identifier = await _polygonIdSdk.identity.getDidIdentifier(
-            privateKey: privateKey,
-            blockchain: blockchain,
-            network: network);
+            privateKey: privateKey, blockchain: blockchain, network: network);
         emit(HomeState.loaded(identifier: identifier));
         return;
       }

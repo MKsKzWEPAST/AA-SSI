@@ -5,8 +5,7 @@ class CustomStrings {
   static const String appTitle = "Secutix Wallet";
 
   // HOME
-  static const String homeDescription =
-      "Welcome to your Wallets";
+  static const String homeDescription = "Welcome to your Wallets";
   static const String loading = "Loading...";
   static const String homeIdentifierSectionPrefix =
       "identity.getDidIdentifier()\nIdentifier:";
@@ -14,7 +13,7 @@ class CustomStrings {
   static const String homeNoWallet = "Generate a DID first.";
   static const String homeSocialLogin = "Google sign-in";
   static const String homePWLogin = "Sign-in with email";
-  static const String createID ="Create a DID here";
+  static const String createID = "Create a DID here";
 
   static const String homeButtonRemoveIdentityCTA =
       "Remove identity\nidentity.removeIdentity() ";

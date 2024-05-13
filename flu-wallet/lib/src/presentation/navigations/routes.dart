@@ -51,12 +51,10 @@ class Routes {
     return (BuildContext context) => const BackendPlug();
   }
 
-
   ///
   static WidgetBuilder _qrCodeScannerRoute() {
     return (BuildContext context) => const QRCodeScannerPage();
   }
-
 
   static WidgetBuilder _combinedRoute() {
     return (BuildContext context) => CombinedScreen();
@@ -65,10 +63,7 @@ class Routes {
   ///
   static WidgetBuilder _claimDetailPath() {
     return (BuildContext context) {
-      final args = ModalRoute
-          .of(context)!
-          .settings
-          .arguments as ClaimModel;
+      final args = ModalRoute.of(context)!.settings.arguments as ClaimModel;
       return ClaimDetailScreen(claimModel: args);
     };
   }

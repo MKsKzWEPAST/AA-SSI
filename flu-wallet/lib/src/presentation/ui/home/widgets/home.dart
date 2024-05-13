@@ -48,7 +48,6 @@ class _HomeScreenState extends State<HomeScreen> {
           logo: null,
           onLogin: signIn,
           onSignup: signUp,
-
           loginProviders: <LoginProvider>[
             LoginProvider(
               icon: FontAwesomeIcons.google,
@@ -66,15 +65,14 @@ class _HomeScreenState extends State<HomeScreen> {
             Navigator.pushNamed(context, Routes.combinedPath);
           },
           onRecoverPassword: (v) {
-            Future.delayed(const Duration(milliseconds: 100)).then((value) => "Can't recover password");
+            Future.delayed(const Duration(milliseconds: 100))
+                .then((value) => "Can't recover password");
             return null;
           },
         );
       },
-      buildWhen: (_, currentState) =>
-      currentState is LoadedIdentifierHomeState,
+      buildWhen: (_, currentState) => currentState is LoadedIdentifierHomeState,
     );
-
   }
 
   Future<String?> signIn(LoginData data) async {
@@ -97,7 +95,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-
   Future<String> signInGoogle() async {
     try {
       final s = await _auth.signInWithGoogle();
@@ -106,6 +103,5 @@ class _HomeScreenState extends State<HomeScreen> {
       logger().i("Error while signing in with Google: $e");
       return e.toString();
     }
-
   }
 }
