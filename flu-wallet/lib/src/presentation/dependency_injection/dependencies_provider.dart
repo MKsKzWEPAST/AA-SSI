@@ -38,6 +38,7 @@ Future<void> init() async {
   registerBackendPlug();
 }
 
+//  blockchain environment variables
 void registerEnv() {
   Map<String, EnvEntity> env = {"amoy": EnvEntity(
     pushUrl: 'https://push-staging.polygonid.com/api/v1',
@@ -111,10 +112,12 @@ void registerUtilities() {
       () => QrcodeParserUtils(getIt()));
 }
 
+// handler for firebase authentication
 void registerAuthModel() {
   getIt.registerSingleton(AuthModel());
 }
 
+// handler for backend url setter
 void registerBackendPlug() {
   getIt.registerSingleton(BackendPlugUtils());
 }

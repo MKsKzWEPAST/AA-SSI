@@ -70,7 +70,10 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: FontAwesomeIcons.google,
               label: 'Google',
               callback: () async {
-                await signInGoogle();
+                final s = await signInGoogle();
+                if (s != "") {
+                  return s;
+                }
                 return null;
               },
             ),
@@ -90,90 +93,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   }
 
-  ///
-  Widget _buildLogo() {
-    return SvgPicture.asset(
-      ImageResources.logo,
-      width: 120,
-    );
-  }
-
-  ///
-  Widget _buildDescription() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 24),
-      child: Text(
-        CustomStrings.homeDescription,
-        textAlign: TextAlign.center,
-        style: CustomTextStyles.descriptionTextStyle,
-      ),
-    );
-  }
-
-  ///
-  Widget _buildProgress() {
-    return BlocBuilder(
-      bloc: _bloc,
-      builder: (BuildContext context, HomeState state) {
-        if (state is! LoadingDataHomeState) return const SizedBox.shrink();
-        return Column(children: [
-          Text(
-            CustomStrings.loading,
-            textAlign: TextAlign.center,
-            style: CustomTextStyles.descriptionTextStyle.copyWith(fontSize: 20),
-          ),
-          const CircularProgressIndicator(
-            backgroundColor: CustomColors.primaryButton,
-          ),
-        ]);
-      },
-    );
-  }
-
-  Widget _buildWalletSection() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: BlocBuilder(
-        bloc: _bloc,
-        builder: (BuildContext context, HomeState state) {
-          return Align(
-            alignment: Alignment.center,
-            child: BlocBuilder(
-              bloc: _bloc,
-              builder: (BuildContext context, HomeState state) {
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment:
-                  CrossAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 10),
-                    _buildGoogleButton(CustomStrings.homeSocialLogin),
-                  ],
-                );
-              },
-            ),
-          );
-        },
-        buildWhen: (_, currentState) =>
-        currentState is LoadedIdentifierHomeState,
-      ),
-    );
-  }
-
-  ///
-  Widget _buildGoogleButton(String text){
-    return ElevatedButton(
-        onPressed: () => {
-          signInGoogle()
-        },
-        child: Text(text));
-  }
   Future<String?> signIn(LoginData data) async {
     try {
       final s = await _auth.signInPassword(data);
       return s;
     } catch (e) {
-      return "Issue with the sign-in: $e";
+      logger().i("Error while signing in: $e");
+      return e.toString();
     }
   }
 
@@ -182,7 +108,8 @@ class _HomeScreenState extends State<HomeScreen> {
       final s = await _auth.signUpPassword(data);
       return s;
     } catch (e) {
-      return "Issue with the sign-in: $e";
+      logger().i("Error while signing up: $e");
+      return e.toString();
     }
   }
 
@@ -191,103 +118,10 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final s = await _auth.signInWithGoogle();
       return s;
-    } catch (error) {
-      logger().i("Error while signing in: $error");
-      return "";
+    } catch (e) {
+      logger().i("Error while signing in with Google: $e");
+      return e.toString();
     }
 
-  }
-  ///
-  Widget _buildErrorSection() {
-    return BlocBuilder(
-      bloc: _bloc,
-      builder: (BuildContext context, HomeState state) {
-        if (state is! ErrorHomeState) return const SizedBox.shrink();
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Text(
-            state.message,
-            style: CustomTextStyles.descriptionTextStyle
-                .copyWith(color: CustomColors.redError),
-          ),
-        );
-      },
-    );
-  }
-
-  ///
-  Widget _buildFeaturesSection() {
-    return ListView(
-      shrinkWrap: true,
-      physics: const ClampingScrollPhysics(),
-      children: [
-        _buildCombinedFeatureCard(),
-        _buildBackupIdentityFeatureCard(),
-        _buildRestoreIdentityFeatureCard(),
-      ],
-    );
-  }
-
-  ///
-  Widget _buildCombinedFeatureCard() {
-    return BlocBuilder(
-      bloc: _bloc,
-      builder: (BuildContext context, HomeState state) {
-        bool enabled = (state is! LoadingDataHomeState) &&
-            (state.identifier != null && state.identifier!.isNotEmpty);
-        return FeatureCard(
-          methodName: "auth() / getCredential()",
-          title: "Combined Test",
-          description: "Combined QR for auth and Claims",
-          onTap: () {
-            Navigator.pushNamed(context, Routes.combinedPath);
-          },
-          enabled: enabled,
-          disabledReason: CustomStrings.homeFeatureCardDisabledReason,
-        );
-      },
-    );
-  }
-
-  ///
-  Widget _buildBackupIdentityFeatureCard() {
-    return BlocBuilder(
-      bloc: _bloc,
-      builder: (BuildContext context, HomeState state) {
-        bool enabled = (state is! LoadingDataHomeState) &&
-            (state.identifier != null && state.identifier!.isNotEmpty);
-        return FeatureCard(
-          methodName: CustomStrings.backupIdentityMethod,
-          title: CustomStrings.backupIdentityTitle,
-          description: CustomStrings.backupIdentityDescription,
-          onTap: () {
-            Navigator.pushNamed(context, Routes.backupIdentityPath);
-          },
-          enabled: enabled,
-          disabledReason: CustomStrings.homeFeatureCardDisabledReason,
-        );
-      },
-    );
-  }
-
-  ///
-  Widget _buildRestoreIdentityFeatureCard() {
-    return BlocBuilder(
-      bloc: _bloc,
-      builder: (BuildContext context, HomeState state) {
-        bool enabled = (state is! LoadingDataHomeState) &&
-            (state.identifier != null && state.identifier!.isNotEmpty);
-        return FeatureCard(
-          methodName: CustomStrings.restoreIdentityMethod,
-          title: CustomStrings.restoreIdentityTitle,
-          description: CustomStrings.restoreIdentityDescription,
-          onTap: () {
-            Navigator.pushNamed(context, Routes.restoreIdentityPath);
-          },
-          enabled: enabled,
-          disabledReason: CustomStrings.homeFeatureCardDisabledReason,
-        );
-      },
-    );
   }
 }

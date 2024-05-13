@@ -27,8 +27,6 @@ class AuthModel {
   Future<String> signInWithGoogle() async {
     await signOutFromGoogle();
     try {
-      logger().i("SIGNING IN WITH GOOGLE");
-
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
       final GoogleSignInAuthentication? googleAuth =
@@ -44,7 +42,7 @@ class AuthModel {
       _email = _auth.currentUser?.email ?? "";
 
       _id_token = await _auth.currentUser?.getIdToken(true) ?? "";
-      return "signed-in";
+      return "";
     } on Exception catch (e) {
       logger().i("error while signing in with google: " + e.toString());
       return e.toString();
@@ -60,12 +58,12 @@ class AuthModel {
       _email = _auth.currentUser?.email ?? "";
 
       _id_token = await _auth.currentUser?.getIdToken(true) ?? "";
+      return null;
     } on Exception catch (e) {
       logger().i("error while signing in: " + e.toString());
-      return "Couldn't sign in";
+      return e.toString();
 
     }
-    return null;
   }
 
   Future<String?> signUpPassword(SignupData data) async {
@@ -80,11 +78,11 @@ class AuthModel {
       _email = _auth.currentUser?.email ?? "";
 
       _id_token = await _auth.currentUser?.getIdToken(true) ?? "";
+      return null;
     } on Exception catch (e) {
       logger().i("error while signing up: " + e.toString());
-        return "Couldn't sign up";
+        return e.toString();
     }
-    return null;
   }
 
   Future<void> signOutFromGoogle() async {

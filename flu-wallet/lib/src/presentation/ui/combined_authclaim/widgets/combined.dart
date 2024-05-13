@@ -70,10 +70,6 @@ class _CombinedScreenState extends State<CombinedScreen> {
                 if (_address != "") {
                   address = _address;
                   auth.setUserAddress(_address);
-                  print("\n\n\n=========== " +
-                      _address +
-                      auth.address +
-                      "================\n\n\n");
                   _fetchCoinsBalance();
                 }
               }));
