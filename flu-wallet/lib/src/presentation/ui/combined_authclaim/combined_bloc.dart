@@ -190,7 +190,7 @@ class CombinedBloc extends Bloc<CombinedEvent, CombinedState> {
               "Iden3MessageType not auth.req nor cred.offer"));
       }
     } catch (error) {
-      emit(CombinedState.error("Scanned code is not valid" + error.toString()));
+      emit(CombinedState.error("Scanned code is not valid: " + error.toString()));
     }
   }
 
