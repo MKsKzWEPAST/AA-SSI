@@ -9,8 +9,6 @@ import 'package:wallet_app/src/presentation/ui/home/widgets/home.dart';
 import 'package:wallet_app/src/presentation/ui/qrcode_scanner/widgets/qrcode_scanner.dart';
 import 'package:wallet_app/src/presentation/ui/restore_identity/widgets/restore_identity.dart';
 import 'package:wallet_app/src/presentation/ui/splash/widgets/splash.dart';
-import 'package:secure_application/secure_gate.dart';
-import 'package:wallet_app/utils/custom_text_styles.dart';
 
 class Routes {
   static const String initialPath = "/";

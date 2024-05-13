@@ -12,7 +12,6 @@ import 'package:wallet_app/utils/custom_button_style.dart';
 import 'package:wallet_app/utils/custom_colors.dart';
 import 'package:wallet_app/utils/custom_text_styles.dart';
 import 'package:wallet_app/utils/image_resources.dart';
-import 'package:secure_application/secure_application_provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);

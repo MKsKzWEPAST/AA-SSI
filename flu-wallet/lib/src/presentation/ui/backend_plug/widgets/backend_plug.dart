@@ -1,22 +1,11 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart' as http;
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:wallet_app/src/presentation/dependency_injection/dependencies_provider.dart';
 import 'package:wallet_app/src/presentation/navigations/routes.dart';
-import 'package:wallet_app/src/presentation/ui/splash/splash_bloc.dart';
-import 'package:wallet_app/src/presentation/ui/splash/splash_event.dart';
-import 'package:wallet_app/src/presentation/ui/splash/splash_state.dart';
 import 'package:wallet_app/utils/backend_plug.dart';
-import 'package:wallet_app/utils/custom_button_style.dart';
 import 'package:wallet_app/utils/custom_colors.dart';
-import 'package:wallet_app/utils/custom_text_styles.dart';
-import 'package:wallet_app/utils/image_resources.dart';
-import 'package:secure_application/secure_application_provider.dart';
-import 'package:http/http.dart' as http;
 
 class BackendPlug extends StatefulWidget {
   const BackendPlug({super.key});

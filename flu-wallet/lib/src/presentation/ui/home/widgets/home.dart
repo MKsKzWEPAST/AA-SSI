@@ -1,33 +1,17 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:local_auth/local_auth.dart';
+import 'package:flutter_login/flutter_login.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
 import 'package:wallet_app/src/presentation/dependency_injection/dependencies_provider.dart';
 import 'package:wallet_app/src/presentation/navigations/routes.dart';
-import 'package:wallet_app/src/presentation/ui/common/widgets/button_next_action.dart';
-import 'package:wallet_app/src/presentation/ui/common/widgets/feature_card.dart';
 import 'package:wallet_app/src/presentation/ui/home/home_bloc.dart';
 import 'package:wallet_app/src/presentation/ui/home/home_event.dart';
 import 'package:wallet_app/src/presentation/ui/home/home_state.dart';
-import 'package:wallet_app/utils/custom_button_style.dart';
-import 'package:wallet_app/utils/custom_colors.dart';
-import 'package:wallet_app/utils/custom_strings.dart';
-import 'package:wallet_app/utils/custom_text_styles.dart';
-import 'package:wallet_app/utils/custom_widgets_keys.dart';
-import 'package:wallet_app/utils/image_resources.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import '../../../../../utils/auth_model.dart';
-import 'package:flutter_login/flutter_login.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

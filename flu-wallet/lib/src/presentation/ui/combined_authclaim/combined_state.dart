@@ -1,17 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:polygonid_flutter_sdk/iden3comm/domain/entities/common/iden3_message_entity.dart';
-import '../claims/models/claim_model.dart';
-import '../../../../utils/custom_strings.dart';
-import '../../../../utils/nonce_utils.dart';
-import '../../../../utils/qr_code_parser_utils.dart';
-import '../../../../utils/secure_storage_keys.dart';
-import '../../../data/secure_storage.dart';
-import '../../dependency_injection/dependencies_provider.dart';
-import '../claims/mappers/claim_model_mapper.dart';
-import '../common/widgets/profile_radio_button.dart';
-import 'combined_event.dart';
-import 'combined_state.dart';
 
+import '../claims/models/claim_model.dart';
+import '../common/widgets/profile_radio_button.dart';
 
 part 'combined_state.freezed.dart';
 

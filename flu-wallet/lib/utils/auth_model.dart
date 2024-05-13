@@ -1,13 +1,7 @@
-import 'dart:collection';
-
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:polygonid_flutter_sdk/common/domain/domain_logger.dart';
-import 'package:flutter/widgets.dart';
-import 'package:polygonid_flutter_sdk/sdk/polygon_id_sdk.dart';
-import 'package:wallet_app/utils/wallet_utils.dart';
 
 class AuthModel {
   final FirebaseAuth _auth = FirebaseAuth.instance;

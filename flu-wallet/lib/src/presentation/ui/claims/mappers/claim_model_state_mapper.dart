@@ -1,6 +1,5 @@
 import 'package:polygonid_flutter_sdk/common/mappers/mapper.dart';
 import 'package:polygonid_flutter_sdk/credential/domain/entities/claim_entity.dart';
-
 import 'package:wallet_app/src/presentation/ui/claims/models/claim_model_state.dart';
 
 class ClaimModelStateMapper implements Mapper<ClaimState, ClaimModelState> {

@@ -5,10 +5,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_commons/google_mlkit_commons.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:scan/scan.dart';
 import 'package:wallet_app/src/presentation/ui/qrcode_scanner/widgets/qrcode_scanner_overlay_shape.dart';
 import 'package:wallet_app/utils/custom_button_style.dart';
 import 'package:wallet_app/utils/custom_colors.dart';
-import 'package:scan/scan.dart';
 
 enum ScreenMode { liveFeed, gallery }
 
