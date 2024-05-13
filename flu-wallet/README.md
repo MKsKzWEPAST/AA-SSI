@@ -1,8 +1,23 @@
 # Wallet App
 
 **Contents**
-1. [Setup](#setup)
-2. [Functionalities](#functionalities)
+1. [Project structure](#structure)
+2. [Setup](#setup)
+3. [Functionalities](#functionalities)
+
+## Structure
+
+```
+└── flu-wallet/
+    ├── lib/
+    │   ├── src/
+    │   ├── utils/
+    │   ├── firebase_options.dart # config for firebase
+    │   └── main.dart
+    ├── firebase.json # firebase admin config
+    ├── android/
+    └── assets/
+```
 ## Setup
 
 ### Install
