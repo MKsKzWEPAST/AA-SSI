@@ -1,4 +1,5 @@
 import {Presets} from "userop";
+import config = require("./config.json");
 
 export const TOKEN_ADDRESSES = new Map([
     ["dai", "0xd7dB0FE7506829004c99d75d1c04c6498CA9A270"],
@@ -22,8 +23,8 @@ export const opts = {paymasterMiddleware: paymasterMiddleware};
 
 
 // smart contracts ===================
-export const verifierSCAddress = "0xf463aefB5975e712059eAF56276a7dfe7D4B5542";
-export const smartMoneyAddress = "0x46346F5Db118505707F17B6c1805D0a557bb3ADA";
+export const verifierSCAddress = config.verifier_address;  // "0xf463aefB5975e712059eAF56276a7dfe7D4B5542";
+export const smartMoneyAddress = config.smart_money_address; // "0x46346F5Db118505707F17B6c1805D0a557bb3ADA";
 
 // google auth ==================
 export const CLIENT_ID = "450618253210-eaoigvic0jsf099369qaf0a6nfs8903q.apps.googleusercontent.com";
