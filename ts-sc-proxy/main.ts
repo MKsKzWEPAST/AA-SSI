@@ -390,9 +390,7 @@ app.get('api/ping', async (req,res) => {
 const signingKey = getCallerAccountPrivateKey("01");
 const signer = new ethers.Wallet(signingKey);
 const builder = Presets.Builder.SimpleAccount.init(signer, rpcUrl, opts);
-const address = builder.then(a => console.log("ADDRESS" + a.getSender()));
-
-console.log(`Account address: ${address}`);
+const address = builder.then(a => console.log("ADDRESS (01): " + a.getSender()));
 
 smartMoney.on("CompletePurchase", (requestID, event_status) => {
     console.log("\nPurchase completed: requestId", requestID, " - status=", event_status, "\n");
